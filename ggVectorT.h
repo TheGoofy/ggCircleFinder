@@ -121,18 +121,18 @@ public:
     return *this;
   }
 
-  template <typename TOtherValueType>
-  inline ggVectorT& operator *= (const TOtherValueType& aOtherValue) {
+  template <typename TScalarType>
+  inline ggVectorT& operator *= (const TScalarType& aScalar) {
     for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
-      (*this)[vDimension] *= aOtherValue;
+      (*this)[vDimension] *= aScalar;
     }
     return *this;
   }
 
-  template <typename TOtherValueType>
-  inline ggVectorT& operator /= (const TOtherValueType& aOtherValue) {
+  template <typename TScalarType>
+  inline ggVectorT& operator /= (const TScalarType& aScalar) {
     for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
-      (*this)[vDimension] /= aOtherValue;
+      (*this)[vDimension] /= aScalar;
     }
     return *this;
   }
@@ -149,17 +149,17 @@ public:
     return vResult;
   }
 
-  template <typename TOtherValueType>
-  inline ggVectorT operator * (const TOtherValueType& aOtherValue) const {
+  template <typename TScalarType>
+  inline ggVectorT operator * (const TScalarType& aScalar) const {
     ggVectorT vResult(*this);
-    vResult *= aOtherValue;
+    vResult *= aScalar;
     return vResult;
   }
 
-  template <typename TOtherValueType>
-  inline ggVectorT operator / (const TOtherValueType& aOtherValue) const {
+  template <typename TScalarType>
+  inline ggVectorT operator / (const TScalarType& aScalar) const {
     ggVectorT vResult(*this);
-    vResult /= aOtherValue;
+    vResult /= aScalar;
     return vResult;
   }
 

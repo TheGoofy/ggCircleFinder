@@ -1,5 +1,6 @@
 #include "ggRenderWidget.h"
 #include <iostream>
+#include <QDebug>
 #include <QPainter>
 #include <QImage>
 #include <QBitmap>
@@ -13,7 +14,6 @@
 #include "ggLinear.h"
 #include "ggImagePainterT.h"
 #include "ggGeometry.h"
-#include <QDebug>
 
 
 ggRenderWidget::ggRenderWidget(QWidget *parent) :
@@ -384,14 +384,12 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
   const bool vLineModelGaussianFilter = vUI->mLineModelGaussianFilterCheckBox->isChecked();
   const ggFloat vLineModelGaussianFilterWidth = vUI->mLineModelGaussianFilterLineEdit->text().toFloat();
 
-  qDebug() << "vCircleCenter" << ggUtilities::ToString(vCircleCenter).c_str();
-
   // original circle
   QPointF vOriginalCircleCenter(vCircleCenter.X(), vCircleCenter.Y());
   ggFloat vOriginalCircleRadius(vCircleDiameter / 2.0f);
 
-  // copy image & smooth (remove the noise)
-  qDebug() << "copy image & smooth (remove the noise)";
+  // copy ROI image & smooth (remove the noise)
+  qDebug() << "copy ROI image & smooth (remove the noise)";
   ggImageT<ggFloat> vImageCameraROI(vRegionOfInterestSize.X(), vRegionOfInterestSize.Y());
   ggImageFilter::Copy(vImageCameraROI, mImageCamera, vRegionOfInterestPosition.X(), vRegionOfInterestPosition.Y());
   if (vLineModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, vLineModelGaussianFilterWidth);
@@ -401,8 +399,8 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
   ggImageT<ggVector2Float> vGradientVectorField(vImageCameraROI.GetSizeX(), vImageCameraROI.GetSizeY());
   ggImageFilter::Gradient(vGradientVectorField, vImageCameraROI);
 
-  // do a gradient based hough transformation
-  qDebug() << "do a gradient based hough transformation";
+  // do gradient based hough transformation
+  qDebug() << "do gradient based hough transformation";
   ggImageT<ggFloat> vImageHough(vImageCameraROI.GetSize(), 0.0f);
   ggImagePainterT<ggFloat> vPainterHough(vImageHough);
   for (ggSize vIndexY = 1; vIndexY+1 < vGradientVectorField.GetSizeY(); vIndexY++) {
