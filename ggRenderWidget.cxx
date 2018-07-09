@@ -413,10 +413,20 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
         //   proximity of the two triangulation points). nevertheless the virtual center can be used
         //   as indicator, on which side to expect the circle center
         // - the two triangulation points are selected perpendicular to the actual gradient
-        bool vPositive = vGradient.X() * vGradient.Y() > 0.0f;
+        bool vDiagonalQ1 = vGradient.X() * vGradient.Y() > 0.0f;
+        bool vHorizontal = fabs(vGradient.X()) > fabs(vGradient.Y());
+        ggDouble vSlope = vHorizontal ? (vGradient.Y() / vGradient.X()) : (vGradient.X() / vGradient.Y());
         // position of two (intersecting) lines
-        ggVector2Int32 vIndexA(vPositive ? vIndexX-1 : vIndexX+1, vPositive ? vIndexY+1 : vIndexY+1);
-        ggVector2Int32 vIndexB(vPositive ? vIndexX+1 : vIndexX-1, vPositive ? vIndexY-1 : vIndexY-1);
+        ggVector2Int32 vIndexA(vIndexX, vIndexY);
+        ggVector2Int32 vIndexB(vIndexX, vIndexY);
+        if (fabs(vSlope) < 0.4142) { // tan(22.5) = sqrt(2) - 1
+          vIndexA += ggVector2Int32(vHorizontal ? 0 : 1, vHorizontal ? 1 : 0);
+          vIndexB += ggVector2Int32(vHorizontal ? 0 : -1, vHorizontal ? -1 : 0);
+        }
+        else {
+          vIndexA += ggVector2Int32(vDiagonalQ1 ? -1 : 1, vDiagonalQ1 ? 1 : 1);
+          vIndexB += ggVector2Int32(vDiagonalQ1 ? 1 : -1, vDiagonalQ1 ? -1 : -1);
+        }
         // direction of two (intersecting) lines
         const ggVector2Double vGradientA(vGradientVectorField(vIndexA).GetConverted<ggDouble>());
         const ggVector2Double vGradientB(vGradientVectorField(vIndexB).GetConverted<ggDouble>());

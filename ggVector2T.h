@@ -75,6 +75,10 @@ public:
     return aVector.Cross();
   }
 
+  inline ggDouble Angle() const {
+    return atan2((*this)[1], (*this)[0]);
+  }
+
 };
 
 #endif // GGVECTOR2T_H
