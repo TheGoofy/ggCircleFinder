@@ -299,11 +299,14 @@ namespace ggImageFilter {
                                 const ggDouble& aY1, // assuming aX1 =  0
                                 const ggDouble& aY2, // assuming aX2 =  1
                                 ggDouble& aVertexX,
-                                ggDouble& aVertexY) {
+                                ggDouble& aVertexY,
+                                bool aCheckVertexInRange) {
+    if (aCheckVertexInRange && ((aY0 > aY1) || (aY2 > aY1))) return false;
     ggDouble vASquare = (aY0 + aY2) / 2.0 - aY1;
     if (vASquare != 0.0) {
       aVertexX = (aY0 - aY2) / (4.0 * vASquare);
       aVertexY = aY1 - vASquare * aVertexX * aVertexX;
+      if (aVertexX < -1.0 || aVertexX > 1.0) qDebug() << aVertexX;
       return true;
     }
     return false;
@@ -333,7 +336,7 @@ namespace ggImageFilter {
         if (GetParabolaVertex(aImage(aIndexX-1, aIndexY+vOffY),
                               aImage(aIndexX  , aIndexY+vOffY),
                               aImage(aIndexX+1, aIndexY+vOffY),
-                              vVertexOffset, vVertexValue)) {
+                              vVertexOffset, vVertexValue, true)) {
           ggDouble vWeight = 1 + vDelta * vDelta - vOffY * vOffY;
           vVertexWeightSumX += vWeight;
           vVertexOffsetX += vVertexOffset * vWeight;
@@ -347,7 +350,7 @@ namespace ggImageFilter {
         if (GetParabolaVertex(aImage(aIndexX+vOffX, aIndexY-1),
                               aImage(aIndexX+vOffX, aIndexY  ),
                               aImage(aIndexX+vOffX, aIndexY+1),
-                              vVertexOffset, vVertexValue)) {
+                              vVertexOffset, vVertexValue, true)) {
           ggDouble vWeight = 1 + vDelta * vDelta - vOffX * vOffX;
           vVertexWeightSumY += vWeight;
           vVertexOffsetY += vVertexOffset * vWeight;
