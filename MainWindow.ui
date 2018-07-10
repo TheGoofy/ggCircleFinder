@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1108</width>
-    <height>727</height>
+    <height>735</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -246,31 +246,6 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="mCameraBitDepthSpinBox">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>16</number>
-             </property>
-             <property name="value">
-              <number>8</number>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="2">
             <widget class="QLabel" name="label_9">
              <property name="sizePolicy">
@@ -299,31 +274,6 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Bit Depth</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="buddy">
-              <cstring>mCameraBitDepthSpinBox</cstring>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="1">
             <widget class="QDoubleSpinBox" name="mCameraNoiseDoubleSpinBox">
              <property name="sizePolicy">
@@ -345,7 +295,7 @@
               <double>100.000000000000000</double>
              </property>
              <property name="value">
-              <double>10.000000000000000</double>
+              <double>3.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -377,6 +327,56 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="mCameraBitDepthSpinBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>16</number>
+             </property>
+             <property name="value">
+              <number>8</number>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Bit Depth</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>mCameraBitDepthSpinBox</cstring>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -390,7 +390,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
-           <string>Lines</string>
+           <string>Circle</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <property name="leftMargin">
@@ -408,7 +408,7 @@
            <property name="spacing">
             <number>2</number>
            </property>
-           <item row="3" column="2">
+           <item row="1" column="2">
             <widget class="QLineEdit" name="mCircleCenterYLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -436,73 +436,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_23">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Circle center (x,y)</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="2">
-            <widget class="QLineEdit" name="mLineThicknessLineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>3</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QLabel" name="label_22">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>20</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>px</string>
-             </property>
-             <property name="buddy">
-              <cstring>mLineEndYLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="label_15">
              <property name="minimumSize">
               <size>
@@ -518,19 +452,29 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="mLineEndXLineEdit">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Circle center (x,y)</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QLineEdit" name="mCircleLineThicknessLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>0</height>
-              </size>
              </property>
              <property name="maximumSize">
               <size>
@@ -539,115 +483,21 @@
               </size>
              </property>
              <property name="text">
-              <string>450</string>
+              <string>2</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_11">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Thickness</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="buddy">
-              <cstring>mLineThicknessLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="3">
+           <item row="4" column="3">
             <widget class="QLabel" name="label_6">
              <property name="text">
               <string>%</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Line begin (x,y)</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="buddy">
-              <cstring>mLineBeginXLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_14">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Line end (x,y)</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="buddy">
-              <cstring>mLineEndXLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="2">
-            <widget class="QSpinBox" name="mLineFragmentationSpinBox">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="value">
-              <number>50</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
+           <item row="1" column="1">
             <widget class="QLineEdit" name="mCircleCenterXLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -675,84 +525,60 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="label_13">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>20</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>px</string>
-             </property>
-             <property name="buddy">
-              <cstring>mLineBeginYLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLineEdit" name="mLineBeginYLineEdit">
+           <item row="4" column="2">
+            <widget class="QSpinBox" name="mCircleLineFragmentationSpinBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>220</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
             </widget>
            </item>
-           <item row="2" column="2">
-            <widget class="QLineEdit" name="mLineEndYLineEdit">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_11">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="minimumSize">
               <size>
-               <width>50</width>
+               <width>100</width>
                <height>0</height>
               </size>
              </property>
-             <property name="maximumSize">
+             <property name="text">
+              <string>Thickness</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>mCircleLineThicknessLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_27">
+             <property name="minimumSize">
               <size>
-               <width>80</width>
-               <height>16777215</height>
+               <width>100</width>
+               <height>0</height>
               </size>
              </property>
              <property name="text">
-              <string>280</string>
+              <string>Circle diameter</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -760,62 +586,6 @@
             </widget>
            </item>
            <item row="3" column="3">
-            <widget class="QLabel" name="label_26">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>20</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>px</string>
-             </property>
-             <property name="buddy">
-              <cstring>mLineEndYLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="mLineBeginXLineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>50</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="3">
             <widget class="QLabel" name="label_12">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -839,27 +609,61 @@
               <string>px</string>
              </property>
              <property name="buddy">
-              <cstring>mLineThicknessLineEdit</cstring>
+              <cstring>mCircleLineThicknessLineEdit</cstring>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_27">
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_28">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimumSize">
               <size>
-               <width>100</width>
+               <width>20</width>
                <height>0</height>
               </size>
              </property>
-             <property name="text">
-              <string>Circle diameter</string>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>16777215</height>
+              </size>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <property name="text">
+              <string>px</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="2">
+           <item row="1" column="3">
+            <widget class="QLabel" name="label_26">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>px</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
             <widget class="QLineEdit" name="mCircleDiameterLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -887,34 +691,6 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="3">
-            <widget class="QLabel" name="label_28">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>20</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>px</string>
-             </property>
-             <property name="buddy">
-              <cstring>mLineEndYLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -934,9 +710,9 @@
         <item>
          <widget class="QGroupBox" name="groupBox_6">
           <property name="title">
-           <string>Line Model</string>
+           <string>Circle Model</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0" columnstretch="0,0,0">
+          <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0,0,0" columnstretch="0,0,0">
            <property name="leftMargin">
             <number>4</number>
            </property>
@@ -952,8 +728,59 @@
            <property name="spacing">
             <number>2</number>
            </property>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="mCircleModelGaussianFilterCheckBox">
+             <property name="text">
+              <string>Filter Image Noise</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="mLineModelThicknessLineEdit">
+            <widget class="QLineEdit" name="mCircleModelGaussianFilterWidthLineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_24">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Edge Thickness</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>mCircleModelLineThicknessLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="mCircleModelLineThicknessLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -968,7 +795,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
+           <item row="3" column="2">
             <widget class="QLabel" name="label_25">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -992,77 +819,22 @@
               <string>px</string>
              </property>
              <property name="buddy">
-              <cstring>mLineModelThicknessLineEdit</cstring>
+              <cstring>mCircleModelLineThicknessLineEdit</cstring>
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_24">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
+           <item row="6" column="0">
+            <widget class="QCheckBox" name="mCircleModelCenterVotesFilterCheckBox">
              <property name="text">
-              <string>Thickness</string>
+              <string>Filter Center Votes</string>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="buddy">
-              <cstring>mLineModelThicknessLineEdit</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_17">
-             <property name="text">
-              <string>Fragmentation</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_18">
-             <property name="text">
-              <string>%</string>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="mLineModelFragmentationSpinBox">
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="value">
-              <number>50</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QCheckBox" name="mLineModelGaussianFilterCheckBox">
-             <property name="text">
-              <string>Gaussian Filter</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="mLineModelGaussianFilterLineEdit">
+            <widget class="QLineEdit" name="mCircleModelDiameterLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1070,14 +842,14 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>3</string>
+              <string>150</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="3" column="2">
+           <item row="1" column="2">
             <widget class="QLabel" name="label_29">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1101,7 +873,182 @@
               <string>px</string>
              </property>
              <property name="buddy">
-              <cstring>mLineModelThicknessLineEdit</cstring>
+              <cstring>mCircleModelLineThicknessLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="label_13">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Number of Circles</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>mCameraBitDepthSpinBox</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_31">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Diameter</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="buddy">
+              <cstring>mCircleModelLineThicknessLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QLabel" name="label_32">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>px</string>
+             </property>
+             <property name="buddy">
+              <cstring>mCircleModelLineThicknessLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLineEdit" name="mCircleModelCenterVotesFilterWidthLineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>3</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QLabel" name="label_30">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>px</string>
+             </property>
+             <property name="buddy">
+              <cstring>mCircleModelLineThicknessLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QSpinBox" name="mCircleModelNumberOfCirclesSpinBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="2">
+            <widget class="QLabel" name="label_14">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>#</string>
+             </property>
+             <property name="buddy">
+              <cstring>mCameraBitDepthSpinBox</cstring>
              </property>
             </widget>
            </item>
@@ -1231,7 +1178,7 @@
               </size>
              </property>
              <property name="text">
-              <string>64</string>
+              <string>128</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1351,13 +1298,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="mFindLinePushButton">
-          <property name="text">
-           <string>Find Line</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="pushButton">
           <property name="text">
            <string>Find Circle</string>
@@ -1457,25 +1397,23 @@
   <tabstop>mCameraBitDepthSpinBox</tabstop>
   <tabstop>mCameraNoiseDoubleSpinBox</tabstop>
   <tabstop>mLoadImagePushButton</tabstop>
-  <tabstop>mLineBeginXLineEdit</tabstop>
-  <tabstop>mLineBeginYLineEdit</tabstop>
-  <tabstop>mLineEndXLineEdit</tabstop>
-  <tabstop>mLineEndYLineEdit</tabstop>
   <tabstop>mCircleCenterXLineEdit</tabstop>
   <tabstop>mCircleCenterYLineEdit</tabstop>
   <tabstop>mCircleDiameterLineEdit</tabstop>
-  <tabstop>mLineThicknessLineEdit</tabstop>
-  <tabstop>mLineFragmentationSpinBox</tabstop>
+  <tabstop>mCircleLineThicknessLineEdit</tabstop>
+  <tabstop>mCircleLineFragmentationSpinBox</tabstop>
   <tabstop>mGenerateImagePushButton</tabstop>
-  <tabstop>mLineModelThicknessLineEdit</tabstop>
-  <tabstop>mLineModelFragmentationSpinBox</tabstop>
-  <tabstop>mLineModelGaussianFilterCheckBox</tabstop>
-  <tabstop>mLineModelGaussianFilterLineEdit</tabstop>
+  <tabstop>mCircleModelGaussianFilterCheckBox</tabstop>
+  <tabstop>mCircleModelGaussianFilterWidthLineEdit</tabstop>
+  <tabstop>mCircleModelDiameterLineEdit</tabstop>
+  <tabstop>mCircleModelLineThicknessLineEdit</tabstop>
+  <tabstop>mCircleModelCenterVotesFilterCheckBox</tabstop>
+  <tabstop>mCircleModelCenterVotesFilterWidthLineEdit</tabstop>
+  <tabstop>mCircleModelNumberOfCirclesSpinBox</tabstop>
   <tabstop>mRegionOfInterestPositionXLineEdit</tabstop>
   <tabstop>mRegionOfInterestPositionYLineEdit</tabstop>
   <tabstop>mRegionOfInterestSizeXLineEdit</tabstop>
   <tabstop>mRegionOfInterestSizeYLineEdit</tabstop>
-  <tabstop>mFindLinePushButton</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>mOverlayOpacitySlider</tabstop>
   <tabstop>mResultsPlainTextEdit</tabstop>
@@ -1490,27 +1428,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>1094</x>
-     <y>348</y>
+     <y>321</y>
     </hint>
     <hint type="destinationlabel">
      <x>607</x>
      <y>254</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mFindLinePushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>mRenderWidget</receiver>
-   <slot>FindLine()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1094</x>
-     <y>543</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>640</x>
-     <y>405</y>
     </hint>
    </hints>
   </connection>
@@ -1553,8 +1475,8 @@
    <slot>repaint()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>816</x>
-     <y>610</y>
+     <x>1085</x>
+     <y>609</y>
     </hint>
     <hint type="destinationlabel">
      <x>708</x>

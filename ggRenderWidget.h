@@ -21,7 +21,6 @@ public slots:
 private slots:
   void LoadImage();
   void GenerateImage();
-  void FindLine();
   void FindCircle();
 
 protected:
@@ -29,7 +28,6 @@ protected:
 
 private:
   void PrepareCameraImage(const ggImageT<ggFloat>& aImageFloat);
-
 
   ggImageT<ggUInt16> mImageCamera;
   QPixmap mImagePixmap;

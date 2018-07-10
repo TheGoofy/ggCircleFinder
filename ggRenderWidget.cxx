@@ -104,15 +104,11 @@ void ggRenderWidget::GenerateImage()
 
   const ggSize vCameraImageSizeX = vUI->mCameraImageSizeXLineEdit->text().toUInt();
   const ggSize vCameraImageSizeY = vUI->mCameraImageSizeYLineEdit->text().toUInt();
-  const ggFloat vLineBeginX = vUI->mLineBeginXLineEdit->text().toFloat();
-  const ggFloat vLineBeginY = vUI->mLineBeginYLineEdit->text().toFloat();
-  const ggFloat vLineEndX = vUI->mLineEndXLineEdit->text().toFloat();
-  const ggFloat vLineEndY = vUI->mLineEndYLineEdit->text().toFloat();
   const ggFloat vCircleCenterX = vUI->mCircleCenterXLineEdit->text().toFloat();
   const ggFloat vCircleCenterY = vUI->mCircleCenterYLineEdit->text().toFloat();
   const ggFloat vCircleDiameter = vUI->mCircleDiameterLineEdit->text().toFloat();
-  const ggFloat vLineThickness = vUI->mLineThicknessLineEdit->text().toFloat();
-  const ggFloat vLineFragmentation = vUI->mLineFragmentationSpinBox->value() / 100.0f;
+  const ggFloat vCircleLineThickness = vUI->mCircleLineThicknessLineEdit->text().toFloat();
+  const ggFloat vCircleLineFragmentation = vUI->mCircleLineFragmentationSpinBox->value() / 100.0f;
 
   if (vCameraImageSizeX == 0) return;
   if (vCameraImageSizeY == 0) return;
@@ -123,207 +119,21 @@ void ggRenderWidget::GenerateImage()
   // init image
   vImageFloat = 0.0f;
 
-  // draw the laser line
-  ggVector2Double vLaserLineBegin(vLineBeginX, vLineBeginY);
-  ggVector2Double vLaserLineEnd(vLineEndX, vLineEndY);
-  vImagePainter.DrawLine(vLaserLineBegin, vLaserLineEnd,
-                         1.0f, 1.0f, ggPainterBlendType::eSet, vLineFragmentation);
-
   // draw a circle
   ggVector2Double vCenter(vCircleCenterX, vCircleCenterY);
   ggDouble vRadius(vCircleDiameter / 2.0f);
-  for (ggSize vIndex = 0; vIndex < 50; vIndex++) {
-    vImagePainter.DrawCircle(vCenter, vRadius + vIndex,
-                             1.0f, 1.0f, ggPainterBlendType::eSet, vLineFragmentation);
+  ggInt32 vNumSteps = std::max<ggInt32>(1, vCircleLineThickness);
+  ggDouble vStepLength = vCircleLineThickness / vNumSteps;
+  for (ggInt32 vStep = 0; vStep < vNumSteps; vStep++) {
+    vImagePainter.DrawCircle(vCenter, vRadius - (vNumSteps - 1) * vStepLength / 2.0 + vStep * vStepLength,
+                             1.0f, 1.0f, ggPainterBlendType::eSet, vCircleLineFragmentation);
   }
 
   // blur the lines
-  if (vLineThickness != 0.0) ggImageFilter::Gauss(vImageFloat, vLineThickness);
+  // if (vCircleLineThickness != 0.0) ggImageFilter::Gauss(vImageFloat, vCircleLineThickness);
 
   // calculate camera image and image for rendering on screen
   PrepareCameraImage(vImageFloat);
-
-  repaint();
-}
-
-
-void ggRenderWidget::FindLine()
-{
-  MainWindow* vMainWindow = dynamic_cast<MainWindow*>(aParent()->aParent());
-  Ui::MainWindow* vUI = vMainWindow->GetUI();
-
-  const ggFloat vLineBeginX = vUI->mLineBeginXLineEdit->text().toFloat();
-  const ggFloat vLineBeginY = vUI->mLineBeginYLineEdit->text().toFloat();
-  const ggFloat vLineEndX = vUI->mLineEndXLineEdit->text().toFloat();
-  const ggFloat vLineEndY = vUI->mLineEndYLineEdit->text().toFloat();
-  const ggFloat vLineThickness = vUI->mLineThicknessLineEdit->text().toFloat();
-  const ggInt32 vRegionOfInterestPositionX = vUI->mRegionOfInterestPositionXLineEdit->text().toInt();
-  const ggInt32 vRegionOfInterestPositionY = vUI->mRegionOfInterestPositionYLineEdit->text().toInt();
-  const ggInt32 vRegionOfInterestSizeX = vUI->mRegionOfInterestSizeXLineEdit->text().toInt();
-  const ggInt32 vRegionOfInterestSizeY = vUI->mRegionOfInterestSizeYLineEdit->text().toInt();
-  const ggFloat vLineModelThickness = vUI->mLineModelThicknessLineEdit->text().toFloat();
-  const ggFloat vLineModelFragmentation = vUI->mLineModelFragmentationSpinBox->value() / 100.0f;
-  const bool vLineModelGaussianFilter = vUI->mLineModelGaussianFilterCheckBox->isChecked();
-
-  // start a timer
-  QElapsedTimer vTimer;
-  vTimer.start();
-
-  // copy image & smooth (remove the noise)
-  ggImageT<ggUInt16> vImageCameraROI(vRegionOfInterestSizeX, vRegionOfInterestSizeY);
-  ggImageFilter::Copy(vImageCameraROI, mImageCamera, vRegionOfInterestPositionX, vRegionOfInterestPositionY);
-  if (vLineModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, vLineModelThickness);
-
-  // calculate a histogram
-  std::vector<ggSize> vHistogram = ggImageFilter::GetHistogram(vImageCameraROI);
-
-  // calculate the threshold
-  ggSize vHistogramMax = 0;
-  ggSize vRegionPixelCount = vImageCameraROI.GetSizeX() * vImageCameraROI.GetSizeY();
-  ggSize vLinePixelCount = vImageCameraROI.GetSizeX() * std::min(vLineModelThickness*(1.0f-vLineModelFragmentation), (ggFloat)vImageCameraROI.GetSizeY());
-  ggSize vBackgroundPixelCount = vRegionPixelCount - vLinePixelCount;
-  ggUInt16 vLineThresholdValue = 0;
-  ggSize vTotalPixelCount = 0;
-  for (ggUInt32 vValue = 0; vValue < vHistogram.size(); vValue++) {
-    vTotalPixelCount += vHistogram[vValue];
-    if (vTotalPixelCount < vBackgroundPixelCount) vLineThresholdValue = vValue;
-    if (vHistogram[vValue] > vHistogramMax) vHistogramMax = vHistogram[vValue];
-  }
-
-  // calculate center of gravity
-  std::vector<ggUInt16> vPositionsX;
-  std::vector<ggUInt16> vPositionsY;
-  ggRunningAveragesT<ggFloat> vAveragesX;
-  ggRunningAveragesT<ggFloat> vAveragesY;
-  for (ggInt32 vIndexY = 0; vIndexY < (ggInt32)vImageCameraROI.GetSizeY(); vIndexY++) {
-    for (ggInt32 vIndexX = 0; vIndexX < (ggInt32)vImageCameraROI.GetSizeX(); vIndexX++) {
-      ggUInt16 vValue = vImageCameraROI(vIndexX, vIndexY);
-      if (vValue > vLineThresholdValue) {
-        ggInt32 vPositionX = vRegionOfInterestPositionX + vIndexX;
-        ggInt32 vPositionY = vRegionOfInterestPositionY + vIndexY;
-        vPositionsX.push_back(vPositionX);
-        vPositionsY.push_back(vPositionY);
-        vAveragesX.AddSample(vPositionX);
-        vAveragesY.AddSample(vPositionY);
-      }
-    }
-  }
-
-  // find the line
-  double vC0, vC1, vCov00, vCov01, vCov02, vSumSQ;
-  gsl_fit_linear(&vPositionsX[0], 1, &vPositionsY[0], 1, vPositionsX.size(),
-                 &vC0, &vC1, &vCov00, &vCov01, &vCov02, &vSumSQ);
-
-  // stop the timer
-  ggFloat vCalculationTimeMicroSeconds = 0.001f * vTimer.nsecsElapsed();
-
-  // display the results
-  mOverlayPixmap = QPixmap(mImageCamera.GetSizeX(), mImageCamera.GetSizeY());
-  mOverlayPixmap.fill(Qt::transparent);
-
-  QPainter vPainter(&mOverlayPixmap);
-  vPainter.setRenderHint(QPainter::Antialiasing, true);
-  vPainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-
-  QPen vPen;
-
-  // draw the region of interest
-  vPen.setWidthF(1.0f);
-  vPen.setColor(QColor(255, 255, 0));
-  vPainter.setPen(vPen);
-  vPainter.drawRect(vRegionOfInterestPositionX,
-                    vRegionOfInterestPositionY,
-                    vRegionOfInterestSizeX,
-                    vRegionOfInterestSizeY);
-
-  // draw the histogram
-  ggFloat vScaleX = (ggFloat)mOverlayPixmap.width() / (ggFloat)vHistogram.size();
-  ggFloat vScaleY = 0.2f * (ggFloat)mOverlayPixmap.height() / (ggFloat)vHistogramMax;
-  for (ggUInt32 vValue = 0; vValue < vHistogram.size(); vValue++) {
-    ggInt32 vPositionX = vValue * vScaleX;
-    ggInt32 vPositionY = mOverlayPixmap.height();
-    vPainter.drawLine(vPositionX, vPositionY, vPositionX, vPositionY-vScaleY*vHistogram[vValue]);
-    if (vValue == vLineThresholdValue) {
-      vPen.setColor(QColor(255, 0, 0));
-      vPainter.setPen(vPen);
-    }
-  }
-
-  // draw the thresholded pixels
-  for (ggInt32 vIndexY = 0; vIndexY < vRegionOfInterestSizeY; vIndexY++) {
-    for (ggInt32 vIndexX = 0; vIndexX < vRegionOfInterestSizeX; vIndexX++) {
-      ggUInt16 vValue = vImageCameraROI(vIndexX, vIndexY);
-      if (vValue > vLineThresholdValue) {
-        ggInt32 vPositionX = vRegionOfInterestPositionX + vIndexX;
-        ggInt32 vPositionY = vRegionOfInterestPositionY + vIndexY;
-        vPainter.drawPoint(vPositionX, vPositionY);
-      }
-    }
-  }
-
-  // draw the original line
-  vPen.setWidthF(1.0f + vLineThickness);
-  vPen.setColor(QColor(0, 127, 255, 127));
-  vPen.setCapStyle(Qt::RoundCap);
-  vPainter.setPen(vPen);
-  vPainter.drawLine(vLineBeginX,
-                    vLineBeginY,
-                    vLineEndX,
-                    vLineEndY);
-
-  // draw the fitted line
-  vPen.setColor(QColor(255, 255, 0));
-  vPen.setWidthF(1.0f);
-  vPen.setStyle(Qt::DashLine);
-  vPainter.setPen(vPen);
-  ggFloat vX0 = 0.0f;
-  ggFloat vY0 = vC0 + vC1 * vX0;
-  ggFloat vX1 = mOverlayPixmap.width();
-  ggFloat vY1 = vC0 + vC1 * vX1;
-  vPainter.drawLine(QPointF(vX0, vY0), QPointF(vX1, vY1));
-
-  // draw the center of gravity + stddev
-  vPen.setColor(QColor(0, 255, 0));
-  vPen.setWidthF(1.0f);
-  vPen.setStyle(Qt::SolidLine);
-  vPainter.setPen(vPen);
-  QPointF vCenter(vAveragesX.GetMean(), vAveragesY.GetMean());
-  ggFloat vRadiusX = vAveragesX.GetStdDev();
-  ggFloat vRadiusY = vAveragesY.GetStdDev();
-  vPainter.drawLine(vCenter.x(), vCenter.y()-vRadiusY, vCenter.x(), vCenter.y()-5);
-  vPainter.drawLine(vCenter.x(), vCenter.y()+vRadiusY, vCenter.x(), vCenter.y()+5);
-  vPainter.drawLine(vCenter.x()-vRadiusX, vCenter.y(), vCenter.x()-5, vCenter.y());
-  vPainter.drawLine(vCenter.x()+vRadiusX, vCenter.y(), vCenter.x()+5, vCenter.y());
-  vPen.setWidthF(0.5f);
-  vPainter.setPen(Qt::NoPen);
-  vPainter.setBrush(QBrush(QColor(0, 255, 0, 50)));
-  vPainter.drawEllipse(vCenter, vRadiusX, vRadiusY);
-
-  // compute distance between center of gravity and line(s)
-  ggFloat vLaserLineDeltaX = vLineEndX - vLineBeginX;
-  ggFloat vLaserLineDeltaY = vLineEndY - vLineBeginY;
-  ggFloat vA1 = vLaserLineDeltaY / vLaserLineDeltaX;
-  ggFloat vA0 = vLineBeginY - vA1 * vLineBeginX;
-  ggFloat vDistanceToLaserLine = fabs(vA1*vCenter.x() - 1.0f*vCenter.y() + vA0) / sqrt(vA1*vA1 + 1.0f*1.0f);
-  ggFloat vDistancetoFittedLine = fabs(vC1*vCenter.x() - 1.0f*vCenter.y() + vC0) / sqrt(vC1*vC1 + 1.0f*1.0f);
-
-  // put some text into results box
-  vUI->mResultsPlainTextEdit->setPlainText("Calculation Time = " + QString::number(vCalculationTimeMicroSeconds) + " us\n" +
-                                           "===========================\n" +
-                                           "Number of Points = " + QString::number(vAveragesX.GetNumberOfSamples()) + "\n" +
-                                           "Mean X = " + QString::number(vAveragesX.GetMean()) + " px\n" +
-                                           "Mean Y = " + QString::number(vAveragesY.GetMean()) + " px\n" +
-                                           "StdDev X = " + QString::number(vAveragesX.GetStdDev()) + " px\n" +
-                                           "StdDev Y = " + QString::number(vAveragesY.GetStdDev()) + " px\n" +
-                                           "===========================\n" +
-                                           "Line C0 = " + QString::number(vC0) + " px\n" +
-                                           "Line C1 = " + QString::number(vC1) + "\n" +
-                                           "Line Cov00 = " + QString::number(vCov00) + "\n" +
-                                           "Line Cov01 = " + QString::number(vCov01) + "\n" +
-                                           "Line Cov02 = " + QString::number(vCov02) + "\n" +
-                                           "===========================\n" +
-                                           "Distance CG to fitted Line = " + QString::number(vDistancetoFittedLine) + " px\n"+
-                                           "Distance CG to Laser Line = " + QString::number(vDistanceToLaserLine) + " px");
 
   repaint();
 }
@@ -372,27 +182,31 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
 
   // read parameters from GUI
   qDebug() << "read parameters from GUI";
-  const ggVector2Float vCircleCenter(vUI->mCircleCenterXLineEdit->text().toFloat(),
-                                     vUI->mCircleCenterYLineEdit->text().toFloat());
-  const ggFloat vCircleDiameter = vUI->mCircleDiameterLineEdit->text().toFloat();
-  const ggFloat vCircleThickness = vUI->mLineThicknessLineEdit->text().toFloat();
+  const ggVector2Float vOriginalCircleCenter(vUI->mCircleCenterXLineEdit->text().toFloat(),
+                                             vUI->mCircleCenterYLineEdit->text().toFloat());
+  const ggFloat vOriginalCircleDiameter = vUI->mCircleDiameterLineEdit->text().toFloat();
+  const ggFloat vCircleThickness = vUI->mCircleLineThicknessLineEdit->text().toFloat();
+  const bool vCircleModelGaussianFilter = vUI->mCircleModelGaussianFilterCheckBox->isChecked();
+  const ggFloat vCircleModelGaussianFilterWidth = vUI->mCircleModelGaussianFilterWidthLineEdit->text().toFloat();
+  const ggFloat vCircleModelDiameter = vUI->mCircleModelDiameterLineEdit->text().toFloat();
+  const ggFloat vCircleModelLineThickness = vUI->mCircleModelLineThicknessLineEdit->text().toFloat();
+  const bool vCircleModelCenterVotesFilter = vUI->mCircleModelCenterVotesFilterCheckBox->isChecked();
+  const ggFloat vCircleModelCenterVotesFilterWidth = vUI->mCircleModelCenterVotesFilterWidthLineEdit->text().toFloat();
+  const ggInt32 vCircleModelNumberOfCircles = vUI->mCircleModelNumberOfCirclesSpinBox->value();
   const ggVector2Int32 vRegionOfInterestPosition(vUI->mRegionOfInterestPositionXLineEdit->text().toInt(),
                                                  vUI->mRegionOfInterestPositionYLineEdit->text().toInt());
   const ggVector2Int32 vRegionOfInterestSize(vUI->mRegionOfInterestSizeXLineEdit->text().toInt(),
                                              vUI->mRegionOfInterestSizeYLineEdit->text().toInt());
-  const ggFloat vLineModelThickness = vUI->mLineModelThicknessLineEdit->text().toFloat();
-  const bool vLineModelGaussianFilter = vUI->mLineModelGaussianFilterCheckBox->isChecked();
-  const ggFloat vLineModelGaussianFilterWidth = vUI->mLineModelGaussianFilterLineEdit->text().toFloat();
 
   // original circle
-  QPointF vOriginalCircleCenter(vCircleCenter.X(), vCircleCenter.Y());
-  ggFloat vOriginalCircleRadius(vCircleDiameter / 2.0f);
+  QPointF vOriginalCircleCenterQt(vOriginalCircleCenter.X(), vOriginalCircleCenter.Y());
+  ggFloat vOriginalCircleRadius(vOriginalCircleDiameter / 2.0f);
 
   // copy ROI image & smooth (remove the noise)
   qDebug() << "copy ROI image & smooth (remove the noise)";
   ggImageT<ggFloat> vImageCameraROI(vRegionOfInterestSize.X(), vRegionOfInterestSize.Y());
   ggImageFilter::Copy(vImageCameraROI, mImageCamera, vRegionOfInterestPosition.X(), vRegionOfInterestPosition.Y());
-  if (vLineModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, vLineModelGaussianFilterWidth);
+  if (vCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, vCircleModelGaussianFilterWidth);
 
   // calculate gradient vector field
   qDebug() << "calculate gradient vector field";
@@ -405,7 +219,7 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
   ggImagePainterT<ggFloat> vPainterHough(vImageHough);
   for (ggSize vIndexY = 1; vIndexY+1 < vGradientVectorField.GetSizeY(); vIndexY++) {
     for (ggSize vIndexX = 1; vIndexX+1 < vGradientVectorField.GetSizeX(); vIndexX++) {
-      const ggVector2Double& vGradient(vGradientVectorField(vIndexX, vIndexY).GetConverted<ggDouble>());
+      const ggVector2Double vGradient(vGradientVectorField(vIndexX, vIndexY).GetConverted<ggDouble>());
       if (vGradient.Length() > 0.0f) {
 
         // try to fibure out some sort of circle curvature depending on the neighbor gradients.
@@ -441,11 +255,11 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
           // direction to the virtual center-point (if the circle radius was unknown, we could use this as an estimate)
           ggVector2Double vCenterDirection(vIntersection - vCirclePoint);
           // (known) radius needs to be negative, when the gradient points outward the circle
-          ggDouble vRadius = vCenterDirection.Dot(vGradient) > 0.0f ? vOriginalCircleRadius : -vOriginalCircleRadius;
+          ggDouble vRadius = vCenterDirection.Dot(vGradient) > 0.0 ? vCircleModelDiameter / 2.0 : -vCircleModelDiameter / 2.0;
           // use the actual gradient (and not the gradient from neighbors) for the center voting
           vCenterDirection = vRadius * vGradient.Normalized();
           // the position of the center point may varies by the thickenss of the circle line
-          ggVector2Double vRadiusRange(0.5f * vLineModelThickness * vGradient.Normalized());
+          ggVector2Double vRadiusRange(0.5f * vCircleModelLineThickness * vGradient.Normalized());
           // if the length of the gradient is high, it's more likely we've detected some reasonable structures (not noise)
           ggFloat vIntensity = vGradient.Length();
           // voting for center point candidates on one side of the (potential) circle point ...
@@ -459,19 +273,19 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
   }
 
   // smooth hough image
-  qDebug() << "smooth hough image";
-  if (vLineModelGaussianFilter) ggImageFilter::Gauss(vImageHough, vLineModelGaussianFilterWidth);
+  qDebug() << "smooth hough voting image";
+  if (vCircleModelCenterVotesFilter) ggImageFilter::Gauss(vImageHough, vCircleModelCenterVotesFilterWidth);
 
-  // find all local maxima
-  qDebug() << "find all local maxima";
+  // detect center spots by finding all local maxima
+  qDebug() << "detect center spots by finding all local maxima";
   typedef ggSpotT<ggFloat, ggVector2Double> tSpot;
   typedef std::vector<tSpot> tSpots;
-  tSpots vLocalMaxima = ggImageFilter::FindLocalMaxima(vImageHough, true);
+  tSpots vCenterSpots = ggImageFilter::FindLocalMaxima(vImageHough, true);
 
-  // sort local maxima from highest to lowest
-  qDebug() << "sort local maxima from highest to lowest";
-  std::sort(vLocalMaxima.begin(), vLocalMaxima.end(),
-            [] (const tSpot& aPA, const tSpot& aPB) {return aPA.GetValue() > aPB.GetValue();} );
+  // sort center spots from highest to lowest
+  qDebug() << "sort center spots from highest to lowest";
+  std::sort(vCenterSpots.begin(), vCenterSpots.end(),
+            [] (const tSpot& aSpotA, const tSpot& aSpotB) {return aSpotA.GetValue() > aSpotB.GetValue();} );
 
   // convert hough image for rendering with QT
   qDebug() << "convert hough image for rendering with QT";
@@ -535,33 +349,31 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
   vPen.setColor(QColor(0, 255, 150, 100));
   vPen.setCapStyle(Qt::RoundCap);
   vPainter.setPen(vPen);
-  DrawCircle(vPainter, vOriginalCircleCenter, vOriginalCircleRadius);
+  DrawCircle(vPainter, vOriginalCircleCenterQt, vOriginalCircleRadius);
   vPen.setWidthF(3.0);
   vPen.setColor(Qt::black);
   vPainter.setPen(vPen);
-  DrawCrossHair(vPainter, vOriginalCircleCenter, 10.0, 4.0);
+  DrawCrossHair(vPainter, vOriginalCircleCenterQt, 10.0, 4.0);
   vPen.setWidthF(1.5);
   vPen.setColor(Qt::white);
   vPainter.setPen(vPen);
-  DrawCrossHair(vPainter, vOriginalCircleCenter, 10.0, 4.0);
+  DrawCrossHair(vPainter, vOriginalCircleCenterQt, 10.0, 4.0);
 
   // draw the local maxima
-  QString vResults;
-  ggInt32 vIndexMax = std::min<ggInt32>(vLocalMaxima.size() - 1, 9);
-  ggFloat vSpotValueMax = vLocalMaxima.empty() ? 0.0f : vLocalMaxima.front().GetValue();
-  for (ggInt32 vIndex = vIndexMax; vIndex >= 0; vIndex--) {
-    const tSpot& vLocalMaximum = vLocalMaxima[vIndex];
-    QPointF vLocalMaximumPosition(vRegionOfInterestPosition.X() + vLocalMaximum.X(),
-                                  vRegionOfInterestPosition.Y() + vLocalMaximum.Y());
+  QString vResults = "Found " + QString::number(vCenterSpots.size()) + " Circle Center Candidates\n";
+  ggInt32 vCenterIndexMax = std::min<ggInt32>(vCenterSpots.size() - 1, vCircleModelNumberOfCircles - 1);
+  ggFloat vCenterSpotValueMax = vCenterSpots.empty() ? 0.0f : vCenterSpots.front().GetValue();
+  for (ggInt32 vSpotIndex = vCenterIndexMax; vSpotIndex >= 0; vSpotIndex--) {
+    const tSpot& vCenterSpot = vCenterSpots[vSpotIndex];
+    const ggVector2Double vCircleCenter = vCenterSpot.GetConverted<ggDouble>() + vRegionOfInterestPosition.GetConverted<ggDouble>();
+    QPointF vLocalMaximumPosition(vRegionOfInterestPosition.X() + vCenterSpot.X(),
+                                  vRegionOfInterestPosition.Y() + vCenterSpot.Y());
     vPainter.setPen(QPen(Qt::black, 3.0));
     DrawCrossHair(vPainter, vLocalMaximumPosition, 10.0, 4.0, 45.0);
-    vPainter.setPen(QPen(QColor(vIndex == 0 ? 0 : 255, (int)(255.0f * vLocalMaximum.GetValue() / vSpotValueMax + 0.5f), 0), 1.5));
+    vPainter.setPen(QPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0), 1.5));
     DrawCrossHair(vPainter, vLocalMaximumPosition, 10.0, 4.0, 45.0);
-    if (vIndex < 5) {
-      DrawCircle(vPainter, vLocalMaximumPosition, vOriginalCircleRadius);
-      // vResults += "Local Maximum [" + QString::number(vIndex) + "] => " +  + "\n";
-      qDebug() << "local max =" << vLocalMaximumPosition << "value =" << vLocalMaximum.GetValue();
-    }
+    DrawCircle(vPainter, vLocalMaximumPosition, vCircleModelDiameter / 2.0);
+    vResults += QString::number(vSpotIndex) + ": Pos" + ggUtilities::ToString(vCircleCenter).c_str() + " Val(" + QString::number(vCenterSpot.GetValue()) + ")\n";
   }
 
   /*
