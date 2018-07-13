@@ -190,6 +190,56 @@ public:
     return vResult;
   }
 
+  inline const TValueType& Max() const {
+    const TValueType& vMaxValue = mValues[0];
+    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+      if (vMaxValue < mValues[vDimension]) vMaxValue = mValues[vDimension];
+    }
+    return vMaxValue;
+  }
+
+  inline const TValueType& Min() const {
+    const TValueType& vMinValue = mValues[0];
+    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+      if (vMinValue > mValues[vDimension]) vMinValue = mValues[vDimension];
+    }
+    return vMinValue;
+  }
+
+  inline unsigned int MaxDimension() const {
+    unsigned int vMaxDimension = 0;
+    const TValueType& vMaxValue = mValues[0];
+    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+      if (vMaxValue < mValues[vDimension]) {
+        vMaxDimension = vDimension;
+        vMaxValue = mValues[vDimension];
+      }
+    }
+    return vMaxDimension;
+  }
+
+  inline unsigned int MinDimension() const {
+    unsigned int vMinDimension = 0;
+    const TValueType& vMinValue = mValues[0];
+    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+      if (vMinValue > mValues[vDimension]) {
+        vMinDimension = vDimension;
+        vMinValue = mValues[vDimension];
+      }
+    }
+    return vMinDimension;
+  }
+
+  template <typename TStringConverter>
+  inline typename TStringConverter::tValueType ToString(int aPrecision = 3) const {
+    typename TStringConverter::tValueType vString("(");
+    for (ggSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+      vString += TStringConverter::ToString(mValues[vDimension], aPrecision) +
+                 typename TStringConverter::tValueType((vDimension + 1 < GetDimensions()) ? "," : ")");
+    }
+    return vString;
+  }
+
 private:
 
   template <typename T>

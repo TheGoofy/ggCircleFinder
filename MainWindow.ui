@@ -1298,9 +1298,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="mFindCirclesPushButton">
           <property name="text">
-           <string>Find Circle</string>
+           <string>Find Circles</string>
           </property>
          </widget>
         </item>
@@ -1386,7 +1386,7 @@
    <slots>
     <slot>GenerateImage()</slot>
     <slot>FindLine()</slot>
-    <slot>FindCircle()</slot>
+    <slot>FindCircles()</slot>
     <slot>LoadImage()</slot>
    </slots>
   </customwidget>
@@ -1414,7 +1414,7 @@
   <tabstop>mRegionOfInterestPositionYLineEdit</tabstop>
   <tabstop>mRegionOfInterestSizeXLineEdit</tabstop>
   <tabstop>mRegionOfInterestSizeYLineEdit</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>mFindCirclesPushButton</tabstop>
   <tabstop>mOverlayOpacitySlider</tabstop>
   <tabstop>mResultsPlainTextEdit</tabstop>
  </tabstops>
@@ -1437,10 +1437,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>mFindCirclesPushButton</sender>
    <signal>clicked()</signal>
    <receiver>mRenderWidget</receiver>
-   <slot>FindCircle()</slot>
+   <slot>FindCircles()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1094</x>

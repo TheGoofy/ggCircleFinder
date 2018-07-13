@@ -21,7 +21,7 @@ public slots:
 private slots:
   void LoadImage();
   void GenerateImage();
-  void FindCircle();
+  void FindCircles();
 
 protected:
   void paintEvent(QPaintEvent* aEvent);// override;

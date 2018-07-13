@@ -175,7 +175,7 @@ void DrawCircle(QPainter& aPainter,
 }
 
 
-void ggRenderWidget::ggRenderWidget::FindCircle()
+void ggRenderWidget::ggRenderWidget::FindCircles()
 {
   MainWindow* vMainWindow = dynamic_cast<MainWindow*>(aParent()->aParent());
   Ui::MainWindow* vUI = vMainWindow->GetUI();
@@ -373,7 +373,7 @@ void ggRenderWidget::ggRenderWidget::FindCircle()
     vPainter.setPen(QPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0), 1.5));
     DrawCrossHair(vPainter, vLocalMaximumPosition, 10.0, 4.0, 45.0);
     DrawCircle(vPainter, vLocalMaximumPosition, vCircleModelDiameter / 2.0);
-    vResults += QString::number(vSpotIndex) + ": Pos" + ggUtilities::ToString(vCircleCenter).c_str() + " Val(" + QString::number(vCenterSpot.GetValue()) + ")\n";
+    vResults += QString::number(vSpotIndex) + ": Pos" + ggUtilities::ToString(vCircleCenter).c_str() + " Val(" + ggUtilities::ToString(vCenterSpot.GetValue()).c_str() + ")\n";
   }
 
   /*
