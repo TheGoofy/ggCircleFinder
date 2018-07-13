@@ -1,10 +1,12 @@
 #ifndef GGRENDERWIDGET_H
 #define GGRENDERWIDGET_H
 
-#include <ggImageT.h>
 #include <QFrame>
 #include <QPixmap>
 #include <QGraphicsWidget>
+
+#include "BaseImage/ggImageT.h"
+
 
 class ggRenderWidget : public QFrame
 {

@@ -2,7 +2,8 @@
 #define GGHISTOGRAMADAPTIVET_H
 
 #include <vector>
-#include "ggTypes.h"
+
+#include "Base/ggTypes.h"
 
 
 template <class TValueType, ggUInt64 TNumberOfBins = 512>

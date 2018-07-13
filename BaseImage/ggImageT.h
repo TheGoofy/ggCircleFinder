@@ -1,9 +1,11 @@
 #ifndef GGIMAGET_H
 #define GGIMAGET_H
 
-#include "ggTypes.h"
-#include "ggAssert.h"
-#include "ggVectorTypes.h"
+#include <cstring>
+
+#include "Base/ggTypes.h"
+#include "Base/ggAssert.h"
+#include "Base/ggVectorTypes.h"
 
 
 template <class TValueType>

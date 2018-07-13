@@ -2,10 +2,12 @@
 #define GGIMAGEPAINTERT_H
 
 #include <math.h>
-#include "ggImageT.h"
-#include "ggAssert.h"
-#include "ggVectorTypes.h"
-#include "ggLineTypes.h"
+#include <random>
+
+#include "Base/ggAssert.h"
+#include "Base/ggVectorTypes.h"
+#include "Base/ggLineTypes.h"
+#include "BaseImage/ggImageT.h"
 
 
 enum class ggPainterBlendType {

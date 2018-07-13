@@ -4,12 +4,13 @@
 #include <math.h>
 #include <random>
 #include <vector>
-#include "ggImageT.h"
-#include "ggUtilities.h"
-#include "ggWalkerT.h"
-#include "ggVectorTypes.h"
-#include "ggHistogramAdaptiveT.h"
-#include "ggSpotTypes.h"
+
+#include "Base/ggWalkerT.h"
+#include "Base/ggVectorTypes.h"
+#include "Base/ggSpotTypes.h"
+#include "Base/ggUtility.h"
+#include "BaseImage/ggImageT.h"
+#include "BaseImage/ggHistogramAdaptiveT.h"
 
 
 namespace ggImageFilter {
@@ -108,10 +109,10 @@ namespace ggImageFilter {
             const ggInt32 aPositionSrcX0,
             const ggInt32 aPositionSrcY0)
   {
-    const ggSize vSrcX0 = ggUtilities::Clamp<ggInt32>(aPositionSrcX0, 0, aImageSrc.GetSizeX());
-    const ggSize vSrcY0 = ggUtilities::Clamp<ggInt32>(aPositionSrcY0, 0, aImageSrc.GetSizeY());
-    const ggSize vSrcX1 = ggUtilities::Clamp<ggInt32>(aPositionSrcX0 + aImageDst.GetSizeX(), 0, aImageSrc.GetSizeX());
-    const ggSize vSrcY1 = ggUtilities::Clamp<ggInt32>(aPositionSrcY0 + aImageDst.GetSizeY(), 0, aImageSrc.GetSizeY());
+    const ggSize vSrcX0 = ggUtility::Clamp<ggInt32>(aPositionSrcX0, 0, aImageSrc.GetSizeX());
+    const ggSize vSrcY0 = ggUtility::Clamp<ggInt32>(aPositionSrcY0, 0, aImageSrc.GetSizeY());
+    const ggSize vSrcX1 = ggUtility::Clamp<ggInt32>(aPositionSrcX0 + aImageDst.GetSizeX(), 0, aImageSrc.GetSizeX());
+    const ggSize vSrcY1 = ggUtility::Clamp<ggInt32>(aPositionSrcY0 + aImageDst.GetSizeY(), 0, aImageSrc.GetSizeY());
     for (ggSize vSrcY = vSrcY0; vSrcY < vSrcY1; vSrcY++) {
       ggSize vDstY = vSrcY - aPositionSrcY0;
       for (ggSize vSrcX = vSrcX0; vSrcX < vSrcX1; vSrcX++) {
@@ -225,7 +226,7 @@ namespace ggImageFilter {
   void MirrorX(ggImageT<TValueType>& aImage) {
     for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX() / 2; vIndexX++) {
-        ggUtilities::Swap(aImage(vIndexX, vIndexY), aImage(aImage.GetSizeX()-vIndexX-1), vIndexY);
+        ggUtility::Swap(aImage(vIndexX, vIndexY), aImage(aImage.GetSizeX()-vIndexX-1), vIndexY);
       }
     }
   }
@@ -235,7 +236,7 @@ namespace ggImageFilter {
   void MirrorY(ggImageT<TValueType>& aImage) {
     for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY() / 2; vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) {
-        ggUtilities::Swap(aImage(vIndexX, vIndexY), aImage(vIndexX, aImage.GetSizeY()-vIndexY-1));
+        ggUtility::Swap(aImage(vIndexX, vIndexY), aImage(vIndexX, aImage.GetSizeY()-vIndexY-1));
       }
     }
   }

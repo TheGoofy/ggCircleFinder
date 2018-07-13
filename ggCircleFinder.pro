@@ -24,36 +24,78 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cxx \
-        MainWindow.cxx \
-    ggRenderWidget.cxx \
-    ggImage.cxx \
-    ggImagePainterT.cxx
+    Base/ggItemLinked.cxx \
+    Base/ggObserver.cxx \
+    Base/ggSubject.cxx \
+    Base/ggUtility.cxx \
+    BaseGraphicsQT/ggConnectionPoint.cxx \
+    BaseGraphicsQT/ggDecoration.cxx \
+    BaseGraphicsQT/ggGraphicsAutoConnectPathItem.cxx \
+    BaseGraphicsQT/ggGraphicsCheckBoxItem.cxx \
+    BaseGraphicsQT/ggGraphicsConnectionPointItem.cxx \
+    BaseGraphicsQT/ggGraphicsDecoratedPathItem.cxx \
+    BaseGraphicsQT/ggGraphicsRoundedRectItem.cxx \
+    BaseGraphicsQT/ggGraphicsShadowRectItem.cxx \
+    BaseGraphicsQT/ggGraphicsTextItem.cxx \
+    BaseGraphicsQT/ggGraphicsView.cxx \
+    BaseGraphicsQT/ggPainterPath.cxx \
+    BaseGraphicsQT/ggSubjectConnectionPoint.cxx \
+    BaseImage/ggImage.cxx \
+    BaseImage/ggImagePainterT.cxx \
+    Main/ggRenderWidget.cxx \
+    Main/main.cxx \
+    Main/MainWindow.cxx
 
 HEADERS += \
-        MainWindow.h \
-    ggRenderWidget.h \
-    ggTypes.h \
-    ggRunningAverages.h \
-    ggLinear.h \
-    ggVectorT.h \
-    ggVector2T.h \
-    ggVector3T.h \
-    ggImageT.h \
-    ggAssert.h \
-    ggVectorTypes.h \
-    ggImagePainterT.h \
-    ggImageTypes.h \
-    ggImageFilter.h \
-    ggUtilities.h \
-    ggHistogramAdaptiveT.h \
-    ggGeometry.h \
-    ggLineT.h \
-    ggLineTypes.h \
-    ggSpotT.h \
-    ggSpotTypes.h
+    Base/ggAssert.h \
+    Base/ggBehaviorBlocking.h \
+    Base/ggBehaviorLazy.h \
+    Base/ggBehaviorT.h \
+    Base/ggGeometry.h \
+    Base/ggItemLinked.h \
+    Base/ggLinear.h \
+    Base/ggLineT.h \
+    Base/ggLineTypes.h \
+    Base/ggObserver.h \
+    Base/ggRunningAverages.h \
+    Base/ggSpotT.h \
+    Base/ggSpotTypes.h \
+    Base/ggString.h \
+    Base/ggSubject.h \
+    Base/ggSubjectT.h \
+    Base/ggSubjectValueT.h \
+    Base/ggTypes.h \
+    Base/ggUtility.h \
+    Base/ggVector2T.h \
+    Base/ggVector3T.h \
+    Base/ggVectorSetT.h \
+    Base/ggVectorT.h \
+    Base/ggVectorTypes.h \
+    Base/ggWalkerT.h \
+    BaseGraphicsQT/ggConnectionPoint.h \
+    BaseGraphicsQT/ggDecoration.h \
+    BaseGraphicsQT/ggGraphicsAutoConnectPathItem.h \
+    BaseGraphicsQT/ggGraphicsCheckBoxItem.h \
+    BaseGraphicsQT/ggGraphicsConnectionPointItem.h \
+    BaseGraphicsQT/ggGraphicsDecoratedPathItem.h \
+    BaseGraphicsQT/ggGraphicsHandleItemT.h \
+    BaseGraphicsQT/ggGraphicsManipulatorBarItemT.h \
+    BaseGraphicsQT/ggGraphicsManipulatorRectItemT.h \
+    BaseGraphicsQT/ggGraphicsRoundedRectItem.h \
+    BaseGraphicsQT/ggGraphicsShadowRectItem.h \
+    BaseGraphicsQT/ggGraphicsTextItem.h \
+    BaseGraphicsQT/ggGraphicsView.h \
+    BaseGraphicsQT/ggPainterPath.h \
+    BaseGraphicsQT/ggSubjectConnectionPoint.h \
+    BaseImage/ggHistogramAdaptiveT.h \
+    BaseImage/ggImageFilter.h \
+    BaseImage/ggImagePainterT.h \
+    BaseImage/ggImageT.h \
+    BaseImage/ggImageTypes.h \
+    Main/ggRenderWidget.h \
+    Main/MainWindow.h
 
 FORMS += \
-        MainWindow.ui
+    Main/MainWindow.ui
 
 RESOURCES +=

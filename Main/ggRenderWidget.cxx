@@ -1,4 +1,5 @@
 #include "ggRenderWidget.h"
+
 #include <iostream>
 #include <QDebug>
 #include <QPainter>
@@ -6,14 +7,16 @@
 #include <QBitmap>
 #include <QElapsedTimer>
 #include <QFileDialog>
-#include "ggImageT.h"
-#include "ggImageFilter.h"
-#include "ggRunningAverages.h"
+
+#include "Base/ggLinear.h"
+#include "Base/ggGeometry.h"
+#include "Base/ggRunningAverages.h"
+#include "BaseImage/ggImageT.h"
+#include "BaseImage/ggImageFilter.h"
+#include "BaseImage/ggImagePainterT.h"
+
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include "ggLinear.h"
-#include "ggImagePainterT.h"
-#include "ggGeometry.h"
 
 
 ggRenderWidget::ggRenderWidget(QWidget *parent) :
@@ -373,7 +376,7 @@ void ggRenderWidget::ggRenderWidget::FindCircles()
     vPainter.setPen(QPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0), 1.5));
     DrawCrossHair(vPainter, vLocalMaximumPosition, 10.0, 4.0, 45.0);
     DrawCircle(vPainter, vLocalMaximumPosition, vCircleModelDiameter / 2.0);
-    vResults += QString::number(vSpotIndex) + ": Pos" + ggUtilities::ToString(vCircleCenter).c_str() + " Val(" + ggUtilities::ToString(vCenterSpot.GetValue()).c_str() + ")\n";
+    vResults += QString::number(vSpotIndex) + ": Pos" + ggUtility::ToString(vCircleCenter).c_str() + " Val(" + ggUtility::ToString(vCenterSpot.GetValue()).c_str() + ")\n";
   }
 
   /*
