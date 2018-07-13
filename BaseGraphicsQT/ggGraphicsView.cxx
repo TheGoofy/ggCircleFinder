@@ -16,6 +16,7 @@ ggGraphicsView::ggGraphicsView(QWidget* aParent)
   // suppress automatic scene centering
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setTransformationAnchor(AnchorUnderMouse);
   setSceneRect(QRectF(-10000.0f, -10000.0f, 20000.0f, 20000.0f));
 
   // enable box-selection, and dragging multiple items
@@ -95,7 +96,9 @@ void ggGraphicsView::mouseMoveEvent(QMouseEvent* aEvent)
   if (aEvent->buttons() & Qt::RightButton && mMouseDrag) {
     QPointF vDeltaPos = mapToScene(aEvent->pos()) - mapToScene(mMouseDragStartPos);
     QTransform vTransform(mMouseDragStartTransform);
+    setTransformationAnchor(NoAnchor);
     setTransform(vTransform.translate(vDeltaPos.x(), vDeltaPos.y()));
+    setTransformationAnchor(AnchorUnderMouse);
   }
   QGraphicsView::mouseMoveEvent(aEvent);
 }
@@ -121,11 +124,7 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
       if (aWheelEvent->delta() > 0) vScale = 1.1f / 1.0f;
       if (aWheelEvent->delta() < 0) vScale = 1.0f / 1.1f;
       vScale = ggUtility::RoundToOMG(vScale * GetSceneScale(), 2);
-      QPointF vPosA = mapToScene(aWheelEvent->pos());
       SetSceneScale(vScale);
-      QPointF vPosB = mapToScene(aWheelEvent->pos());
-      QPointF vDeltaPos = vPosB - vPosA;
-      translate(vDeltaPos.x(), vDeltaPos.y());
       NotifyZoom();
     }
 
@@ -134,9 +133,11 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
       aWheelEvent->accept();
       float vAngle = aWheelEvent->delta() > 0 ? -5.0f : 5.0f;
       QPointF vPos = mapToScene(aWheelEvent->pos());
+      setTransformationAnchor(NoAnchor);
       translate(vPos.x(), vPos.y());
       rotate(vAngle);
       translate(-vPos.x(), -vPos.y());
+      setTransformationAnchor(AnchorUnderMouse);
     }
   }
 
