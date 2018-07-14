@@ -23,8 +23,8 @@ class ggGraphicsManipulatorRectItemT :
 public:
 
   ggGraphicsManipulatorRectItemT(const QRectF& aRect,
-                             const float& aHandleSize = 9.0f,
-                             QGraphicsItem* aParent = nullptr) :
+                                 const float& aHandleSize = 9.0f,
+                                 QGraphicsItem* aParent = nullptr) :
     TBaseItem(aRect, aParent)
   {
     TBaseItem::setFlag(TBaseItem::ItemIsMovable);
@@ -63,8 +63,38 @@ public:
     return &mSubjectPosition;
   }
 
+  QPointF GetPosition() const {
+    return TBaseItem::pos() + TBaseItem::rect().topLeft();
+  }
+
+  void SetPosition(const QPointF& aPosition) {
+    ggSubject::cExecutorBlocking vBlocker(&mSubjectPosition);
+    TBaseItem::setPos(aPosition);
+    QRectF vRect(TBaseItem::rect());
+    vRect.moveTo(0.0f, 0.0f);
+    TBaseItem::setRect(vRect);
+    UpdateHandlePositions();
+  }
+
   const ggSubject* GetSubjectSize() const {
     return &mSubjectSize;
+  }
+
+  QSizeF GetSize() const {
+    return TBaseItem::rect().size();
+  }
+
+  void SetSize(const QSizeF& aSize) {
+    QRectF vRect(TBaseItem::rect());
+    vRect.setSize(aSize);
+    TBaseItem::setRect(vRect);
+    UpdateHandlePositions();
+  }
+
+  void SetHandleColor(const QColor& aColor) {
+    if (mHandleColor != aColor) {
+      mHandleColor = aColor;
+    }
   }
 
 protected:
@@ -100,11 +130,11 @@ protected:
 private:
 
   void ShowHandles() {
-    SetHandleBrush(QColor(255, 0, 0, 255));
+    SetHandleBrush(mHandleColor);
   }
 
   void HideHandles() {
-    SetHandleBrush(QColor(255, 255, 255, 0));
+    SetHandleBrush(Qt::transparent);
   }
 
   void SetHandleBrush(const QBrush& aBrush) {
@@ -114,10 +144,18 @@ private:
     mHandleItemBL->setBrush(aBrush);
   }
 
+  void UpdateHandlePositions() {
+    ggObserver::cExecutorBlocking vBlockerTL(this, mHandleItemTL->GetSubjectPosition());
+    ggObserver::cExecutorBlocking vBlockerBR(this, mHandleItemTL->GetSubjectPosition());
+    mHandleItemTL->setPos(TBaseItem::rect().topLeft());
+    mHandleItemBR->setPos(TBaseItem::rect().bottomRight());
+  }
+
   void UpdateRect() {
     TBaseItem::setRect(QRectF(mHandleItemTL->pos(), mHandleItemBR->pos()).normalized());
   }
 
+  QColor mHandleColor;
   THandleItem* mHandleItemTL;
   THandleItem* mHandleItemTR;
   THandleItem* mHandleItemBR;

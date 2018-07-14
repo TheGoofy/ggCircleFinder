@@ -76,6 +76,7 @@ void ggRenderWidget::PrepareCameraImage(const ggImageT<ggFloat>& aImageFloat)
 
 void ggRenderWidget::LoadImage()
 {
+  /*
   QFileDialog vFileDialog(this);
   if (vFileDialog.exec()) {
 
@@ -97,6 +98,7 @@ void ggRenderWidget::LoadImage()
       repaint();
     }
   }
+  */
 }
 
 
