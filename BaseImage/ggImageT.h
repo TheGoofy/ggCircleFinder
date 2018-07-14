@@ -84,7 +84,8 @@ public:
   }
 
   inline bool IsInside(ggSize aIndexX, ggSize aIndexY) const {
-    return (aIndexX < GetSizeX()) && (aIndexY < GetSizeY());
+    return (0 <= aIndexX) && (aIndexX < GetSizeX()) &&
+           (0 <= aIndexY) && (aIndexY < GetSizeY());
   }
 
   template <typename TIndexType>
