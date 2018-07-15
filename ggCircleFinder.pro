@@ -93,7 +93,9 @@ HEADERS += \
     BaseImage/ggImageT.h \
     BaseImage/ggImageTypes.h \
     Main/ggRenderWidget.h \
-    Main/MainWindow.h
+    Main/MainWindow.h \
+    Base/ggColorT.h \
+    Base/ggColorTypes.h
 
 FORMS += \
     Main/MainWindow.ui

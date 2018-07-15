@@ -372,6 +372,19 @@ namespace ggImageFilter {
   }
 
 
+  template <typename TValueType>
+  void InterpolateIndex(const ggImageT<TValueType>& aImage,
+                        const ggSize aIndexX,
+                        const ggSize aIndexY,
+                        ggDouble& aIndexInterpolatedX,
+                        ggDouble& aIndexInterpolatedY) {
+    if (aImage.IsInside(aIndexX - 1, aIndexY - 1) &&
+        aImage.IsInside(aIndexX + 1, aIndexX + 1)) {
+      // todo goofy: calculate center of gravity from 3x3 region
+    }
+  }
+
+
   template <typename TValueType,
             typename TSpotType = ggSpotT<TValueType, ggVector2Double> >
   std::vector<TSpotType> FindLocalMaxima(const ggImageT<TValueType>& aImage,

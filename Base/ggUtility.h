@@ -12,6 +12,7 @@
 #include "Base/ggTypes.h"
 #include "Base/ggVectorTypes.h"
 #include "Base/ggWalkerT.h"
+#include "Base/ggColorTypes.h"
 
 // 3) forward declarations
 
@@ -59,8 +60,8 @@ namespace ggUtility {
   // rounds to ... 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50 ...
   ggFloat RoundTo125(const ggFloat aValue, cRoundType aRoundType = cRoundType::eFactor20);
 
-  // round to Order of MaGnitude: 5321.215 => 5320.0 ... 0.08716813 => 0.0872 ... 2.575612 => 2.58
-  ggFloat RoundToOMG(ggFloat aValue, ggUInt16 aOrderOfMagnitude = 3);
+  // round to Significant Digits: 5321.215 => 5320.0 ... 0.08716813 => 0.0872 ... 2.575612 => 2.58
+  ggFloat RoundToSD(ggFloat aValue, ggUInt16 aSignificantDigits = 3);
 
   template <typename T>
   inline const T& Clamp(const T& aValue, const T& aValueMin, const T& aValueMax) {
@@ -107,11 +108,6 @@ namespace ggUtility {
     if (aA < aB) return Max(aB, aC, aD);
     return Max(aA, aC, aD);
   }  
-
-  template <typename T1, typename T2>
-  inline bool Find(const std::set<T1>& aItems, const T2& aItem) {
-    return aItems.find(aItem) != aItems.end();
-  }
 
   template <typename TValueType>
   inline std::string ToString(const TValueType& aValue) {
@@ -196,6 +192,11 @@ namespace ggUtility {
   template <> inline std::string ToString(const ggVector3Double& aValue, int aPrecision) { return VectorToString(aValue, aPrecision); }
 
   template <typename T1, typename T2>
+  inline bool Find(const std::set<T1>& aItems, const T2& aItem) {
+    return aItems.find(aItem) != aItems.end();
+  }
+
+  template <typename T1, typename T2>
   void MoveUp(std::vector<T1>& aItemsVector, const std::set<T2>& aItemsSet) {
     if (aItemsSet.empty()) return;
     if (aItemsVector.size() < 2) return;
@@ -252,6 +253,9 @@ namespace ggUtility {
     aItemsVector.insert(aItemsVector.end(), vItemsVectorA.begin(), vItemsVectorA.end());
     aItemsVector.insert(aItemsVector.end(), vItemsVectorB.begin(), vItemsVectorB.end());
   }
+
+  std::vector<ggColorUInt8> ColorTable();
+
 }
 
 #endif // GGUTILITIES_H

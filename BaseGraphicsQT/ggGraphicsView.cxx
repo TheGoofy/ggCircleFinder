@@ -123,7 +123,7 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
       float vScale = 1.0f;
       if (aWheelEvent->delta() > 0) vScale = 1.1f / 1.0f;
       if (aWheelEvent->delta() < 0) vScale = 1.0f / 1.1f;
-      vScale = ggUtility::RoundToOMG(vScale * GetSceneScale(), 2);
+      vScale = ggUtility::RoundToSD(vScale * GetSceneScale(), 2);
       SetSceneScale(vScale);
       NotifyZoom();
     }
