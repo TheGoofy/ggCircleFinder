@@ -37,17 +37,17 @@ public:
     return *this;
   }
 
-  template <typename TConvertedValueType>
-  inline ggVectorT<TConvertedValueType, TDimensions> GetConverted() const {
-    ggVectorT<TConvertedValueType, TDimensions> vConverted;
+  template <typename TValueTypeConverted>
+  inline ggVectorT<TValueTypeConverted, TDimensions> GetConverted() const {
+    ggVectorT<TValueTypeConverted, TDimensions> vVectorConverted;
     for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
-      vConverted[vDimension] = mValues[vDimension];
+      vVectorConverted[vDimension] = mValues[vDimension];
     }
-    return vConverted;
+    return vVectorConverted;
   }
 
-  template <typename TConvertedValueType>
-  inline void SetConverted(const ggVectorT<TConvertedValueType, TDimensions>& aOther) {
+  template <typename TValueTypeOther>
+  inline void SetConverted(const ggVectorT<TValueTypeOther, TDimensions>& aOther) {
     for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       mValues[vDimension] = aOther[vDimension];
     }
