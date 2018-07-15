@@ -72,7 +72,7 @@ public:
   }
 
   inline void SetZ(const TValueType& aZ) {
-    (*this)[3] = aZ;
+    (*this)[2] = aZ;
   }
 
   inline void Set(const TValueType& aX,
