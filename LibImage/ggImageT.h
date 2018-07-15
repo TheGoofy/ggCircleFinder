@@ -69,6 +69,10 @@ public:
     return mSize.X() * mSize.Y();
   }
 
+  inline bool Empty() const {
+    return (mSize.X() > 0) && (mSize.Y() > 0);
+  }
+
   inline void Resize(ggSize aSizeX, ggSize aSizeY) {
     Resize(ggVector2Size(aSizeX, aSizeY));
   }
@@ -146,9 +150,9 @@ public:
   }
 
   inline void SetValues(const TValueType& aValue) {
-    TValueType* vValueIterator = mValues;
-    const TValueType* vValuesEnd = mValues + GetSizeTotal();
-    while (vValueIterator != vValuesEnd) *vValueIterator++ = aValue;
+    ProcessValues([aValue] (TValueType& aValueProcessed) {
+      aValueProcessed = aValue;
+    });
   }
 
   inline ggImageT<TValueType>& operator = (const TValueType& aValue) {
@@ -164,11 +168,161 @@ public:
     return mValues;
   }
 
+  inline static TValueType GetMinLimit() {
+    return std::numeric_limits<TValueType>::min();
+  }
+
+  inline static TValueType GetMaxLimit() {
+    return std::numeric_limits<TValueType>::max();
+  }
+
+  template <typename TProcessor>
+  inline void ProcessValues(TProcessor aProcessor) {
+    TValueType* vValuesIterator = mValues;
+    TValueType* vValuesEnd = mValues + GetSizeTotal();
+    while (vValuesIterator != vValuesEnd) {
+      aProcessor(*vValuesIterator);
+      ++vValuesIterator;
+    }
+  }
+
+  template <typename TProcessor>
+  inline void ProcessValues(TProcessor aProcessor) const {
+    const TValueType* vValuesIterator = mValues;
+    const TValueType* vValuesEnd = mValues + GetSizeTotal();
+    while (vValuesIterator != vValuesEnd) {
+      aProcessor(*vValuesIterator);
+      ++vValuesIterator;
+    }
+  }
+
+  const TValueType& GetMin() const {
+    GG_ASSERT(!Empty());
+    const TValueType& vMin = mValues[0];
+    ProcessValues([&vMin] (const TValueType& aValue) {
+      if (aValue < vMin) vMin = aValue;
+    });
+    return vMin;
+  }
+
+  const TValueType& GetMax() const {
+    GG_ASSERT(!Empty());
+    const TValueType& vMax = mValues[0];
+    ProcessValues([&vMax] (const TValueType& aValue) {
+      if (aValue > vMax) vMax = aValue;
+    });
+    return vMax;
+  }
+
+  void GetMinMax(TValueType& aMin, TValueType& aMax) const {
+    if (!Empty()) aMin = aMax = mValues[0];
+    ProcessValues([&aMin, &aMax] (const TValueType& aValue) {
+      if (aValue < aMin) aMin = aValue;
+      if (aValue > aMax) aMax = aValue;
+    });
+  }
+
+  ggVectorT<TValueType, 2> GetMinMax() const {
+    ggVectorT<TValueType, 2> vMinMax;
+    GetMinMax(vMinMax[0], vMinMax[1]);
+    return vMinMax;
+  }
+
+  void Invert(const TValueType& aReference) {
+    ProcessValues([aReference] (TValueType& aValue) {
+      aValue = aReference - aValue;
+    });
+  }
+
+  void Invert() {
+    Invert(GetMinLimit() + GetMaxLimit());
+  }
+
+  ggImageT<TValueType> Inverted(const TValueType& aReference) {
+    ggImageT<TValueType> vImageInverted(*this);
+    vImageInverted.Invert(aReference);
+    return vImageInverted;
+  }
+
+  ggImageT<TValueType> Inverted() {
+    ggImageT<TValueType> vImageInverted(*this);
+    vImageInverted.Invert();
+    return vImageInverted;
+  }
+
+  template <typename TValueTypeProcessed, typename TProcessor>
+  inline ggImageT<TValueTypeProcessed> GetProcessed(TProcessor aProcessor) const {
+    ggImageT<TValueTypeProcessed> vImageProcessed(mSize);
+    const TValueType* vValuesIterator = mValues;
+    const TValueType* vValuesEnd = mValues + GetSizeTotal();
+    TValueTypeProcessed* vValuesProcessedIterator = vImageProcessed.GetValues();
+    while (vValuesIterator != vValuesEnd) {
+      *vValuesProcessedIterator++ = aProcessor(*vValuesIterator++);
+    }
+    return vImageProcessed;
+  }
+
+  template <typename TValueTypeConverted>
+  inline ggImageT<TValueTypeConverted> GetConvertedFitMinMax(const TValueTypeConverted& aMinConverted,
+                                                             const TValueTypeConverted& aMaxConverted) const {
+    ggVectorT<tValueType, 2> vMinMax(GetMinMax());
+    ggDouble vDelta = vMinMax[1] - vMinMax[0];
+    if (vDelta != 0.0) {
+      ggDouble vDeltaConverted = aMaxConverted - aMinConverted;
+      ggDouble vScale = vDeltaConverted / vDelta;
+      ggDouble vOffset = aMinConverted - vMinMax[0] * vScale;
+      return GetProcessed<TValueTypeConverted>([vScale, vOffset] (const TValueType& aValue) {
+        return aValue * vScale + vOffset;
+      });
+    }
+    else {
+      return GetProcessed<TValueTypeConverted>([] (const TValueType& aValue) {
+        return aValue;
+      });
+    }
+  }
+
+  template <typename TValueTypeConverted>
+  inline ggImageT<TValueTypeConverted> GetConvertedFitMinMax() const {
+    return GetConvertedFitMinMax<TValueTypeConverted>(ggImageT<TValueTypeConverted>::GetMinLimit(),
+                                                      ggImageT<TValueTypeConverted>::GetMaxLimit());
+  }
+
 private:
 
   ggVector2Size mSize;
   TValueType* mValues;
 
 };
+
+template <>
+inline float ggImageT<float>::GetMinLimit() {
+  return 0.0f;
+}
+
+template <>
+inline double ggImageT<double>::GetMinLimit() {
+  return 0.0;
+}
+
+template <>
+inline long double ggImageT<long double>::GetMinLimit() {
+  return 0.0;
+}
+
+template <>
+inline float ggImageT<float>::GetMaxLimit() {
+  return 1.0f;
+}
+
+template <>
+inline double ggImageT<double>::GetMaxLimit() {
+  return 1.0;
+}
+
+template <>
+inline long double ggImageT<long double>::GetMaxLimit() {
+  return 1.0;
+}
 
 #endif // GGIMAGET_H

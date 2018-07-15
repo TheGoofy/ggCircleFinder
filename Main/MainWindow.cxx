@@ -177,15 +177,7 @@ public:
 */
     // convert hough image for rendering with QT
     qDebug() << "convert hough image for rendering with QT";
-    ggFloat vMin, vMax;
-    ggImageFilter::GetMinMax(vImageHough, vMin, vMax);
-    ggImageT<ggUChar> vImageUChar(vImageHough.GetSizeX(), vImageHough.GetSizeY());
-    for (ggSize vIndexY = 0; vIndexY < vImageHough.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < vImageHough.GetSizeX(); vIndexX++) {
-        float vValue = (vImageHough(vIndexX, vIndexY) - vMin) / (vMax - vMin);
-        vImageUChar(vIndexX, vIndexY) = 255.0f * vValue;
-      }
-    }
+    ggImageT<ggUChar> vImageUChar = vImageHough.GetConvertedFitMinMax<ggUChar>();
 
     QImage vImage(vImageUChar.GetValues(),
                   vImageUChar.GetSizeX(),
@@ -197,14 +189,15 @@ public:
     qDebug() << "generate a nice color table for the hough image";
     QVector<QRgb> vColorTable(256);
     for (int vIndex = 0; vIndex < vColorTable.size(); vIndex++) {
-      if      (vIndex <  32) vColorTable[vIndex] = QColor(2*vIndex,          0,             8*vIndex      ).rgb();
-      else if (vIndex <  64) vColorTable[vIndex] = QColor(2*vIndex,          0,             255           ).rgb();
-      else if (vIndex <  96) vColorTable[vIndex] = QColor(3*(vIndex-64)+128, 0,             4*(127-vIndex)).rgb();
-      else if (vIndex < 128) vColorTable[vIndex] = QColor(1*(vIndex-96)+224, 2*(vIndex-96), 4*(127-vIndex)).rgb();
-      else if (vIndex < 160) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 0             ).rgb();
-      else if (vIndex < 192) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 0             ).rgb();
-      else if (vIndex < 224) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 4*(vIndex-192)).rgb();
-      else                   vColorTable[vIndex] = QColor(255,               255,           4*(vIndex-192)).rgb();
+      if      (vIndex <   4) vColorTable[vIndex] = QColor(2*vIndex,          0,             8*vIndex,       64*vIndex).rgba();
+      else if (vIndex <  32) vColorTable[vIndex] = QColor(2*vIndex,          0,             8*vIndex,       255      ).rgba();
+      else if (vIndex <  64) vColorTable[vIndex] = QColor(2*vIndex,          0,             255,            255      ).rgba();
+      else if (vIndex <  96) vColorTable[vIndex] = QColor(3*(vIndex-64)+128, 0,             4*(127-vIndex), 255      ).rgba();
+      else if (vIndex < 128) vColorTable[vIndex] = QColor(1*(vIndex-96)+224, 2*(vIndex-96), 4*(127-vIndex), 255      ).rgba();
+      else if (vIndex < 160) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 0,              255      ).rgba();
+      else if (vIndex < 192) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 0,              255      ).rgba();
+      else if (vIndex < 224) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 4*(vIndex-192), 255      ).rgba();
+      else                   vColorTable[vIndex] = QColor(255,               255,           4*(vIndex-192), 255      ).rgba();
       // for (int vX = 0; vX < 50; vX++) vImageUChar(vX, vIndex) = vIndex;
     }
     vImage.setColorTable(vColorTable);
