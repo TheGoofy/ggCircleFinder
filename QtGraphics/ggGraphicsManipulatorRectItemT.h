@@ -3,6 +3,7 @@
 
 // 1) include system or QT
 #include <QGraphicsRectItem>
+#include <QCursor>
 
 // 2) include own project-related (sort by component dependency)
 #include "LibBase/ggObserver.h"

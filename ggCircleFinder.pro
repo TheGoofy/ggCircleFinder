@@ -30,9 +30,8 @@ SOURCES += \
     LibBase/ggUtility.cxx \
     LibImage/ggImage.cxx \
     LibImage/ggImagePainterT.cxx \
-    Main/ggRenderWidget.cxx \
-    Main/main.cxx \
-    Main/MainWindow.cxx \
+    QtMain/main.cxx \
+    QtMain/MainWindow.cxx \
     QtBase/ggUtilityQt.cxx \
     QtGraphics/ggConnectionPoint.cxx \
     QtGraphics/ggDecoration.cxx \
@@ -49,7 +48,8 @@ SOURCES += \
     QtWidgets/ggColorChannelWidget.cxx \
     QtWidgets/ggColorDialog.cxx \
     QtWidgets/ggColorPreviewWidget.cxx \
-    QtWidgets/ggColorWheelWidget.cxx
+    QtWidgets/ggColorWheelWidget.cxx \
+    QtMain/ggGraphicsScene.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -84,8 +84,7 @@ HEADERS += \
     LibImage/ggImagePainterT.h \
     LibImage/ggImageT.h \
     LibImage/ggImageTypes.h \
-    Main/ggRenderWidget.h \
-    Main/MainWindow.h \
+    QtMain/MainWindow.h \
     QtBase/ggUtilityQt.h \
     QtGraphics/ggConnectionPoint.h \
     QtGraphics/ggDecoration.h \
@@ -106,10 +105,11 @@ HEADERS += \
     QtWidgets/ggColorDialog.h \
     QtWidgets/ggColorPreviewWidget.h \
     QtWidgets/ggColorWheelWidget.h \
-    LibImage/ggImageAlgorithm.h
+    LibImage/ggImageAlgorithm.h \
+    QtMain/ggGraphicsScene.h
 
 FORMS += \
-    Main/MainWindow.ui \
+    QtMain/MainWindow.ui \
     QtWidgets/ggColorDialog.ui
 
 RESOURCES +=

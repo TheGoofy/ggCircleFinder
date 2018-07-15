@@ -106,7 +106,6 @@ namespace ggImageAlgorithm {
   }
 
 
-
   // y[i] - vx = a * (x[i] - vx)^2
   inline bool GetParabolaVertex(const ggDouble& aY0, // assuming aX0 = -1
                                 const ggDouble& aY1, // assuming aX1 =  0
@@ -119,7 +118,7 @@ namespace ggImageAlgorithm {
     if (vASquare != 0.0) {
       aVertexX = (aY0 - aY2) / (4.0 * vASquare);
       aVertexY = aY1 - vASquare * aVertexX * aVertexX;
-      if (aVertexX < -1.0 || aVertexX > 1.0) qDebug() << aVertexX;
+      GG_ASSERT(-1.0 <= aVertexX && aVertexX <= 1.0);
       return true;
     }
     return false;
