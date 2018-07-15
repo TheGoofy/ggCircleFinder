@@ -24,80 +24,91 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    Base/ggItemLinked.cxx \
-    Base/ggObserver.cxx \
-    Base/ggSubject.cxx \
-    Base/ggUtility.cxx \
-    BaseGraphicsQT/ggConnectionPoint.cxx \
-    BaseGraphicsQT/ggDecoration.cxx \
-    BaseGraphicsQT/ggGraphicsAutoConnectPathItem.cxx \
-    BaseGraphicsQT/ggGraphicsCheckBoxItem.cxx \
-    BaseGraphicsQT/ggGraphicsConnectionPointItem.cxx \
-    BaseGraphicsQT/ggGraphicsDecoratedPathItem.cxx \
-    BaseGraphicsQT/ggGraphicsRoundedRectItem.cxx \
-    BaseGraphicsQT/ggGraphicsShadowRectItem.cxx \
-    BaseGraphicsQT/ggGraphicsTextItem.cxx \
-    BaseGraphicsQT/ggGraphicsView.cxx \
-    BaseGraphicsQT/ggPainterPath.cxx \
-    BaseGraphicsQT/ggSubjectConnectionPoint.cxx \
-    BaseImage/ggImage.cxx \
-    BaseImage/ggImagePainterT.cxx \
+    LibBase/ggItemLinked.cxx \
+    LibBase/ggObserver.cxx \
+    LibBase/ggSubject.cxx \
+    LibBase/ggUtility.cxx \
+    LibImage/ggImage.cxx \
+    LibImage/ggImagePainterT.cxx \
     Main/ggRenderWidget.cxx \
     Main/main.cxx \
-    Main/MainWindow.cxx
+    Main/MainWindow.cxx \
+    QtBase/ggUtilityQt.cxx \
+    QtGraphics/ggConnectionPoint.cxx \
+    QtGraphics/ggDecoration.cxx \
+    QtGraphics/ggGraphicsAutoConnectPathItem.cxx \
+    QtGraphics/ggGraphicsCheckBoxItem.cxx \
+    QtGraphics/ggGraphicsConnectionPointItem.cxx \
+    QtGraphics/ggGraphicsDecoratedPathItem.cxx \
+    QtGraphics/ggGraphicsRoundedRectItem.cxx \
+    QtGraphics/ggGraphicsShadowRectItem.cxx \
+    QtGraphics/ggGraphicsTextItem.cxx \
+    QtGraphics/ggGraphicsView.cxx \
+    QtGraphics/ggPainterPath.cxx \
+    QtGraphics/ggSubjectConnectionPoint.cxx \
+    QtWidgets/ggColorChannelWidget.cxx \
+    QtWidgets/ggColorDialog.cxx \
+    QtWidgets/ggColorPreviewWidget.cxx \
+    QtWidgets/ggColorWheelWidget.cxx
 
 HEADERS += \
-    Base/ggAssert.h \
-    Base/ggBehaviorBlocking.h \
-    Base/ggBehaviorLazy.h \
-    Base/ggBehaviorT.h \
-    Base/ggGeometry.h \
-    Base/ggItemLinked.h \
-    Base/ggLinear.h \
-    Base/ggLineT.h \
-    Base/ggLineTypes.h \
-    Base/ggObserver.h \
-    Base/ggRunningAverages.h \
-    Base/ggSpotT.h \
-    Base/ggSpotTypes.h \
-    Base/ggString.h \
-    Base/ggSubject.h \
-    Base/ggSubjectT.h \
-    Base/ggSubjectValueT.h \
-    Base/ggTypes.h \
-    Base/ggUtility.h \
-    Base/ggVector2T.h \
-    Base/ggVector3T.h \
-    Base/ggVectorSetT.h \
-    Base/ggVectorT.h \
-    Base/ggVectorTypes.h \
-    Base/ggWalkerT.h \
-    BaseGraphicsQT/ggConnectionPoint.h \
-    BaseGraphicsQT/ggDecoration.h \
-    BaseGraphicsQT/ggGraphicsAutoConnectPathItem.h \
-    BaseGraphicsQT/ggGraphicsCheckBoxItem.h \
-    BaseGraphicsQT/ggGraphicsConnectionPointItem.h \
-    BaseGraphicsQT/ggGraphicsDecoratedPathItem.h \
-    BaseGraphicsQT/ggGraphicsHandleItemT.h \
-    BaseGraphicsQT/ggGraphicsManipulatorBarItemT.h \
-    BaseGraphicsQT/ggGraphicsManipulatorRectItemT.h \
-    BaseGraphicsQT/ggGraphicsRoundedRectItem.h \
-    BaseGraphicsQT/ggGraphicsShadowRectItem.h \
-    BaseGraphicsQT/ggGraphicsTextItem.h \
-    BaseGraphicsQT/ggGraphicsView.h \
-    BaseGraphicsQT/ggPainterPath.h \
-    BaseGraphicsQT/ggSubjectConnectionPoint.h \
-    BaseImage/ggHistogramAdaptiveT.h \
-    BaseImage/ggImageFilter.h \
-    BaseImage/ggImagePainterT.h \
-    BaseImage/ggImageT.h \
-    BaseImage/ggImageTypes.h \
+    LibBase/ggAssert.h \
+    LibBase/ggBehaviorBlocking.h \
+    LibBase/ggBehaviorLazy.h \
+    LibBase/ggBehaviorT.h \
+    LibBase/ggColorT.h \
+    LibBase/ggColorTypes.h \
+    LibBase/ggGeometry.h \
+    LibBase/ggItemLinked.h \
+    LibBase/ggLinear.h \
+    LibBase/ggLineT.h \
+    LibBase/ggLineTypes.h \
+    LibBase/ggObserver.h \
+    LibBase/ggRunningAverages.h \
+    LibBase/ggSpotT.h \
+    LibBase/ggSpotTypes.h \
+    LibBase/ggString.h \
+    LibBase/ggSubject.h \
+    LibBase/ggSubjectT.h \
+    LibBase/ggSubjectValueT.h \
+    LibBase/ggTypes.h \
+    LibBase/ggUtility.h \
+    LibBase/ggVector2T.h \
+    LibBase/ggVector3T.h \
+    LibBase/ggVectorSetT.h \
+    LibBase/ggVectorT.h \
+    LibBase/ggVectorTypes.h \
+    LibBase/ggWalkerT.h \
+    LibImage/ggHistogramAdaptiveT.h \
+    LibImage/ggImageFilter.h \
+    LibImage/ggImagePainterT.h \
+    LibImage/ggImageT.h \
+    LibImage/ggImageTypes.h \
     Main/ggRenderWidget.h \
     Main/MainWindow.h \
-    Base/ggColorT.h \
-    Base/ggColorTypes.h
+    QtBase/ggUtilityQt.h \
+    QtGraphics/ggConnectionPoint.h \
+    QtGraphics/ggDecoration.h \
+    QtGraphics/ggGraphicsAutoConnectPathItem.h \
+    QtGraphics/ggGraphicsCheckBoxItem.h \
+    QtGraphics/ggGraphicsConnectionPointItem.h \
+    QtGraphics/ggGraphicsDecoratedPathItem.h \
+    QtGraphics/ggGraphicsHandleItemT.h \
+    QtGraphics/ggGraphicsManipulatorBarItemT.h \
+    QtGraphics/ggGraphicsManipulatorRectItemT.h \
+    QtGraphics/ggGraphicsRoundedRectItem.h \
+    QtGraphics/ggGraphicsShadowRectItem.h \
+    QtGraphics/ggGraphicsTextItem.h \
+    QtGraphics/ggGraphicsView.h \
+    QtGraphics/ggPainterPath.h \
+    QtGraphics/ggSubjectConnectionPoint.h \
+    QtWidgets/ggColorChannelWidget.h \
+    QtWidgets/ggColorDialog.h \
+    QtWidgets/ggColorPreviewWidget.h \
+    QtWidgets/ggColorWheelWidget.h
 
 FORMS += \
-    Main/MainWindow.ui
+    Main/MainWindow.ui \
+    QtWidgets/ggColorDialog.ui
 
 RESOURCES +=

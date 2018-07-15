@@ -5,7 +5,7 @@
 #include <QPixmap>
 #include <QGraphicsWidget>
 
-#include "BaseImage/ggImageT.h"
+#include "LibImage/ggImageT.h"
 
 
 class ggRenderWidget : public QFrame

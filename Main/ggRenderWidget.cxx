@@ -8,12 +8,12 @@
 #include <QElapsedTimer>
 #include <QFileDialog>
 
-#include "Base/ggLinear.h"
-#include "Base/ggGeometry.h"
-#include "Base/ggRunningAverages.h"
-#include "BaseImage/ggImageT.h"
-#include "BaseImage/ggImageFilter.h"
-#include "BaseImage/ggImagePainterT.h"
+#include "LibBase/ggLinear.h"
+#include "LibBase/ggGeometry.h"
+#include "LibBase/ggRunningAverages.h"
+#include "LibImage/ggImageT.h"
+#include "LibImage/ggImageFilter.h"
+#include "LibImage/ggImagePainterT.h"
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"

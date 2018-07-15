@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "Base/ggObserver.h"
+#include "LibBase/ggObserver.h"
 
 namespace Ui {
   class MainWindow;

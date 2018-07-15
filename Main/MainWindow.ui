@@ -1470,7 +1470,7 @@
   <customwidget>
    <class>ggGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>BaseGraphicsQT/ggGraphicsView.h</header>
+   <header>QtGraphics/ggGraphicsView.h</header>
    <slots>
     <slot>SetZoom100()</slot>
     <slot>SetZoomFit()</slot>

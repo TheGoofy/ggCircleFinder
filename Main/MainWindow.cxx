@@ -7,10 +7,10 @@
 #include <QSettings>
 #include <QDebug>
 
-#include "Base/ggGeometry.h"
-#include "BaseImage/ggImageFilter.h"
-#include "BaseImage/ggImagePainterT.h"
-#include "BaseGraphicsQT/ggGraphicsManipulatorRectItemT.h"
+#include "LibBase/ggGeometry.h"
+#include "LibImage/ggImageFilter.h"
+#include "LibImage/ggImagePainterT.h"
+#include "QtGraphics/ggGraphicsManipulatorRectItemT.h"
 
 
 
