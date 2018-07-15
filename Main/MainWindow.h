@@ -22,7 +22,7 @@ public:
   explicit MainWindow(QWidget *aParent = 0);
   ~MainWindow();
 
-  Ui::MainWindow* GetUI();
+  Ui::MainWindow& UI();
 
 protected slots:
 
@@ -60,7 +60,7 @@ private:
   QString ZoomToString(float aZoomFloat) const;
   float StringToZoom(const QString& aZoomString) const;
   
-  Ui::MainWindow* ui;
+  Ui::MainWindow* mUserInterface;
   
   ggGraphicsScene* mScene;
 

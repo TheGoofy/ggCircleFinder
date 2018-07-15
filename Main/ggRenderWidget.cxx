@@ -30,7 +30,7 @@ ggRenderWidget::ggRenderWidget(QWidget *parent) :
 void ggRenderWidget::PrepareCameraImage(const ggImageT<ggFloat>& aImageFloat)
 {
   MainWindow* vMainWindow = dynamic_cast<MainWindow*>(aParent()->aParent());
-  Ui::MainWindow* vUI = vMainWindow->GetUI();
+  Ui::MainWindow* vUI = &vMainWindow->UI();
 
   const ggFloat vCameraNoise = vUI->mCameraNoiseDoubleSpinBox->value() / 100.0f;
   const ggInt32 vCameraNumberOfBits = vUI->mCameraBitDepthSpinBox->value();
@@ -105,7 +105,7 @@ void ggRenderWidget::LoadImage()
 void ggRenderWidget::GenerateImage()
 {
   MainWindow* vMainWindow = dynamic_cast<MainWindow*>(aParent()->aParent());
-  Ui::MainWindow* vUI = vMainWindow->GetUI();
+  Ui::MainWindow* vUI = &vMainWindow->UI();
 
   const ggSize vCameraImageSizeX = vUI->mCameraImageSizeXLineEdit->text().toUInt();
   const ggSize vCameraImageSizeY = vUI->mCameraImageSizeYLineEdit->text().toUInt();
@@ -183,7 +183,7 @@ void DrawCircle(QPainter& aPainter,
 void ggRenderWidget::ggRenderWidget::FindCircles()
 {
   MainWindow* vMainWindow = dynamic_cast<MainWindow*>(aParent()->aParent());
-  Ui::MainWindow* vUI = vMainWindow->GetUI();
+  Ui::MainWindow* vUI = &vMainWindow->UI();
 
   // read parameters from GUI
   qDebug() << "read parameters from GUI";
@@ -464,7 +464,7 @@ void ggRenderWidget::ggRenderWidget::FindCircles()
 void ggRenderWidget::paintEvent(QPaintEvent* /* event */)
 {
   MainWindow* vMainWindow = dynamic_cast<MainWindow*>(aParent()->aParent());
-  Ui::MainWindow* vUI = vMainWindow->GetUI();
+  Ui::MainWindow* vUI = &vMainWindow->UI();
 
   const ggInt32 vOpacitySliderValue = vUI->mOverlayOpacitySlider->value();
   const ggInt32 vOpacitySliderValueMin = vUI->mOverlayOpacitySlider->minimum();

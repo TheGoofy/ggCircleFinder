@@ -233,32 +233,32 @@ private:
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
-  ui(new Ui::MainWindow)
+  mUserInterface(new Ui::MainWindow)
 {
-  ui->setupUi(this);
+  UI().setupUi(this);
   centralWidget()->layout()->setMargin(0);
   centralWidget()->layout()->setSpacing(0);
 
   ReadSettings();
 
-  ui->toolBar->hide();
-  ui->statusBar->setContentsMargins(0, -6, 0, -6);
-  ui->statusBar->addPermanentWidget(ui->mZoomLabel);
-  ui->statusBar->addPermanentWidget(ui->mZoomComboBox);
-  ui->statusBar->addPermanentWidget(ui->mZoomFitPushButton);
-  ui->statusBar->addPermanentWidget(ui->mZoomResetPushButton);
-  ui->centralWidget->layout()->setMargin(0);
-  ui->centralWidget->layout()->setSpacing(0);
-  ui->mZoomComboBox->setCompleter(0);
-  ui->mZoomComboBox->setFocusPolicy(Qt::ClickFocus);
+  UI().toolBar->hide();
+  UI().statusBar->setContentsMargins(0, -6, 0, -6);
+  UI().statusBar->addPermanentWidget(UI().mZoomLabel);
+  UI().statusBar->addPermanentWidget(UI().mZoomComboBox);
+  UI().statusBar->addPermanentWidget(UI().mZoomFitPushButton);
+  UI().statusBar->addPermanentWidget(UI().mZoomResetPushButton);
+  UI().centralWidget->layout()->setMargin(0);
+  UI().centralWidget->layout()->setSpacing(0);
+  UI().mZoomComboBox->setCompleter(0);
+  UI().mZoomComboBox->setFocusPolicy(Qt::ClickFocus);
 
-  connect(ui->mZoomComboBox->lineEdit(), SIGNAL(editingFinished()), this, SLOT(on_mZoomComboBox_editingFinished()));
+  connect(UI().mZoomComboBox->lineEdit(), SIGNAL(editingFinished()), this, SLOT(on_mZoomComboBox_editingFinished()));
 
   mScene = new ggGraphicsScene(this);
-  ui->mGraphicsView->setScene(mScene);
+  UI().mGraphicsView->setScene(mScene);
 
   // register subject(s)
-  Attach(ui->mGraphicsView->GetSubjectZoom());
+  Attach(UI().mGraphicsView->GetSubjectZoom());
   Attach(mScene->ROI().GetSubjectPosition());
   Attach(mScene->ROI().GetSubjectSize());
 
@@ -268,13 +268,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  delete ui;
+  delete mUserInterface;
 }
 
 
-Ui::MainWindow* MainWindow::GetUI()
+Ui::MainWindow& MainWindow::UI()
 {
-  return ui;
+  return *mUserInterface;
 }
 
 
@@ -282,31 +282,31 @@ void MainWindow::UpdateROI()
 {
   ggObserver::cExecutorBlocking vBlockPosition(this, mScene->ROI().GetSubjectPosition());
   ggObserver::cExecutorBlocking vBlockSize(this, mScene->ROI().GetSubjectSize());
-  mScene->ROI().SetPosition(QPointF(ui->mRegionOfInterestPositionXLineEdit->text().toInt(),
-                                    ui->mRegionOfInterestPositionYLineEdit->text().toInt()));
-  mScene->ROI().SetSize(QSizeF(ui->mRegionOfInterestSizeXLineEdit->text().toInt(),
-                               ui->mRegionOfInterestSizeYLineEdit->text().toInt()));
+  mScene->ROI().SetPosition(QPointF(UI().mRegionOfInterestPositionXLineEdit->text().toInt(),
+                                    UI().mRegionOfInterestPositionYLineEdit->text().toInt()));
+  mScene->ROI().SetSize(QSizeF(UI().mRegionOfInterestSizeXLineEdit->text().toInt(),
+                               UI().mRegionOfInterestSizeYLineEdit->text().toInt()));
 }
 
 
 void MainWindow::UpdateUserInterfaceZoom()
 {
-  ui->mZoomComboBox->lineEdit()->setText(ZoomToString(ui->mGraphicsView->GetSubjectZoom()->GetValue()));
+  UI().mZoomComboBox->lineEdit()->setText(ZoomToString(UI().mGraphicsView->GetSubjectZoom()->GetValue()));
 }
 
 
 void MainWindow::UpdateUserInterfaceROI()
 {
-  ui->mRegionOfInterestPositionXLineEdit->setText(QString::number(mScene->ROI().GetPosition().x(), 'f', 0));
-  ui->mRegionOfInterestPositionYLineEdit->setText(QString::number(mScene->ROI().GetPosition().y(), 'f', 0));
-  ui->mRegionOfInterestSizeXLineEdit->setText(QString::number(mScene->ROI().GetSize().width(), 'f', 0));
-  ui->mRegionOfInterestSizeYLineEdit->setText(QString::number(mScene->ROI().GetSize().height(), 'f', 0));
+  UI().mRegionOfInterestPositionXLineEdit->setText(QString::number(mScene->ROI().GetPosition().x(), 'f', 0));
+  UI().mRegionOfInterestPositionYLineEdit->setText(QString::number(mScene->ROI().GetPosition().y(), 'f', 0));
+  UI().mRegionOfInterestSizeXLineEdit->setText(QString::number(mScene->ROI().GetSize().width(), 'f', 0));
+  UI().mRegionOfInterestSizeYLineEdit->setText(QString::number(mScene->ROI().GetSize().height(), 'f', 0));
 }
 
 
 void MainWindow::Update(const ggSubject* aSubject)
 {
-  if (aSubject == ui->mGraphicsView->GetSubjectZoom()) {
+  if (aSubject == UI().mGraphicsView->GetSubjectZoom()) {
     UpdateUserInterfaceZoom();
   }
 
@@ -333,27 +333,27 @@ float MainWindow::StringToZoom(const QString& aZoomString) const
 
 void MainWindow::on_mZoomComboBox_activated(int aIndex)
 {
-  float vZoomFloat = StringToZoom(ui->mZoomComboBox->itemText(aIndex));
-  ui->mGraphicsView->GetSubjectZoom()->SetValue(vZoomFloat);
+  float vZoomFloat = StringToZoom(UI().mZoomComboBox->itemText(aIndex));
+  UI().mGraphicsView->GetSubjectZoom()->SetValue(vZoomFloat);
 }
 
 
 void MainWindow::on_mZoomComboBox_editingFinished()
 {
-  float vZoomFloat = StringToZoom(ui->mZoomComboBox->lineEdit()->text());
-  if (vZoomFloat > 0.0f) ui->mGraphicsView->GetSubjectZoom()->SetValue(vZoomFloat);
+  float vZoomFloat = StringToZoom(UI().mZoomComboBox->lineEdit()->text());
+  if (vZoomFloat > 0.0f) UI().mGraphicsView->GetSubjectZoom()->SetValue(vZoomFloat);
 }
 
 
 void MainWindow::on_mZoomFitPushButton_clicked()
 {
-  ui->mGraphicsView->SetZoomFit();
+  UI().mGraphicsView->SetZoomFit();
 }
 
 
 void MainWindow::on_mZoomResetPushButton_clicked()
 {
-  ui->mGraphicsView->SetZoomReset();
+  UI().mGraphicsView->SetZoomReset();
 }
 
 
@@ -384,15 +384,15 @@ void MainWindow::on_mRegionOfInterestSizeYLineEdit_editingFinished()
 void MainWindow::on_mGenerateImagePushButton_clicked()
 {
   // settings from user interface
-  const ggSize vCameraImageSizeX = ui->mCameraImageSizeXLineEdit->text().toUInt();
-  const ggSize vCameraImageSizeY = ui->mCameraImageSizeYLineEdit->text().toUInt();
-  const ggFloat vCircleCenterX = ui->mCircleCenterXLineEdit->text().toFloat();
-  const ggFloat vCircleCenterY = ui->mCircleCenterYLineEdit->text().toFloat();
-  const ggFloat vCircleDiameter = ui->mCircleDiameterLineEdit->text().toFloat();
-  const ggFloat vCircleLineThickness = ui->mCircleLineThicknessLineEdit->text().toFloat();
-  const ggFloat vCircleLineFragmentation = ui->mCircleLineFragmentationSpinBox->value() / 100.0f;
-  const ggFloat vCameraNoise = ui->mCameraNoiseDoubleSpinBox->value() / 100.0f;
-  const ggInt32 vCameraNumberOfBits = ui->mCameraBitDepthSpinBox->value();
+  const ggSize vCameraImageSizeX = UI().mCameraImageSizeXLineEdit->text().toUInt();
+  const ggSize vCameraImageSizeY = UI().mCameraImageSizeYLineEdit->text().toUInt();
+  const ggFloat vCircleCenterX = UI().mCircleCenterXLineEdit->text().toFloat();
+  const ggFloat vCircleCenterY = UI().mCircleCenterYLineEdit->text().toFloat();
+  const ggFloat vCircleDiameter = UI().mCircleDiameterLineEdit->text().toFloat();
+  const ggFloat vCircleLineThickness = UI().mCircleLineThicknessLineEdit->text().toFloat();
+  const ggFloat vCircleLineFragmentation = UI().mCircleLineFragmentationSpinBox->value() / 100.0f;
+  const ggFloat vCameraNoise = UI().mCameraNoiseDoubleSpinBox->value() / 100.0f;
+  const ggInt32 vCameraNumberOfBits = UI().mCameraBitDepthSpinBox->value();
 
   if (vCameraImageSizeX == 0) return;
   if (vCameraImageSizeY == 0) return;
@@ -418,7 +418,7 @@ void MainWindow::on_mGenerateImagePushButton_clicked()
                              vCameraNoise,
                              vCameraNumberOfBits);
 
-  ui->mGraphicsView->SetZoomFit();
+  UI().mGraphicsView->SetZoomFit();
 }
 
 
@@ -440,15 +440,15 @@ void MainWindow::on_mLoadImagePushButton_clicked()
       }
 
       // settings from user interface
-      const ggFloat vCameraNoise = ui->mCameraNoiseDoubleSpinBox->value() / 100.0f;
-      const ggInt32 vCameraNumberOfBits = ui->mCameraBitDepthSpinBox->value();
+      const ggFloat vCameraNoise = UI().mCameraNoiseDoubleSpinBox->value() / 100.0f;
+      const ggInt32 vCameraNumberOfBits = UI().mCameraBitDepthSpinBox->value();
 
       // calculate camera image and image for rendering on screen
       mScene->PrepareCameraImage(vImageFloat,
                                  vCameraNoise,
                                  vCameraNumberOfBits);
 
-      ui->mGraphicsView->SetZoomFit();
+      UI().mGraphicsView->SetZoomFit();
     }
   }
 }
@@ -457,17 +457,17 @@ void MainWindow::on_mLoadImagePushButton_clicked()
 void MainWindow::on_mFindCirclesPushButton_clicked()
 {
   // read parameters from GUI
-  const ggVector2Float vOriginalCircleCenter(ui->mCircleCenterXLineEdit->text().toFloat(),
-                                             ui->mCircleCenterYLineEdit->text().toFloat());
-  const ggFloat vOriginalCircleDiameter = ui->mCircleDiameterLineEdit->text().toFloat();
-  const ggFloat vCircleThickness = ui->mCircleLineThicknessLineEdit->text().toFloat();
-  const bool vCircleModelGaussianFilter = ui->mCircleModelGaussianFilterCheckBox->isChecked();
-  const ggFloat vCircleModelGaussianFilterWidth = ui->mCircleModelGaussianFilterWidthLineEdit->text().toFloat();
-  const ggFloat vCircleModelDiameter = ui->mCircleModelDiameterLineEdit->text().toFloat();
-  const ggFloat vCircleModelLineThickness = ui->mCircleModelLineThicknessLineEdit->text().toFloat();
-  const bool vCircleModelCenterVotesFilter = ui->mCircleModelCenterVotesFilterCheckBox->isChecked();
-  const ggFloat vCircleModelCenterVotesFilterWidth = ui->mCircleModelCenterVotesFilterWidthLineEdit->text().toFloat();
-  const ggInt32 vCircleModelNumberOfCircles = ui->mCircleModelNumberOfCirclesSpinBox->value();
+  const ggVector2Float vOriginalCircleCenter(UI().mCircleCenterXLineEdit->text().toFloat(),
+                                             UI().mCircleCenterYLineEdit->text().toFloat());
+  const ggFloat vOriginalCircleDiameter = UI().mCircleDiameterLineEdit->text().toFloat();
+  const ggFloat vCircleThickness = UI().mCircleLineThicknessLineEdit->text().toFloat();
+  const bool vCircleModelGaussianFilter = UI().mCircleModelGaussianFilterCheckBox->isChecked();
+  const ggFloat vCircleModelGaussianFilterWidth = UI().mCircleModelGaussianFilterWidthLineEdit->text().toFloat();
+  const ggFloat vCircleModelDiameter = UI().mCircleModelDiameterLineEdit->text().toFloat();
+  const ggFloat vCircleModelLineThickness = UI().mCircleModelLineThicknessLineEdit->text().toFloat();
+  const bool vCircleModelCenterVotesFilter = UI().mCircleModelCenterVotesFilterCheckBox->isChecked();
+  const ggFloat vCircleModelCenterVotesFilterWidth = UI().mCircleModelCenterVotesFilterWidthLineEdit->text().toFloat();
+  const ggInt32 vCircleModelNumberOfCircles = UI().mCircleModelNumberOfCirclesSpinBox->value();
 
   mScene->ComputeHoughImage(vCircleModelGaussianFilter,
                             vCircleModelGaussianFilterWidth,
@@ -476,15 +476,15 @@ void MainWindow::on_mFindCirclesPushButton_clicked()
                             vCircleModelCenterVotesFilter,
                             vCircleModelCenterVotesFilterWidth);
 
-  on_mOverlayOpacitySlider_valueChanged(ui->mOverlayOpacitySlider->value());
+  on_mOverlayOpacitySlider_valueChanged(UI().mOverlayOpacitySlider->value());
 }
 
 
 void MainWindow::on_mOverlayOpacitySlider_valueChanged(int /*aValue*/)
 {
-  const ggInt32 vOpacitySliderValue = ui->mOverlayOpacitySlider->value();
-  const ggInt32 vOpacitySliderValueMin = ui->mOverlayOpacitySlider->minimum();
-  const ggInt32 vOpacitySliderValueMax = ui->mOverlayOpacitySlider->maximum();
+  const ggInt32 vOpacitySliderValue = UI().mOverlayOpacitySlider->value();
+  const ggInt32 vOpacitySliderValueMin = UI().mOverlayOpacitySlider->minimum();
+  const ggInt32 vOpacitySliderValueMax = UI().mOverlayOpacitySlider->maximum();
 
   const ggFloat vOpacity = (ggFloat)(vOpacitySliderValue - vOpacitySliderValueMin) /
                            (ggFloat)(vOpacitySliderValueMax - vOpacitySliderValueMin);
