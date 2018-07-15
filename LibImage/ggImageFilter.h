@@ -103,40 +103,6 @@ namespace ggImageFilter {
   }
 
 
-  template <typename TValueTypeDst, typename TValueTypeSrc>
-  void Copy(ggImageT<TValueTypeDst>& aImageDst,
-            const ggImageT<TValueTypeSrc>& aImageSrc,
-            const ggInt32 aPositionSrcX0,
-            const ggInt32 aPositionSrcY0)
-  {
-    const ggSize vSrcX0 = ggUtility::Clamp<ggInt32>(aPositionSrcX0, 0, aImageSrc.GetSizeX());
-    const ggSize vSrcY0 = ggUtility::Clamp<ggInt32>(aPositionSrcY0, 0, aImageSrc.GetSizeY());
-    const ggSize vSrcX1 = ggUtility::Clamp<ggInt32>(aPositionSrcX0 + aImageDst.GetSizeX(), 0, aImageSrc.GetSizeX());
-    const ggSize vSrcY1 = ggUtility::Clamp<ggInt32>(aPositionSrcY0 + aImageDst.GetSizeY(), 0, aImageSrc.GetSizeY());
-    for (ggSize vSrcY = vSrcY0; vSrcY < vSrcY1; vSrcY++) {
-      ggSize vDstY = vSrcY - aPositionSrcY0;
-      for (ggSize vSrcX = vSrcX0; vSrcX < vSrcX1; vSrcX++) {
-        ggSize vDstX = vSrcX - aPositionSrcX0;
-        aImageDst(vDstX, vDstY) = aImageSrc(vSrcX, vSrcY);
-      }
-    }
-  }
-
-
-  template <typename TValueType>
-  void GetMinMax(const ggImageT<TValueType>& aImage, TValueType& aMin, TValueType& aMax)
-  {
-    const TValueType* vData = aImage.GetValues();
-    const TValueType* vDataEnd = aImage.GetValues() + aImage.GetSizeX() * aImage.GetSizeY();
-    if (vData != vDataEnd) aMin = aMax = *vData++;
-    while (vData != vDataEnd) {
-      if (*vData < aMin) aMin = *vData;
-      if (*vData > aMax) aMax = *vData;
-      ++vData;
-    }
-  }
-
-
   template <typename TValueType>
   std::vector<ggSize> GetHistogram(const ggImageT<TValueType>& aImage)
   {
@@ -206,18 +172,6 @@ namespace ggImageFilter {
     TValueType* vDst = aImage.GetValues();
     while (vSrc != vSrcEnd) {
       *vDst++ = *vSrc++ + vRandom(vEngine);
-    }
-  }
-
-
-  template <typename TValueType>
-  void Invert(ggImageT<TValueType>& aImage,
-              const TValueType& aReference) {
-    const TValueType* vSrc = aImage.GetValues();
-    const TValueType* vSrcEnd = aImage.GetValues() + aImage.GetSizeX()*aImage.GetSizeY();
-    TValueType* vDst = aImage.GetValues();
-    while (vSrc != vSrcEnd) {
-      *vDst++ = aReference - *vSrc++;
     }
   }
 

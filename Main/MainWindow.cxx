@@ -56,9 +56,9 @@ public:
     ggFloat vMax = 0.0f;
 
     ggImageT<ggFloat> vImageFloat(aImageFloat);
-    ggImageFilter::GetMinMax(vImageFloat, vMin, vMax);
+    vImageFloat.GetMinMax(vMin, vMax);
     ggImageFilter::AddNoise(vImageFloat, aCameraNoise * (vMin != vMax ?  vMax - vMin : 1.0f));
-    ggImageFilter::GetMinMax(vImageFloat, vMin, vMax);
+    vImageFloat.GetMinMax(vMin, vMax);
 
     ggUInt16 vCameraValueMax = (1 << aCameraNumberOfBits) - 1;
     ggFloat vScaleCameraToDisplay = 255.0f / (ggFloat)vCameraValueMax;
@@ -92,8 +92,8 @@ public:
   {
     // copy ROI image & smooth (remove the noise)
     qDebug() << "copy ROI image & smooth (remove the noise)";
-    ggImageT<ggFloat> vImageCameraROI(GetROISize().width(), GetROISize().height());
-    ggImageFilter::Copy(vImageCameraROI, mImageCamera, GetROIPosition().x(), GetROIPosition().y());
+    ggImageT<ggFloat> vImageCameraROI(GetROISize().width(), GetROISize().height(), 0.0f);
+    mImageCamera.Copy(vImageCameraROI, GetROIPosition().x(), GetROIPosition().y());
     if (aCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, aCircleModelGaussianFilterWidth);
 
     // calculate gradient vector field

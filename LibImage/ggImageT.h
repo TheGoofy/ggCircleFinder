@@ -176,6 +176,24 @@ public:
     return std::numeric_limits<TValueType>::max();
   }
 
+  template <typename TValueTypeDst>
+  void Copy(ggImageT<TValueTypeDst>& aImageDst,
+            const ggSize aPositionSrcX0,
+            const ggSize aPositionSrcY0)
+  {
+    const ggSize vSrcX0 = Clamp<ggSize>(aPositionSrcX0, 0, GetSizeX());
+    const ggSize vSrcY0 = Clamp<ggSize>(aPositionSrcY0, 0, GetSizeY());
+    const ggSize vSrcX1 = Clamp<ggSize>(aPositionSrcX0 + aImageDst.GetSizeX(), 0, GetSizeX());
+    const ggSize vSrcY1 = Clamp<ggSize>(aPositionSrcY0 + aImageDst.GetSizeY(), 0, GetSizeY());
+    for (ggSize vSrcY = vSrcY0; vSrcY < vSrcY1; vSrcY++) {
+      ggSize vDstY = vSrcY - aPositionSrcY0;
+      for (ggSize vSrcX = vSrcX0; vSrcX < vSrcX1; vSrcX++) {
+        ggSize vDstX = vSrcX - aPositionSrcX0;
+        aImageDst(vDstX, vDstY) = (*this)(vSrcX, vSrcY);
+      }
+    }
+  }
+
   template <typename TProcessor>
   inline void ProcessValues(TProcessor aProcessor) {
     TValueType* vValuesIterator = mValues;
@@ -289,6 +307,11 @@ public:
   }
 
 private:
+
+  template <typename T>
+  inline T Clamp(const T& aValue, const T& aValueMin, const T& aValueMax) {
+    return aValue < aValueMin ? aValueMin : (aValue > aValueMax ? aValueMax : aValue);
+  }
 
   ggVector2Size mSize;
   TValueType* mValues;

@@ -39,9 +39,9 @@ void ggRenderWidget::PrepareCameraImage(const ggImageT<ggFloat>& aImageFloat)
   ggFloat vMax = 0.0f;
 
   ggImageT<ggFloat> vImageFloat(aImageFloat);
-  ggImageFilter::GetMinMax(vImageFloat, vMin, vMax);
+  vImageFloat.GetMinMax(vMin, vMax);
   ggImageFilter::AddNoise(vImageFloat, vCameraNoise * (vMin != vMax ?  vMax - vMin : 1.0f));
-  ggImageFilter::GetMinMax(vImageFloat, vMin, vMax);
+  vImageFloat.GetMinMax(vMin, vMax);
 
   ggUInt16 vCameraValueMax = (1 << vCameraNumberOfBits) - 1;
   ggFloat vScaleCameraToDisplay = 255.0f / (ggFloat)vCameraValueMax;
@@ -210,7 +210,7 @@ void ggRenderWidget::ggRenderWidget::FindCircles()
   // copy ROI image & smooth (remove the noise)
   qDebug() << "copy ROI image & smooth (remove the noise)";
   ggImageT<ggFloat> vImageCameraROI(vRegionOfInterestSize.X(), vRegionOfInterestSize.Y());
-  ggImageFilter::Copy(vImageCameraROI, mImageCamera, vRegionOfInterestPosition.X(), vRegionOfInterestPosition.Y());
+  mImageCamera.Copy(vImageCameraROI, vRegionOfInterestPosition.X(), vRegionOfInterestPosition.Y());
   if (vCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, vCircleModelGaussianFilterWidth);
 
   // calculate gradient vector field
@@ -295,7 +295,7 @@ void ggRenderWidget::ggRenderWidget::FindCircles()
   // convert hough image for rendering with QT
   qDebug() << "convert hough image for rendering with QT";
   ggFloat vMin, vMax;
-  ggImageFilter::GetMinMax(vImageHough, vMin, vMax);
+  vImageHough.GetMinMax(vMin, vMax);
   ggImageT<ggUChar> vImageUChar(vImageHough.GetSizeX(), vImageHough.GetSizeY());
   for (ggSize vIndexY = 0; vIndexY < vImageHough.GetSizeY(); vIndexY++) {
     for (ggSize vIndexX = 0; vIndexX < vImageHough.GetSizeX(); vIndexX++) {
