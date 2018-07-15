@@ -83,14 +83,15 @@ std::vector<ggColorUInt8> ggUtility::ColorTable()
 {
   std::vector<ggColorUInt8> vColorTable(256);
   for (unsigned int vIndex = 0; vIndex < vColorTable.size(); vIndex++) {
-    if      (vIndex <  32) vColorTable[vIndex].Set(2*vIndex,          0,             8*vIndex      );
-    else if (vIndex <  64) vColorTable[vIndex].Set(2*vIndex,          0,             255           );
-    else if (vIndex <  96) vColorTable[vIndex].Set(3*(vIndex-64)+128, 0,             4*(127-vIndex));
-    else if (vIndex < 128) vColorTable[vIndex].Set(1*(vIndex-96)+224, 2*(vIndex-96), 4*(127-vIndex));
-    else if (vIndex < 160) vColorTable[vIndex].Set(255,               2*(vIndex-96), 0             );
-    else if (vIndex < 192) vColorTable[vIndex].Set(255,               2*(vIndex-96), 0             );
-    else if (vIndex < 224) vColorTable[vIndex].Set(255,               2*(vIndex-96), 4*(vIndex-192));
-    else                   vColorTable[vIndex].Set(255,               255,           4*(vIndex-192));
+    if      (vIndex <   4) vColorTable[vIndex].Set(2*vIndex,          0,             8*vIndex,       64*vIndex);
+    else if (vIndex <  32) vColorTable[vIndex].Set(2*vIndex,          0,             8*vIndex,       255      );
+    else if (vIndex <  64) vColorTable[vIndex].Set(2*vIndex,          0,             255,            255      );
+    else if (vIndex <  96) vColorTable[vIndex].Set(3*(vIndex-64)+128, 0,             4*(127-vIndex), 255      );
+    else if (vIndex < 128) vColorTable[vIndex].Set(1*(vIndex-96)+224, 2*(vIndex-96), 4*(127-vIndex), 255      );
+    else if (vIndex < 160) vColorTable[vIndex].Set(255,               2*(vIndex-96), 0,              255      );
+    else if (vIndex < 192) vColorTable[vIndex].Set(255,               2*(vIndex-96), 0,              255      );
+    else if (vIndex < 224) vColorTable[vIndex].Set(255,               2*(vIndex-96), 4*(vIndex-192), 255      );
+    else                   vColorTable[vIndex].Set(255,               255,           4*(vIndex-192), 255      );
   }
   return vColorTable;
 }

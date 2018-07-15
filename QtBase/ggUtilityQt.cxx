@@ -94,6 +94,12 @@ QColor ggUtilityQt::GetColorWithAlpha(const QColor& aColor, float aAlpha)
 }
 
 
+QColor ggUtilityQt::GetColorQt(const ggColorUInt8& aColor)
+{
+  return QColor(aColor.R(), aColor.G(), aColor.B(), aColor.A());
+}
+
+
 QRectF ggUtilityQt::GetRectInflated(const QRectF& aRect, float aDelta)
 {
   return QRectF(aRect.x() - aDelta,
@@ -147,4 +153,30 @@ QBrush ggUtilityQt::GetCheckerBoardBrush(int aSize, const QColor& aColor)
   QBrush vBrush(vBitmap);
   vBrush.setColor(aColor);
   return vBrush;
+}
+
+
+QPointF ggUtilityQt::GetPointF(const ggVector2Double& aVector)
+{
+  return QPointF(aVector.X(), aVector.Y());
+}
+
+
+QImage ggUtilityQt::GetImage(const ggImageT<ggUChar>& aImage,
+                             const std::vector<ggColorUInt8>& aColorTable)
+{
+  QImage vImageQt(aImage.GetValues(),
+                  aImage.GetSizeX(),
+                  aImage.GetSizeY(),
+                  aImage.GetSizeX(),
+                  QImage::Format_Indexed8);
+
+  QVector<QRgb> vColorTableQt;
+  std::for_each(aColorTable.begin(), aColorTable.end(), [&vColorTableQt] (const ggColorUInt8& aColor) {
+    vColorTableQt.push_back(ggUtilityQt::GetColorQt(aColor).rgba());
+  });
+
+  vImageQt.setColorTable(vColorTableQt);
+
+  return vImageQt;
 }

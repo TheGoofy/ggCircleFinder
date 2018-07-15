@@ -105,7 +105,8 @@ HEADERS += \
     QtWidgets/ggColorChannelWidget.h \
     QtWidgets/ggColorDialog.h \
     QtWidgets/ggColorPreviewWidget.h \
-    QtWidgets/ggColorWheelWidget.h
+    QtWidgets/ggColorWheelWidget.h \
+    LibImage/ggImageAlgorithm.h
 
 FORMS += \
     Main/MainWindow.ui \

@@ -10,6 +10,8 @@
 #include "LibBase/ggGeometry.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
+#include "LibImage/ggImageAlgorithm.h"
+#include "QtBase/ggUtilityQt.h"
 #include "QtGraphics/ggGraphicsManipulatorRectItemT.h"
 
 
@@ -25,14 +27,17 @@ public:
   : QGraphicsScene(aParent) {
 
     mImageCameraPixmapItem = new QGraphicsPixmapItem();
+    mImageCameraPixmapItem->setZValue(0.0);
     addItem(mImageCameraPixmapItem);
 
     mImageHoughPixmapItem = new QGraphicsPixmapItem();
+    mImageHoughPixmapItem->setZValue(1.0);
     addItem(mImageHoughPixmapItem);
 
     mROI = new tROI(QRectF(10,10,100,100));
     mROI->setPen(QPen(QColor(255, 200, 0), 0.0));
     mROI->SetHandleColor(QColor(255, 200, 0));
+    mROI->setZValue(3.0);
     addItem(mROI);
   }
 
@@ -83,12 +88,13 @@ public:
     mImageCameraPixmapItem->setPixmap(QPixmap::fromImage(vImage));
   }
 
-  void ComputeHoughImage(const bool aCircleModelGaussianFilter,
-                         const ggFloat aCircleModelGaussianFilterWidth,
-                         const ggFloat aCircleModelDiameter,
-                         const ggFloat aCircleModelLineThickness,
-                         const bool aCircleModelCenterVotesFilter,
-                         const ggFloat aCircleModelCenterVotesFilterWidth)
+  QString FindCircles(const bool aCircleModelGaussianFilter,
+                      const ggFloat aCircleModelGaussianFilterWidth,
+                      const ggFloat aCircleModelDiameter,
+                      const ggFloat aCircleModelLineThickness,
+                      const bool aCircleModelCenterVotesFilter,
+                      const ggFloat aCircleModelCenterVotesFilterWidth,
+                      const ggInt32 aCircleModelNumberOfCircles)
   {
     // copy ROI image & smooth (remove the noise)
     qDebug() << "copy ROI image & smooth (remove the noise)";
@@ -96,115 +102,53 @@ public:
     mImageCamera.Copy(vImageCameraROI, GetROIPosition().x(), GetROIPosition().y());
     if (aCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, aCircleModelGaussianFilterWidth);
 
-    // calculate gradient vector field
-    qDebug() << "calculate gradient vector field";
-    ggImageT<ggVector2Float> vGradientVectorField(vImageCameraROI.GetSizeX(), vImageCameraROI.GetSizeY());
-    ggImageFilter::Gradient(vGradientVectorField, vImageCameraROI);
-
     // do gradient based hough transformation
     qDebug() << "do gradient based hough transformation";
-    ggImageT<ggFloat> vImageHough(vImageCameraROI.GetSize(), 0.0f);
-    ggImagePainterT<ggFloat> vPainterHough(vImageHough);
-    for (ggSize vIndexY = 1; vIndexY+1 < vGradientVectorField.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 1; vIndexX+1 < vGradientVectorField.GetSizeX(); vIndexX++) {
-        const ggVector2Double vGradient(vGradientVectorField(vIndexX, vIndexY).GetConverted<ggDouble>());
-        if (vGradient.Length() > 0.0f) {
-
-          // try to fibure out some sort of circle curvature depending on the neighbor gradients.
-          // - triangulate a virtual center-point (accuracy might be a problem due to the close
-          //   proximity of the two triangulation points). nevertheless the virtual center can be used
-          //   as indicator, on which side to expect the circle center
-          // - the two triangulation points are selected perpendicular to the actual gradient
-          bool vDiagonalQ1 = vGradient.X() * vGradient.Y() > 0.0f;
-          bool vHorizontal = fabs(vGradient.X()) > fabs(vGradient.Y());
-          ggDouble vSlope = vHorizontal ? (vGradient.Y() / vGradient.X()) : (vGradient.X() / vGradient.Y());
-          // position of two (intersecting) lines
-          ggVector2Int32 vIndexA(vIndexX, vIndexY);
-          ggVector2Int32 vIndexB(vIndexX, vIndexY);
-          if (fabs(vSlope) < 0.4142) { // tan(22.5) = sqrt(2) - 1
-            vIndexA += ggVector2Int32(vHorizontal ? 0 : 1, vHorizontal ? 1 : 0);
-            vIndexB += ggVector2Int32(vHorizontal ? 0 : -1, vHorizontal ? -1 : 0);
-          }
-          else {
-            vIndexA += ggVector2Int32(vDiagonalQ1 ? -1 : 1, vDiagonalQ1 ? 1 : 1);
-            vIndexB += ggVector2Int32(vDiagonalQ1 ? 1 : -1, vDiagonalQ1 ? -1 : -1);
-          }
-          // direction of two (intersecting) lines
-          const ggVector2Double vGradientA(vGradientVectorField(vIndexA).GetConverted<ggDouble>());
-          const ggVector2Double vGradientB(vGradientVectorField(vIndexB).GetConverted<ggDouble>());
-          // two lines potentially intersect at the virtual center-point
-          ggLine2Double vLineA = ggLine2Double::FromDir(vIndexA.GetConverted<ggDouble>(), vGradientA);
-          ggLine2Double vLineB = ggLine2Double::FromDir(vIndexB.GetConverted<ggDouble>(), vGradientB);
-          ggVector2Double vIntersection;
-          // if the two lines are not parallel, we'll get an intersection
-          if (ggGeometry::Intersect(vLineA, vLineB, vIntersection)) {
-            // point on circle
-            ggVector2Double vCirclePoint(vIndexX, vIndexY);
-            // direction to the virtual center-point (if the circle radius was unknown, we could use this as an estimate)
-            ggVector2Double vCenterDirection(vIntersection - vCirclePoint);
-            // (known) radius needs to be negative, when the gradient points outward the circle
-            ggDouble vRadius = vCenterDirection.Dot(vGradient) > 0.0 ? aCircleModelDiameter / 2.0 : -aCircleModelDiameter / 2.0;
-            // use the actual gradient (and not the gradient from neighbors) for the center voting
-            vCenterDirection = vRadius * vGradient.Normalized();
-            // the position of the center point may varies by the thickenss of the circle line
-            ggVector2Double vRadiusRange(0.5f * aCircleModelLineThickness * vGradient.Normalized());
-            // if the length of the gradient is high, it's more likely we've detected some reasonable structures (not noise)
-            ggFloat vIntensity = vGradient.Length();
-            // voting for center point candidates on one side of the (potential) circle point ...
-            vPainterHough.DrawLine(vCirclePoint + vCenterDirection - vRadiusRange,
-                                   vCirclePoint + vCenterDirection + vRadiusRange,
-                                   vIntensity, 1.0f,  ggPainterBlendType::eAdd);
-          }
-
-        }
-      }
-    }
+    ggImageT<ggFloat> vImageHough(ggImageAlgorithm::ComputeHoughImage(vImageCameraROI,
+                                                                      aCircleModelDiameter,
+                                                                      aCircleModelLineThickness));
 
     // smooth hough image
     qDebug() << "smooth hough voting image";
     if (aCircleModelCenterVotesFilter) ggImageFilter::Gauss(vImageHough, aCircleModelCenterVotesFilterWidth);
-/*
+
     // detect center spots by finding all local maxima
     qDebug() << "detect center spots by finding all local maxima";
     typedef ggSpotT<ggFloat, ggVector2Double> tSpot;
     typedef std::vector<tSpot> tSpots;
-    tSpots vCenterSpots = ggImageFilter::FindLocalMaxima(vImageHough, true);
+    tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima(vImageHough, true);
 
-    // sort center spots from highest to lowest
-    qDebug() << "sort center spots from highest to lowest";
-    std::sort(vCenterSpots.begin(), vCenterSpots.end(),
-              [] (const tSpot& aSpotA, const tSpot& aSpotB) {return aSpotA.GetValue() > aSpotB.GetValue();} );
-*/
     // convert hough image for rendering with QT
     qDebug() << "convert hough image for rendering with QT";
     ggImageT<ggUChar> vImageUChar = vImageHough.GetConvertedFitMinMax<ggUChar>();
-
-    QImage vImage(vImageUChar.GetValues(),
-                  vImageUChar.GetSizeX(),
-                  vImageUChar.GetSizeY(),
-                  vImageUChar.GetSizeX(),
-                  QImage::Format_Indexed8);
-
-    // generate a nice color table for the hough image
-    qDebug() << "generate a nice color table for the hough image";
-    QVector<QRgb> vColorTable(256);
-    for (int vIndex = 0; vIndex < vColorTable.size(); vIndex++) {
-      if      (vIndex <   4) vColorTable[vIndex] = QColor(2*vIndex,          0,             8*vIndex,       64*vIndex).rgba();
-      else if (vIndex <  32) vColorTable[vIndex] = QColor(2*vIndex,          0,             8*vIndex,       255      ).rgba();
-      else if (vIndex <  64) vColorTable[vIndex] = QColor(2*vIndex,          0,             255,            255      ).rgba();
-      else if (vIndex <  96) vColorTable[vIndex] = QColor(3*(vIndex-64)+128, 0,             4*(127-vIndex), 255      ).rgba();
-      else if (vIndex < 128) vColorTable[vIndex] = QColor(1*(vIndex-96)+224, 2*(vIndex-96), 4*(127-vIndex), 255      ).rgba();
-      else if (vIndex < 160) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 0,              255      ).rgba();
-      else if (vIndex < 192) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 0,              255      ).rgba();
-      else if (vIndex < 224) vColorTable[vIndex] = QColor(255,               2*(vIndex-96), 4*(vIndex-192), 255      ).rgba();
-      else                   vColorTable[vIndex] = QColor(255,               255,           4*(vIndex-192), 255      ).rgba();
-      // for (int vX = 0; vX < 50; vX++) vImageUChar(vX, vIndex) = vIndex;
-    }
-    vImage.setColorTable(vColorTable);
-
-    // display the results
+    std::vector<ggColorUInt8> vColorTableUInt8 = ggUtility::ColorTable();
+    QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTableUInt8);
     mImageHoughPixmapItem->setPos(GetROIPosition());
-    mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImage));
+    mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
+
+    // draw the detected circles
+    std::for_each(mCircleItems.begin(), mCircleItems.end(), [] (QGraphicsEllipseItem* aItem) { delete aItem; });
+    mCircleItems.clear();
+    QString vResults = "Found " + QString::number(vCenterSpots.size()) + " Circle Center Candidates\n";
+    ggInt32 vCenterIndexMax = std::min<ggInt32>(vCenterSpots.size() - 1, aCircleModelNumberOfCircles - 1);
+    ggFloat vCenterSpotValueMax = vCenterSpots.empty() ? 0.0f : vCenterSpots.front().GetValue();
+    for (ggInt32 vSpotIndex = vCenterIndexMax; vSpotIndex >= 0; vSpotIndex--) {
+      const tSpot& vCenterSpot = vCenterSpots[vSpotIndex];
+      const ggVector2Double vCircleCenter = vCenterSpot.GetConverted<ggDouble>() + ggVector2Double(GetROIPosition().x(), GetROIPosition().y());
+      QPointF vCenterSpotPointF(ggUtilityQt::GetPointF(vCircleCenter));
+
+/*
+      vPainter.setPen(QPen(Qt::black, 3.0));
+      DrawCrossHair(vPainter, vCenterSpotPointF, 10.0, 4.0, 45.0);
+      vPainter.setPen(QPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0), 1.5));
+      DrawCrossHair(vPainter, vCenterSpotPointF, 10.0, 4.0, 45.0);
+      */
+      QPen vPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0, 255), aCircleModelLineThickness);
+      AddCircle(vCenterSpotPointF, aCircleModelDiameter / 2.0, vPen);
+      vResults += QString::number(vSpotIndex) + ": Pos" + ggUtility::ToString(vCircleCenter, 2).c_str() + " Val(" + ggUtility::ToString(ggUtility::RoundToSD(vCenterSpot.GetValue())).c_str() + ")\n";
+    }
+
+    return vResults;
   }
 
   void SetHoughImageOpacity(ggFloat aOpacity)
@@ -212,7 +156,54 @@ public:
     mImageHoughPixmapItem->setOpacity(aOpacity);
   }
 
+  void SetCirclesOpacity(ggFloat aOpacity)
+  {
+    std::for_each(mCircleItems.begin(), mCircleItems.end(), [aOpacity] (QGraphicsItem* aItem) {
+      aItem->setOpacity(aOpacity);
+    });
+  }
+
 private:
+
+  void AddCrossHair(QPainter& aPainter,
+                    const QPointF& aCenter,
+                    qreal aRadiusOuter,
+                    qreal aRadiusInner = 0.0,
+                    qreal aAngleDeg = 0.0)
+  {
+    const QPointF vCenter = aCenter + QPointF(0.5, 0.5);
+    if (aRadiusInner == 0.0) {
+      qreal vAngle = aAngleDeg * M_PI / 180.0;
+      QPointF vPO0(aRadiusOuter * cos(vAngle), aRadiusOuter * sin(vAngle));
+      QPointF vPO1(-vPO0.y(), vPO0.x());
+      aPainter.drawLine(vCenter - vPO0, vCenter + vPO0);
+      aPainter.drawLine(vCenter - vPO1, vCenter + vPO1);
+    }
+    else {
+      qreal vAngle = aAngleDeg * M_PI / 180.0;
+      QPointF vPI0(aRadiusInner * cos(vAngle), aRadiusInner * sin(vAngle));
+      QPointF vPO0(aRadiusOuter * cos(vAngle), aRadiusOuter * sin(vAngle));
+      QPointF vPI1(-vPI0.y(), vPI0.x());
+      QPointF vPO1(-vPO0.y(), vPO0.x());
+      aPainter.drawLine(vCenter - vPO0, vCenter - vPI0);
+      aPainter.drawLine(vCenter + vPI0, vCenter + vPO0);
+      aPainter.drawLine(vCenter - vPO1, vCenter - vPI1);
+      aPainter.drawLine(vCenter + vPI1, vCenter + vPO1);
+    }
+  }
+
+  void AddCircle(const QPointF& aCenter,
+                 qreal aRadius,
+                 const QPen& aPen)
+  {
+    QGraphicsEllipseItem* vCircle = addEllipse(aCenter.x() - aRadius + 0.5,
+                                               aCenter.y() - aRadius + 0.5,
+                                               2.0 * aRadius,
+                                               2.0 * aRadius);
+    vCircle->setZValue(2.0);
+    vCircle->setPen(aPen);
+    mCircleItems.push_back(vCircle);
+  }
 
   tROI* mROI;
 
@@ -220,6 +211,8 @@ private:
   QGraphicsPixmapItem* mImageCameraPixmapItem;
 
   QGraphicsPixmapItem* mImageHoughPixmapItem;
+
+  std::vector<QGraphicsEllipseItem*> mCircleItems;
 
 };
 
@@ -462,27 +455,44 @@ void MainWindow::on_mFindCirclesPushButton_clicked()
   const ggFloat vCircleModelCenterVotesFilterWidth = UI().mCircleModelCenterVotesFilterWidthLineEdit->text().toFloat();
   const ggInt32 vCircleModelNumberOfCircles = UI().mCircleModelNumberOfCirclesSpinBox->value();
 
-  mScene->ComputeHoughImage(vCircleModelGaussianFilter,
-                            vCircleModelGaussianFilterWidth,
-                            vCircleModelDiameter,
-                            vCircleModelLineThickness,
-                            vCircleModelCenterVotesFilter,
-                            vCircleModelCenterVotesFilterWidth);
+  QString vResults = mScene->FindCircles(vCircleModelGaussianFilter,
+                                         vCircleModelGaussianFilterWidth,
+                                         vCircleModelDiameter,
+                                         vCircleModelLineThickness,
+                                         vCircleModelCenterVotesFilter,
+                                         vCircleModelCenterVotesFilterWidth,
+                                         vCircleModelNumberOfCircles);
+
+  UI().mResultsPlainTextEdit->setPlainText(vResults);
 
   on_mOverlayOpacitySlider_valueChanged(UI().mOverlayOpacitySlider->value());
+  on_mCirclesOpacitySlider_valueChanged(UI().mCirclesOpacitySlider->value());
 }
 
 
 void MainWindow::on_mOverlayOpacitySlider_valueChanged(int /*aValue*/)
 {
-  const ggInt32 vOpacitySliderValue = UI().mOverlayOpacitySlider->value();
-  const ggInt32 vOpacitySliderValueMin = UI().mOverlayOpacitySlider->minimum();
-  const ggInt32 vOpacitySliderValueMax = UI().mOverlayOpacitySlider->maximum();
+  const ggInt32 vValue = UI().mOverlayOpacitySlider->value();
+  const ggInt32 vValueMin = UI().mOverlayOpacitySlider->minimum();
+  const ggInt32 vValueMax = UI().mOverlayOpacitySlider->maximum();
 
-  const ggFloat vOpacity = (ggFloat)(vOpacitySliderValue - vOpacitySliderValueMin) /
-                           (ggFloat)(vOpacitySliderValueMax - vOpacitySliderValueMin);
+  const ggFloat vOpacity = (ggFloat)(vValue - vValueMin) /
+                           (ggFloat)(vValueMax - vValueMin);
 
   mScene->SetHoughImageOpacity(vOpacity);
+}
+
+
+void MainWindow::on_mCirclesOpacitySlider_valueChanged(int /*aValue*/)
+{
+  const ggInt32 vValue = UI().mCirclesOpacitySlider->value();
+  const ggInt32 vValueMin = UI().mCirclesOpacitySlider->minimum();
+  const ggInt32 vValueMax = UI().mCirclesOpacitySlider->maximum();
+
+  const ggFloat vOpacity = (ggFloat)(vValue - vValueMin) /
+                           (ggFloat)(vValueMax - vValueMin);
+
+  mScene->SetCirclesOpacity(vOpacity);
 }
 
 

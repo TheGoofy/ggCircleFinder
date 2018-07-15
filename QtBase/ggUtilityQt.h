@@ -7,7 +7,9 @@
 #include <QBrush>
 
 // 2) include own project-related (sort by component dependency)
+#include "LibBase/ggColorTypes.h"
 #include "LibBase/ggUtility.h"
+#include "LibImage/ggImageT.h"
 
 // 3) forward declarations
 
@@ -28,6 +30,7 @@ namespace ggUtilityQt
   QColor GetColorWithAlpha(const QColor& aColor, float aAlpha);
   QColor GetColorWithValue(const QColor& aColor, float aValue);
   QColor GetColorWithLightness(const QColor& aColor, float aLightness);
+  QColor GetColorQt(const ggColorUInt8& aColor);
 
   QRectF GetRectInflated(const QRectF& aRect, float aDelta);
 
@@ -38,6 +41,12 @@ namespace ggUtilityQt
   T FromString(const QString& aString, bool* aOK = nullptr);
 
   QBrush GetCheckerBoardBrush(int aSize = 5, const QColor& aColor = QColor(170, 170, 170, 255));
+
+  QPointF GetPointF(const ggVector2Double& aVector);
+
+  QImage GetImage(const ggImageT<ggUChar>& aImage,
+                  const std::vector<ggColorUInt8>& aColorTable);
+
 }
 
 #endif // GGUTILITYQT_H

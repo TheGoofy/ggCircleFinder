@@ -12,6 +12,7 @@
 #include "LibBase/ggGeometry.h"
 #include "LibBase/ggRunningAverages.h"
 #include "LibImage/ggImageT.h"
+#include "LibImage/ggImageAlgorithm.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
 
@@ -285,7 +286,7 @@ void ggRenderWidget::ggRenderWidget::FindCircles()
   qDebug() << "detect center spots by finding all local maxima";
   typedef ggSpotT<ggFloat, ggVector2Double> tSpot;
   typedef std::vector<tSpot> tSpots;
-  tSpots vCenterSpots = ggImageFilter::FindLocalMaxima(vImageHough, true);
+  tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima(vImageHough, true);
 
   // sort center spots from highest to lowest
   qDebug() << "sort center spots from highest to lowest";
@@ -454,7 +455,7 @@ void ggRenderWidget::ggRenderWidget::FindCircles()
   */
 
   // put some text into results box
-  vUI->mResultsPlainTextEdit->setPlainText(vResults);
+  //vUI->mResultsPlainTextEdit->setPlainText(vResults);
 
   // repaint...
   repaint();

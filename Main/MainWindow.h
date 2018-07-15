@@ -44,6 +44,7 @@ protected slots:
   void on_mFindCirclesPushButton_clicked();
 
   void on_mOverlayOpacitySlider_valueChanged(int aValue);
+  void on_mCirclesOpacitySlider_valueChanged(int aValue);
 
 protected:
 
