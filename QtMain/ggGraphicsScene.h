@@ -123,7 +123,7 @@ public:
     mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
 
     // draw the detected circles
-    std::for_each(mCircleItems.begin(), mCircleItems.end(), [] (QGraphicsEllipseItem* aItem) { delete aItem; });
+    std::for_each(mCircleItems.begin(), mCircleItems.end(), [] (QGraphicsItem* aItem) { delete aItem; });
     mCircleItems.clear();
     QString vResults = "Found " + QString::number(vCenterSpots.size()) + " Candidates\n";
     ggInt32 vCenterIndexMax = std::min<ggInt32>(vCenterSpots.size() - 1, aCircleModelNumberOfCircles - 1);
@@ -132,16 +132,12 @@ public:
       const tSpot& vCenterSpot = vCenterSpots[vSpotIndex];
       const ggVector2Double vCircleCenter = vCenterSpot.GetConverted<ggDouble>() + ggVector2Double(GetROIPosition().x(), GetROIPosition().y());
       QPointF vCenterSpotPointF(ggUtilityQt::GetPointF(vCircleCenter));
-      /*
-      vPainter.setPen(QPen(Qt::black, 3.0));
-      DrawCrossHair(vPainter, vCenterSpotPointF, 10.0, 4.0, 45.0);
-      vPainter.setPen(QPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0), 1.5));
-      DrawCrossHair(vPainter, vCenterSpotPointF, 10.0, 4.0, 45.0);
-      */
       QPen vPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0, 255), aCircleModelLineThickness);
-      AddCircle(vCenterSpotPointF, aCircleModelDiameter / 2.0, vPen);
-      vResults += QString::number(vSpotIndex) + ": Pos" + ggUtility::ToString(vCircleCenter, 2).c_str() + " Val(" + ggUtility::ToString(ggUtility::RoundToSD(vCenterSpot.GetValue())).c_str() + ")\n";
+      AddCircle(vCenterSpotPointF, aCircleModelDiameter / 2.0, vCenterSpot.GetValue(), vPen);
+      vResults += QString::number(vSpotIndex) + " : " + ggUtility::ToString(vCircleCenter, 2).c_str() + " : " +
+                  ggUtility::ToString(ggUtility::RoundToSD(vCenterSpot.GetValue(), 3)).c_str() + "\n";
     }
+    SetCirclesZValue(2.0);
 
     return vResults;
   }
@@ -160,20 +156,26 @@ public:
 
 private:
 
-  /*
-  void AddCrossHair(QPainter& aPainter,
-                    const QPointF& aCenter,
+  void SetCirclesZValue(ggFloat aZValue)
+  {
+    std::for_each(mCircleItems.begin(), mCircleItems.end(), [aZValue] (QGraphicsItem* aItem) {
+      aItem->setZValue(aZValue);
+    });
+  }
+
+  void AddCrossHair(const QPointF& aCenter,
                     qreal aRadiusOuter,
-                    qreal aRadiusInner = 0.0,
-                    qreal aAngleDeg = 0.0)
+                    qreal aRadiusInner,
+                    qreal aAngleDeg,
+                    const QPen& aPen)
   {
     const QPointF vCenter = aCenter + QPointF(0.5, 0.5);
     if (aRadiusInner == 0.0) {
       qreal vAngle = aAngleDeg * M_PI / 180.0;
       QPointF vPO0(aRadiusOuter * cos(vAngle), aRadiusOuter * sin(vAngle));
       QPointF vPO1(-vPO0.y(), vPO0.x());
-      aPainter.drawLine(vCenter - vPO0, vCenter + vPO0);
-      aPainter.drawLine(vCenter - vPO1, vCenter + vPO1);
+      mCircleItems.push_back(addLine(QLineF(vCenter - vPO0, vCenter + vPO0), aPen));
+      mCircleItems.push_back(addLine(QLineF(vCenter - vPO1, vCenter + vPO1), aPen));
     }
     else {
       qreal vAngle = aAngleDeg * M_PI / 180.0;
@@ -181,25 +183,37 @@ private:
       QPointF vPO0(aRadiusOuter * cos(vAngle), aRadiusOuter * sin(vAngle));
       QPointF vPI1(-vPI0.y(), vPI0.x());
       QPointF vPO1(-vPO0.y(), vPO0.x());
-      aPainter.drawLine(vCenter - vPO0, vCenter - vPI0);
-      aPainter.drawLine(vCenter + vPI0, vCenter + vPO0);
-      aPainter.drawLine(vCenter - vPO1, vCenter - vPI1);
-      aPainter.drawLine(vCenter + vPI1, vCenter + vPO1);
+      mCircleItems.push_back(addLine(QLineF(vCenter - vPO0, vCenter - vPI0), aPen));
+      mCircleItems.push_back(addLine(QLineF(vCenter + vPI0, vCenter + vPO0), aPen));
+      mCircleItems.push_back(addLine(QLineF(vCenter - vPO1, vCenter - vPI1), aPen));
+      mCircleItems.push_back(addLine(QLineF(vCenter + vPI1, vCenter + vPO1), aPen));
     }
   }
-  */
 
   void AddCircle(const QPointF& aCenter,
                  qreal aRadius,
+                 qreal aValue,
                  const QPen& aPen)
   {
-    QGraphicsEllipseItem* vCircle = addEllipse(aCenter.x() - aRadius + 0.5,
-                                               aCenter.y() - aRadius + 0.5,
-                                               2.0 * aRadius,
-                                               2.0 * aRadius);
-    vCircle->setZValue(2.0);
-    vCircle->setPen(aPen);
-    mCircleItems.push_back(vCircle);
+    mCircleItems.push_back(addEllipse(aCenter.x() - aRadius + 0.5,
+                                      aCenter.y() - aRadius + 0.5,
+                                      2.0 * aRadius,
+                                      2.0 * aRadius,
+                                      aPen));
+
+    AddCrossHair(aCenter, 10.0, 4.0, 0.0, QPen(aPen.color(), 0.0));
+
+    QString vTextString("(" + QString::number(aCenter.x(),'f',1) + "/" + QString::number(aCenter.y(),'f',1) + ")\n"
+                        "Hough: " + QString::number(aValue,'f',1));
+    QGraphicsTextItem* vText = addText(vTextString);
+    QFont vFont = vText->font();
+    vFont.setPointSizeF(11.0);
+    vText->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    vText->setFont(vFont);
+    vText->setPos(aCenter);
+    vText->setDefaultTextColor(Qt::white);
+    mCircleItems.push_back(vText);
+
   }
 
   tROI* mROI;
@@ -209,7 +223,7 @@ private:
 
   QGraphicsPixmapItem* mImageHoughPixmapItem;
 
-  std::vector<QGraphicsEllipseItem*> mCircleItems;
+  std::vector<QGraphicsItem*> mCircleItems;
 
 };
 

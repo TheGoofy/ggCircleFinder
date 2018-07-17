@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
   Attach(mScene->ROI().GetSubjectSize());
 
   UpdateUserInterfaceZoom();
+  UpdateROI();
 }
 
 

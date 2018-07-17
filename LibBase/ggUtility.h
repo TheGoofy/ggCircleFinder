@@ -147,7 +147,7 @@ namespace ggUtility {
   inline std::string VectorToString(const ggVectorT<TValueType, TDimensions>& aVector) {
     std::string vString("(");
     for (ggSize vDimension = 0; vDimension < aVector.GetDimensions(); vDimension++) {
-      vString += ToString(aVector[vDimension]) + std::string((vDimension + 1 < aVector.GetDimensions()) ? "," : ")");
+      vString += ToString(aVector[vDimension]) + std::string((vDimension + 1 < aVector.GetDimensions()) ? "/" : ")");
     }
     return vString;
   }
@@ -156,7 +156,7 @@ namespace ggUtility {
   inline std::string VectorToString(const ggVectorT<TValueType, TDimensions>& aVector, int aPrecision) {
     std::string vString("(");
     for (ggSize vDimension = 0; vDimension < aVector.GetDimensions(); vDimension++) {
-      vString += ToString(aVector[vDimension], aPrecision) + std::string((vDimension + 1 < aVector.GetDimensions()) ? "," : ")");
+      vString += ToString(aVector[vDimension], aPrecision) + std::string((vDimension + 1 < aVector.GetDimensions()) ? "/" : ")");
     }
     return vString;
   }
