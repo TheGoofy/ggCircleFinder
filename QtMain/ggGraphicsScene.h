@@ -100,9 +100,9 @@ public:
 
     // do gradient based hough transformation
     qDebug() << "do gradient based hough transformation";
-    ggImageT<ggFloat> vImageHough(ggImageAlgorithm::ComputeHoughImage(vImageCameraROI,
-                                                                      aCircleModelDiameter,
-                                                                      aCircleModelLineThickness));
+    ggImageT<ggFloat> vImageHough(ggImageAlgorithm::CalculateHoughImage(vImageCameraROI,
+                                                                        aCircleModelDiameter,
+                                                                        aCircleModelLineThickness));
 
     // smooth hough image
     qDebug() << "smooth hough voting image";

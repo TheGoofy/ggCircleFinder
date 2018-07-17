@@ -3,6 +3,7 @@
 
 
 #include "LibBase/ggSpotT.h"
+#include "LibBase/ggRunningAverages.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
 
@@ -31,9 +32,9 @@ namespace ggImageAlgorithm {
 
 
   template <typename TValueType>
-  ggImageT<TValueType> ComputeHoughImage(const ggImageT<TValueType>& aImage,
-                                         const ggFloat aCircleModelDiameter,
-                                         const ggFloat aCircleModelLineThickness)
+  ggImageT<TValueType> CalculateHoughImage(const ggImageT<TValueType>& aImage,
+                                           const ggFloat aCircleModelDiameter,
+                                           const ggFloat aCircleModelLineThickness)
   {
     // calculate gradient vector field
     ggImageT<ggVector2Float> vGradientVectorField(aImage.GetSize());
@@ -107,12 +108,12 @@ namespace ggImageAlgorithm {
 
 
   // y[i] - vx = a * (x[i] - vx)^2
-  inline bool GetParabolaVertex(const ggDouble& aY0, // assuming aX0 = -1
-                                const ggDouble& aY1, // assuming aX1 =  0
-                                const ggDouble& aY2, // assuming aX2 =  1
-                                ggDouble& aVertexX,
-                                ggDouble& aVertexY,
-                                bool aCheckVertexInRange) {
+  inline bool CalculateParabolaVertex(const ggDouble& aY0, // assuming aX0 = -1
+                                      const ggDouble& aY1, // assuming aX1 =  0
+                                      const ggDouble& aY2, // assuming aX2 =  1
+                                      ggDouble& aVertexX,
+                                      ggDouble& aVertexY,
+                                      bool aCheckVertexInRange) {
     if (aCheckVertexInRange && ((aY0 > aY1) || (aY2 > aY1))) return false;
     ggDouble vASquare = (aY0 + aY2) / 2.0 - aY1;
     if (vASquare != 0.0) {
@@ -126,32 +127,29 @@ namespace ggImageAlgorithm {
 
 
   template <typename TValueType>
-  bool GetParabolaVertex(const ggImageT<TValueType>& aImage,
-                         const ggSize aIndexX,
-                         const ggSize aIndexY,
-                         ggDouble& aVertexX,
-                         ggDouble& aVertexY,
-                         TValueType& aVertexValue) {
+  bool CalculateParabolaVertex(const ggImageT<TValueType>& aImage,
+                               const ggSize aIndexX,
+                               const ggSize aIndexY,
+                               ggDouble& aVertexX,
+                               ggDouble& aVertexY,
+                               TValueType& aVertexValue) {
+
     if (aImage.IsInside(aIndexX - 1, aIndexY - 1) &&
         aImage.IsInside(aIndexX + 1, aIndexX + 1)) {
 
-      ggDouble vVertexOffsetX = 0.0;
-      ggDouble vVertexOffsetY = 0.0;
-      ggDouble vVertexWeightSumX = 0.0;
-      ggDouble vVertexWeightSumY = 0.0;
+      ggVector2T<ggRunningAveragesT<ggDouble>> vVertex;
       ggDouble vVertexValueMax = aImage(aIndexX, aIndexY);
       const ggInt32 vDelta = 1;
 
       for (ggInt32 vOffY = -vDelta; vOffY <= vDelta; vOffY++) {
         ggDouble vVertexOffset = 0.0;
         ggDouble vVertexValue = 0.0;
-        if (GetParabolaVertex(aImage(aIndexX-1, aIndexY+vOffY),
-                              aImage(aIndexX  , aIndexY+vOffY),
-                              aImage(aIndexX+1, aIndexY+vOffY),
-                              vVertexOffset, vVertexValue, true)) {
+        if (CalculateParabolaVertex(aImage(aIndexX-1, aIndexY+vOffY),
+                                    aImage(aIndexX  , aIndexY+vOffY),
+                                    aImage(aIndexX+1, aIndexY+vOffY),
+                                    vVertexOffset, vVertexValue, true)) {
           ggDouble vWeight = 1 + vDelta * vDelta - vOffY * vOffY;
-          vVertexWeightSumX += vWeight;
-          vVertexOffsetX += vVertexOffset * vWeight;
+          vVertex.X().AddSample(aIndexX + vVertexOffset, vWeight);
           vVertexValueMax = std::max(vVertexValueMax, vVertexValue);
         }
       }
@@ -159,21 +157,19 @@ namespace ggImageAlgorithm {
       for (ggInt32 vOffX = -vDelta; vOffX <= vDelta; vOffX++) {
         ggDouble vVertexOffset = 0.0;
         ggDouble vVertexValue = 0.0;
-        if (GetParabolaVertex(aImage(aIndexX+vOffX, aIndexY-1),
-                              aImage(aIndexX+vOffX, aIndexY  ),
-                              aImage(aIndexX+vOffX, aIndexY+1),
-                              vVertexOffset, vVertexValue, true)) {
+        if (CalculateParabolaVertex(aImage(aIndexX+vOffX, aIndexY-1),
+                                    aImage(aIndexX+vOffX, aIndexY  ),
+                                    aImage(aIndexX+vOffX, aIndexY+1),
+                                    vVertexOffset, vVertexValue, true)) {
           ggDouble vWeight = 1 + vDelta * vDelta - vOffX * vOffX;
-          vVertexWeightSumY += vWeight;
-          vVertexOffsetY += vVertexOffset * vWeight;
+          vVertex.Y().AddSample(aIndexY + vVertexOffset, vWeight);
           vVertexValueMax = std::max(vVertexValueMax, vVertexValue);
         }
       }
 
-      if ((vVertexWeightSumX != 0.0) &&
-          (vVertexWeightSumY != 0.0)) {
-        aVertexX = aIndexX + vVertexOffsetX / vVertexWeightSumX;
-        aVertexY = aIndexY + vVertexOffsetY / vVertexWeightSumY;
+      if (vVertex.X().GetNumberOfSamples() > 0) {
+        aVertexX = vVertex.X().GetMean();
+        aVertexY = vVertex.Y().GetMean();
         aVertexValue = vVertexValueMax;
         return true;
       }
@@ -184,14 +180,36 @@ namespace ggImageAlgorithm {
 
 
   template <typename TValueType>
-  void InterpolateIndex(const ggImageT<TValueType>& aImage,
-                        const ggSize aIndexX,
-                        const ggSize aIndexY,
-                        ggDouble& aIndexInterpolatedX,
-                        ggDouble& aIndexInterpolatedY) {
-    if (aImage.IsInside(aIndexX - 1, aIndexY - 1) &&
-        aImage.IsInside(aIndexX + 1, aIndexX + 1)) {
-      // todo goofy: calculate center of gravity from 3x3 region
+  void CalculateCenterOfGravity(const ggImageT<TValueType>& aImage,
+                                const ggSize aCircleCenterIndexX,
+                                const ggSize aCircleCenterIndexY,
+                                const ggSize aCircleRadius,
+                                ggDouble& aCenterOfGravityX,
+                                ggDouble& aCenterOfGravityY) {
+
+    if (aImage.IsInside(aCircleCenterIndexX - aCircleRadius, aCircleCenterIndexY - aCircleRadius) &&
+        aImage.IsInside(aCircleCenterIndexX + aCircleRadius, aCircleCenterIndexX + aCircleRadius)) {
+
+      const ggDouble vCircleRadiusSquare = aCircleRadius * aCircleRadius;
+      ggVector2T<ggRunningAveragesT<ggDouble>> vCenterOfGravity;
+
+      for (ggInt32 vOffY = -aCircleRadius; vOffY <= aCircleRadius; vOffY++) {
+        for (ggInt32 vOffX = -aCircleRadius; vOffX <= aCircleRadius; vOffX++) {
+          const ggDouble vDistanceSquare = vOffX * vOffX + vOffY * vOffY;
+          if (vDistanceSquare <= vCircleRadiusSquare) {
+            const ggInt32 vIndexX = aCircleCenterIndexX + vOffX;
+            const ggInt32 vIndexY = aCircleCenterIndexY + vOffY;
+            const TValueType& vImageValue(aImage(vIndexX, vIndexY));
+            vCenterOfGravity.X().AddSample(vIndexX, vImageValue);
+            vCenterOfGravity.Y().AddSample(vIndexY, vImageValue);
+          }
+        }
+      }
+
+      if (vCenterOfGravity.X().GetNumberOfSamples() > 0) {
+        aCenterOfGravityX = vCenterOfGravity.X().GetMean();
+        aCenterOfGravityY = vCenterOfGravity.Y().GetMean();
+      }
     }
   }
 
@@ -203,25 +221,27 @@ namespace ggImageAlgorithm {
 
     std::vector<TSpotType> vLocalMaxima;
 
-    for (ggSize vIndexY = 1; vIndexY + 1 < aImage.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 1; vIndexX + 1 < aImage.GetSizeX(); vIndexX++) {
+    const ggInt32 vDelta = 1;
+
+    for (ggSize vIndexY = vDelta; vIndexY + vDelta < aImage.GetSizeY(); vIndexY++) {
+      for (ggSize vIndexX = vDelta; vIndexX + vDelta < aImage.GetSizeX(); vIndexX++) {
 
         bool vIsLocalMax = true;
-        const TValueType& aValue = aImage(vIndexX, vIndexY);
-        const ggInt32 vDelta = 1;
+        const TValueType& vImageValue = aImage(vIndexX, vIndexY);
 
         for (ggInt32 vOffY = -vDelta; (vOffY <= vDelta) && vIsLocalMax; vOffY++) {
           for (ggInt32 vOffX = -vDelta; (vOffX <= vDelta) && vIsLocalMax; vOffX++) {
             if ((vOffX != 0) || (vOffY != 0)) {
-              vIsLocalMax = vIsLocalMax && (aValue > aImage(vIndexX + vOffX, vIndexY + vOffY));
+              vIsLocalMax = vIsLocalMax && (vImageValue > aImage(vIndexX + vOffX, vIndexY + vOffY));
             }
           }
         }
 
         if (vIsLocalMax) {
           typedef typename TSpotType::tVectorType tVector;
-          TSpotType vSpot(tVector(vIndexX, vIndexY), aValue);
-          if (aInterpolatePosition) GetParabolaVertex(aImage, vIndexX, vIndexY, vSpot[0], vSpot[1], *vSpot);
+          TSpotType vSpot(tVector(vIndexX, vIndexY), vImageValue);
+          if (aInterpolatePosition) CalculateParabolaVertex(aImage, vIndexX, vIndexY, vSpot[0], vSpot[1], *vSpot);
+          // if (aInterpolatePosition) CalculateCenterOfGravity(aImage, vIndexX, vIndexY, 10, vSpot[0], vSpot[1]);
           vLocalMaxima.push_back(vSpot);
         }
       }
