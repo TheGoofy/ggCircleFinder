@@ -135,7 +135,7 @@ namespace ggImageAlgorithm {
                                TValueType& aVertexValue) {
 
     if (aImage.IsInside(aIndexX - 1, aIndexY - 1) &&
-        aImage.IsInside(aIndexX + 1, aIndexX + 1)) {
+        aImage.IsInside(aIndexX + 1, aIndexY + 1)) {
 
       ggVector2T<ggRunningAveragesT<ggDouble>> vVertex;
       ggDouble vVertexValueMax = aImage(aIndexX, aIndexY);
@@ -188,7 +188,7 @@ namespace ggImageAlgorithm {
                                 ggDouble& aCenterOfGravityY) {
 
     if (aImage.IsInside(aCircleCenterIndexX - aCircleRadius, aCircleCenterIndexY - aCircleRadius) &&
-        aImage.IsInside(aCircleCenterIndexX + aCircleRadius, aCircleCenterIndexX + aCircleRadius)) {
+        aImage.IsInside(aCircleCenterIndexX + aCircleRadius, aCircleCenterIndexY + aCircleRadius)) {
 
       const ggDouble vCircleRadiusSquare = aCircleRadius * aCircleRadius;
       ggVector2T<ggRunningAveragesT<ggDouble>> vCenterOfGravity;
@@ -226,18 +226,18 @@ namespace ggImageAlgorithm {
     for (ggSize vIndexY = vDelta; vIndexY + vDelta < aImage.GetSizeY(); vIndexY++) {
       for (ggSize vIndexX = vDelta; vIndexX + vDelta < aImage.GetSizeX(); vIndexX++) {
 
-        bool vIsLocalMax = true;
+        bool vIsLocalMaximum = true;
         const TValueType& vImageValue = aImage(vIndexX, vIndexY);
 
-        for (ggInt32 vOffY = -vDelta; (vOffY <= vDelta) && vIsLocalMax; vOffY++) {
-          for (ggInt32 vOffX = -vDelta; (vOffX <= vDelta) && vIsLocalMax; vOffX++) {
+        for (ggInt32 vOffY = -vDelta; (vOffY <= vDelta) && vIsLocalMaximum; vOffY++) {
+          for (ggInt32 vOffX = -vDelta; (vOffX <= vDelta) && vIsLocalMaximum; vOffX++) {
             if ((vOffX != 0) || (vOffY != 0)) {
-              vIsLocalMax = vIsLocalMax && (vImageValue > aImage(vIndexX + vOffX, vIndexY + vOffY));
+              vIsLocalMaximum = vIsLocalMaximum && (vImageValue > aImage(vIndexX + vOffX, vIndexY + vOffY));
             }
           }
         }
 
-        if (vIsLocalMax) {
+        if (vIsLocalMaximum) {
           typedef typename TSpotType::tVectorType tVector;
           TSpotType vSpot(tVector(vIndexX, vIndexY), vImageValue);
           if (aInterpolatePosition) CalculateParabolaVertex(aImage, vIndexX, vIndexY, vSpot[0], vSpot[1], *vSpot);
