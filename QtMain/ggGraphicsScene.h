@@ -205,15 +205,26 @@ private:
 
     QString vTextString("(" + QString::number(aCenter.x(),'f',1) + "/" + QString::number(aCenter.y(),'f',1) + ")\n"
                         "Hough: " + QString::number(aValue,'f',1));
-    QGraphicsTextItem* vText = addText(vTextString);
-    QFont vFont = vText->font();
-    vFont.setPointSizeF(11.0);
-    vText->setFlag(QGraphicsItem::ItemIgnoresTransformations);
-    vText->setFont(vFont);
-    vText->setPos(aCenter);
-    vText->setDefaultTextColor(Qt::white);
-    mCircleItems.push_back(vText);
 
+    QGraphicsTextItem* vTextItem = new QGraphicsTextItem(vTextString);
+    QFont vFont = vTextItem->font();
+    vFont.setPointSizeF(11.0);
+    vTextItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    vTextItem->setFont(vFont);
+    vTextItem->setPos(aCenter + QPointF(1,1));
+    vTextItem->setDefaultTextColor(Qt::white);
+
+    QGraphicsRectItem* vRectItem = new QGraphicsRectItem(vTextItem->boundingRect());
+    vRectItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    vRectItem->setPos(aCenter + QPointF(1,1));
+    vRectItem->setPen(Qt::NoPen);
+    vRectItem->setBrush(QColor(0,0,0,127));
+
+    addItem(vRectItem);
+    mCircleItems.push_back(vRectItem);
+
+    addItem(vTextItem);
+    mCircleItems.push_back(vTextItem);
   }
 
   tROI* mROI;
