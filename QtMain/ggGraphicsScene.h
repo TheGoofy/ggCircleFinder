@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QGraphicsScene>
+#include <QElapsedTimer>
 
 #include "LibBase/ggGeometry.h"
 #include "LibImage/ggImageT.h"
@@ -91,31 +92,34 @@ public:
                       const bool aCircleModelCenterVotesFilter,
                       const ggFloat aCircleModelCenterVotesFilterWidth,
                       const ggInt32 aCircleModelNumberOfCircles)
-  {
+  {    
+    // start a timer
+    QElapsedTimer vTimer;
+    vTimer.start();
+
     // copy ROI image & smooth (remove the noise)
-    qDebug() << "copy ROI image & smooth (remove the noise)";
     ggImageT<ggFloat> vImageCameraROI(GetROISize().width(), GetROISize().height(), 0.0f);
     mImageCamera.Copy(vImageCameraROI, GetROIPosition().x(), GetROIPosition().y());
     if (aCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, aCircleModelGaussianFilterWidth);
 
     // do gradient based hough transformation
-    qDebug() << "do gradient based hough transformation";
     ggImageT<ggFloat> vImageHough(ggImageAlgorithm::CalculateHoughImage(vImageCameraROI,
                                                                         aCircleModelDiameter,
                                                                         aCircleModelLineThickness));
 
     // smooth hough image
-    qDebug() << "smooth hough voting image";
     if (aCircleModelCenterVotesFilter) ggImageFilter::Gauss(vImageHough, aCircleModelCenterVotesFilterWidth);
 
     // detect center spots by finding all local maxima
-    qDebug() << "detect center spots by finding all local maxima";
     typedef ggSpotT<ggFloat, ggVector2Double> tSpot;
     typedef std::vector<tSpot> tSpots;
     tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima(vImageHough, true);
 
+    // stop the timer
+    ggFloat vCalculationTimeMicroSeconds = 0.001f * vTimer.nsecsElapsed();
+    QString vResults = "Calculation Time = " + QString::number(vCalculationTimeMicroSeconds) + " us\n";
+
     // convert hough image for rendering with QT
-    qDebug() << "convert hough image for rendering with QT";
     ggImageT<ggUChar> vImageUChar = vImageHough.GetConvertedFitMinMax<ggUChar>();
     std::vector<ggColorUInt8> vColorTableUInt8 = ggUtility::ColorTable();
     QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTableUInt8);
@@ -125,7 +129,7 @@ public:
     // draw the detected circles
     std::for_each(mCircleItems.begin(), mCircleItems.end(), [] (QGraphicsItem* aItem) { delete aItem; });
     mCircleItems.clear();
-    QString vResults = "Found " + QString::number(vCenterSpots.size()) + " Candidates\n";
+    vResults += "Found " + QString::number(vCenterSpots.size()) + " Candidates\n";
     ggInt32 vCenterIndexMax = std::min<ggInt32>(vCenterSpots.size() - 1, aCircleModelNumberOfCircles - 1);
     ggFloat vCenterSpotValueMax = vCenterSpots.empty() ? 0.0f : vCenterSpots.front().GetValue();
     for (ggInt32 vSpotIndex = vCenterIndexMax; vSpotIndex >= 0; vSpotIndex--) {
