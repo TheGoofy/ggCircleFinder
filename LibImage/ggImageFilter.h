@@ -103,34 +103,6 @@ namespace ggImageFilter {
   }
 
 
-  template <typename TValueType>
-  std::vector<ggSize> GetHistogram(const ggImageT<TValueType>& aImage)
-  {
-    std::vector<ggSize> vHistogram;
-    for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) {
-        ggUInt16 vValue = aImage(vIndexX, vIndexY);
-        if (vValue >= vHistogram.size()) vHistogram.resize(vValue+1, 0);
-        ++vHistogram[vValue];
-      }
-    }
-    return vHistogram;
-  }
-
-
-  template <typename TValueType, ggUInt64 TNumberOfBins = 512>
-  ggHistogramAdaptiveT<TValueType, TNumberOfBins> GetHistogram2(const ggImageT<TValueType>& aImage)
-  {
-    ggHistogramAdaptiveT<TValueType, TNumberOfBins> vHistogram;
-    for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) {
-        vHistogram.Insert(aImage(vIndexX, vIndexY));
-      }
-    }
-    return vHistogram;
-  }
-
-
   template <typename TValueType, typename TValueTypeInternal = TValueType>
   void Gauss(ggImageT<TValueType>& aImage, const ggFloat aSigma)
   {
@@ -160,19 +132,39 @@ namespace ggImageFilter {
 
 
   template <typename TValueType>
+  std::vector<ggSize> GetHistogram(const ggImageT<TValueType>& aImage)
+  {
+    std::vector<ggSize> vHistogram;
+    aImage.ProcessValues([&vHistogram] (const TValueType& aValue) {
+      if (aValue >= vHistogram.size()) vHistogram.resize(aValue + 1, 0);
+      ++vHistogram[aValue];
+    });
+    return vHistogram;
+  }
+
+
+  template <typename TValueType, ggUInt64 TNumberOfBins = 512>
+  ggHistogramAdaptiveT<TValueType, TNumberOfBins> GetHistogram2(const ggImageT<TValueType>& aImage)
+  {
+    ggHistogramAdaptiveT<TValueType, TNumberOfBins> vHistogram;
+    aImage.ProcessValues([&vHistogram] (const TValueType& aValue) {
+      vHistogram.Insert(aValue);
+    });
+    return vHistogram;
+  }
+
+
+  template <typename TValueType>
   void AddNoise(ggImageT<TValueType>& aImage, const ggFloat aSigma)
   {
     // set up random generator
     std::random_device vRandomDevice;
     std::mt19937 vEngine(vRandomDevice());
     std::normal_distribution<> vRandom(0.0f, aSigma);
-    // get iterators
-    const TValueType* vSrc = aImage.GetValues();
-    const TValueType* vSrcEnd = aImage.GetValues() + aImage.GetSizeX()*aImage.GetSizeY();
-    TValueType* vDst = aImage.GetValues();
-    while (vSrc != vSrcEnd) {
-      *vDst++ = *vSrc++ + vRandom(vEngine);
-    }
+    // add random values
+    aImage.ProcessValues([&vRandom, &vEngine] (TValueType& aValue) {
+      aValue += vRandom(vEngine);
+    });
   }
 
 
@@ -183,21 +175,40 @@ namespace ggImageFilter {
   {
     ggVector2Float vGradient(0.0f, 0.0f);
 
-    if (aImage.IsInside(aIndexX-1, aIndexY-1) &&
-        aImage.IsInside(aIndexX+1, aIndexY+1)) {
+    // scharr operator
+    vGradient.SetX( 3 * aImage(aIndexX+1, aIndexY-1) -  3 * aImage(aIndexX-1, aIndexY-1) +
+                   10 * aImage(aIndexX+1, aIndexY  ) - 10 * aImage(aIndexX-1, aIndexY  ) +
+                    3 * aImage(aIndexX+1, aIndexY+1) -  3 * aImage(aIndexX-1, aIndexY+1));
+    vGradient.SetY( 3 * aImage(aIndexX-1, aIndexY+1) -  3 * aImage(aIndexX-1, aIndexY-1) +
+                   10 * aImage(aIndexX  , aIndexY+1) - 10 * aImage(aIndexX  , aIndexY-1) +
+                    3 * aImage(aIndexX+1, aIndexY+1) -  3 * aImage(aIndexX+1, aIndexY-1));
 
-      // scharr operator
-      vGradient.SetX( 3 * aImage(aIndexX+1, aIndexY-1) -  3 * aImage(aIndexX-1, aIndexY-1) +
-                     10 * aImage(aIndexX+1, aIndexY  ) - 10 * aImage(aIndexX-1, aIndexY  ) +
-                      3 * aImage(aIndexX+1, aIndexY+1) -  3 * aImage(aIndexX-1, aIndexY+1));
-      vGradient.SetY( 3 * aImage(aIndexX-1, aIndexY+1) -  3 * aImage(aIndexX-1, aIndexY-1) +
-                     10 * aImage(aIndexX  , aIndexY+1) - 10 * aImage(aIndexX  , aIndexY-1) +
-                      3 * aImage(aIndexX+1, aIndexY+1) -  3 * aImage(aIndexX+1, aIndexY-1));
+    // normalize gradient by total operator weight
+    // the gradient then represents "value change per pixel"
+    vGradient /= 32; // 3 + 10 + 3 + 3 + 10 + 3;
 
-      // normalize gradient by total operator weight
-      // the gradient then represents "value change per pixel"
-      vGradient /= 32; // 3 + 10 + 3 + 3 + 10 + 3;
-    }
+    return vGradient;
+  }
+
+
+  template <typename TValueType>
+  ggVector2Float GradientClamp(const ggImageT<TValueType>& aImage,
+                               const ggSize aIndexX,
+                               const ggSize aIndexY)
+  {
+    ggVector2Float vGradient(0.0f, 0.0f);
+
+    // scharr operator
+    vGradient.SetX( 3 * aImage.GetClamp(aIndexX+1, aIndexY-1) -  3 * aImage.GetClamp(aIndexX-1, aIndexY-1) +
+                   10 * aImage.GetClamp(aIndexX+1, aIndexY  ) - 10 * aImage.GetClamp(aIndexX-1, aIndexY  ) +
+                    3 * aImage.GetClamp(aIndexX+1, aIndexY+1) -  3 * aImage.GetClamp(aIndexX-1, aIndexY+1));
+    vGradient.SetY( 3 * aImage.GetClamp(aIndexX-1, aIndexY+1) -  3 * aImage.GetClamp(aIndexX-1, aIndexY-1) +
+                   10 * aImage.GetClamp(aIndexX  , aIndexY+1) - 10 * aImage.GetClamp(aIndexX  , aIndexY-1) +
+                    3 * aImage.GetClamp(aIndexX+1, aIndexY+1) -  3 * aImage.GetClamp(aIndexX+1, aIndexY-1));
+
+    // normalize gradient by total operator weight
+    // the gradient then represents "value change per pixel"
+    vGradient /= 32; // 3 + 10 + 3 + 3 + 10 + 3;
 
     return vGradient;
   }
@@ -209,11 +220,13 @@ namespace ggImageFilter {
   {
     GG_ASSERT(aImageSrc.GetSizeX() == aImageDst.GetSizeX());
     GG_ASSERT(aImageSrc.GetSizeY() == aImageDst.GetSizeY());
-    for (ggSize vIndexY = 0; vIndexY < aImageSrc.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < aImageSrc.GetSizeX(); vIndexX++) {
-        aImageDst(vIndexX, vIndexY) = Gradient(aImageSrc, vIndexX, vIndexY).Length();
-      }
-    }
+    auto vFunctionGradient = [&aImageSrc, &aImageDst] (ggSize aIndexX, ggSize aIndexY) {
+      aImageDst(aIndexX, aIndexY) = Gradient(aImageSrc, aIndexX, aIndexY).Length();
+    };
+    auto vFunctionGradientClamp = [&aImageSrc, &aImageDst] (ggSize aIndexX, ggSize aIndexY) {
+      aImageDst(aIndexX, aIndexY) = GradientClamp(aImageSrc, aIndexX, aIndexY).Length();
+    };
+    aImageSrc.ProcessIndexBorder(1, vFunctionGradient, vFunctionGradientClamp);
   }
 
 
@@ -222,11 +235,13 @@ namespace ggImageFilter {
                 const ggImageT<TValueType>& aImageSrc) {
     GG_ASSERT(aImageSrc.GetSizeX() == aImageDst.GetSizeX());
     GG_ASSERT(aImageSrc.GetSizeY() == aImageDst.GetSizeY());
-    for (ggSize vIndexY = 0; vIndexY < aImageSrc.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < aImageSrc.GetSizeX(); vIndexX++) {
-        aImageDst(vIndexX, vIndexY) = Gradient(aImageSrc, vIndexX, vIndexY);
-      }
-    }
+    auto vFunctionGradient = [&aImageSrc, &aImageDst] (ggSize aIndexX, ggSize aIndexY) {
+      aImageDst(aIndexX, aIndexY) = Gradient(aImageSrc, aIndexX, aIndexY);
+    };
+    auto vFunctionGradientClamp = [&aImageSrc, &aImageDst] (ggSize aIndexX, ggSize aIndexY) {
+      aImageDst(aIndexX, aIndexY) = GradientClamp(aImageSrc, aIndexX, aIndexY);
+    };
+    aImageSrc.ProcessIndexBorder(1, vFunctionGradient, vFunctionGradientClamp);
   }
 
 

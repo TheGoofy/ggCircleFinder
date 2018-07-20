@@ -134,6 +134,17 @@ public:
     return Get(aIndex.X(), aIndex.Y());
   }
 
+  inline const TValueType& GetClamp(ggSize aIndexX, ggSize aIndexY) const {
+    return Get(Clamp<ggSize>(aIndexX, 0, GetSizeX() - 1),
+               Clamp<ggSize>(aIndexY, 0, GetSizeY() - 1));
+  }
+
+  template <typename TIndexType>
+  inline const TValueType& GetClamp(const ggVector2T<TIndexType>& aIndex) const {
+    return Get(Clamp<ggSize>(aIndex.X(), 0, GetSizeX() - 1),
+               Clamp<ggSize>(aIndex.Y(), 0, GetSizeY() - 1));
+  }
+
   inline ggImageT<TValueType>& operator = (const ggImageT<TValueType>& aOther) {
     Resize(aOther.mSizeX, aOther.mSizeY);
     std::memcpy(mValues, aOther.mValues, GetSizeTotal() * sizeof(TValueType));
@@ -194,24 +205,164 @@ public:
     }
   }
 
-  template <typename TProcessor>
-  inline void ProcessValues(TProcessor aProcessor) {
+  template <typename TValueProcessor>
+  inline void ProcessValues(TValueProcessor aValueProcessor) {
     TValueType* vValuesIterator = mValues;
     TValueType* vValuesEnd = mValues + GetSizeTotal();
     while (vValuesIterator != vValuesEnd) {
-      aProcessor(*vValuesIterator);
+      aValueProcessor(*vValuesIterator);
       ++vValuesIterator;
     }
   }
 
-  template <typename TProcessor>
-  inline void ProcessValues(TProcessor aProcessor) const {
+  template <typename TValueProcessor>
+  inline void ProcessValues(TValueProcessor aValueProcessor) const {
     const TValueType* vValuesIterator = mValues;
     const TValueType* vValuesEnd = mValues + GetSizeTotal();
     while (vValuesIterator != vValuesEnd) {
-      aProcessor(*vValuesIterator);
+      aValueProcessor(*vValuesIterator);
       ++vValuesIterator;
     }
+  }
+
+  template <typename TIndexProcessor>
+  inline void ProcessIndex(TIndexProcessor aIndexProcessor) const {
+    for (ggSize vIndexY = 0; vIndexY < GetSizeX(); vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < GetSizeY(); vIndexX++) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+    }
+  }
+
+  template <typename TIndexProcessor>
+  inline void ProcessIndexRangeInside(ggSize aIndexBeginX, ggSize aIndexBeginY,
+                                      ggSize aIndexEndX, ggSize aIndexEndY,
+                                      TIndexProcessor aIndexProcessor) const {
+    aIndexBeginX = Clamp<ggSize>(aIndexBeginX, 0, GetSizeX());
+    aIndexBeginY = Clamp<ggSize>(aIndexBeginY, 0, GetSizeY());
+    aIndexEndX = Clamp<ggSize>(aIndexEndX, 0, GetSizeX());
+    aIndexEndY = Clamp<ggSize>(aIndexEndY, 0, GetSizeY());
+    for (ggSize vIndexY = aIndexBeginY; vIndexY < aIndexEndY; vIndexY++) {
+      for (ggSize vIndexX = aIndexBeginX; vIndexX < aIndexEndX; vIndexX++) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+    }
+  }
+
+  template <typename TIndexType, typename TIndexProcessor>
+  inline void ProcessIndexRangeInside(const ggVector2T<TIndexType>& aIndexBegin,
+                                      const ggVector2T<TIndexType>& aIndexEnd,
+                                      TIndexProcessor aIndexProcessor) const {
+    ProcessIndexRangeInside(aIndexBegin.X(), aIndexBegin.Y(),
+                      aIndexEnd.X(), aIndexEnd.Y(),
+                      aIndexProcessor);
+  }
+
+  template <typename TIndexProcessor>
+  inline void ProcessIndexRangeOutside(ggSize aIndexBeginX, ggSize aIndexBeginY,
+                                       ggSize aIndexEndX, ggSize aIndexEndY,
+                                       TIndexProcessor aIndexProcessor) const {
+    aIndexBeginX = Clamp<ggSize>(aIndexBeginX, 0, GetSizeX());
+    aIndexBeginY = Clamp<ggSize>(aIndexBeginY, 0, GetSizeY());
+    aIndexEndX = Clamp<ggSize>(aIndexEndX, 0, GetSizeX());
+    aIndexEndY = Clamp<ggSize>(aIndexEndY, 0, GetSizeY());
+    for (ggSize vIndexY = 0; vIndexY < aIndexBeginY; vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+    }
+    for (ggSize vIndexY = aIndexBeginY; vIndexY < aIndexEndY; vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < aIndexBeginX; vIndexX++) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+      for (ggSize vIndexX = aIndexEndX; vIndexX < GetSizeX(); vIndexX++) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+    }
+    for (ggSize vIndexY = aIndexEndY; vIndexY < GetSizeY(); vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+    }
+  }
+
+  template <typename TIndexType, typename TIndexProcessor>
+  inline void ProcessIndexRangeOutside(const ggVector2T<TIndexType>& aIndexBegin,
+                                       const ggVector2T<TIndexType>& aIndexEnd,
+                                       TIndexProcessor aIndexProcessor) const {
+    ProcessIndexRangeOutside(aIndexBegin.X(), aIndexBegin.Y(),
+                             aIndexEnd.X(), aIndexEnd.Y(),
+                             aIndexProcessor);
+  }
+
+  template <typename TIndexProcessorInside, typename TIndexProcessorOutside>
+  inline void ProcessIndexRange(ggSize aIndexBeginX, ggSize aIndexBeginY,
+                                ggSize aIndexEndX, ggSize aIndexEndY,
+                                TIndexProcessorInside aIndexProcessorInside,
+                                TIndexProcessorOutside aIndexProcessorOutside) const {
+    aIndexBeginX = Clamp<ggSize>(aIndexBeginX, 0, GetSizeX());
+    aIndexBeginY = Clamp<ggSize>(aIndexBeginY, 0, GetSizeY());
+    aIndexEndX = Clamp<ggSize>(aIndexEndX, 0, GetSizeX());
+    aIndexEndY = Clamp<ggSize>(aIndexEndY, 0, GetSizeY());
+    for (ggSize vIndexY = 0; vIndexY < aIndexBeginY; vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
+        aIndexProcessorOutside(vIndexX, vIndexY);
+      }
+    }
+    for (ggSize vIndexY = aIndexBeginY; vIndexY < aIndexEndY; vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < aIndexBeginX; vIndexX++) {
+        aIndexProcessorOutside(vIndexX, vIndexY);
+      }
+      for (ggSize vIndexX = aIndexBeginX; vIndexX < aIndexEndX; vIndexX++) {
+        aIndexProcessorInside(vIndexX, vIndexY);
+      }
+      for (ggSize vIndexX = aIndexEndX; vIndexX < GetSizeX(); vIndexX++) {
+        aIndexProcessorOutside(vIndexX, vIndexY);
+      }
+    }
+    for (ggSize vIndexY = aIndexEndY; vIndexY < GetSizeY(); vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
+        aIndexProcessorOutside(vIndexX, vIndexY);
+      }
+    }
+  }
+
+  template <typename TIndexType, typename TIndexProcessorInside, typename TIndexProcessorOutside>
+  inline void ProcessIndexRange(const ggVector2T<TIndexType>& aIndexBegin,
+                                const ggVector2T<TIndexType>& aIndexEnd,
+                                TIndexProcessorInside aIndexProcessorInside,
+                                TIndexProcessorOutside aIndexProcessorOutside) const {
+
+    ProcessIndexRange(aIndexBegin.X(), aIndexBegin.Y(),
+                      aIndexEnd.X(), aIndexEnd.Y(),
+                      aIndexProcessorInside,
+                      aIndexProcessorOutside);
+  }
+
+  template <typename TIndexProcessor>
+  inline void ProcessIndexBorderInside(ggSize aBorderSize,
+                                       TIndexProcessor aIndexProcessor) const {
+    ProcessIndexRangeInside(aBorderSize, aBorderSize,
+                      GetSizeX() - aBorderSize, GetSizeY() - aBorderSize,
+                      aIndexProcessor);
+  }
+
+  template <typename TIndexProcessor>
+  inline void ProcessIndexBorderOutside(ggSize aBorderSize,
+                                        TIndexProcessor aIndexProcessor) const {
+    ProcessIndexRangeOutside(aBorderSize, aBorderSize,
+                             GetSizeX() - aBorderSize, GetSizeY() - aBorderSize,
+                             aIndexProcessor);
+  }
+
+  template <typename TIndexProcessorInside, typename TIndexProcessorOutside>
+  inline void ProcessIndexBorder(ggSize aBorderSize,
+                                 TIndexProcessorInside aIndexProcessorInside,
+                                 TIndexProcessorOutside aIndexProcessorOutside) const {
+    ProcessIndexRange(aBorderSize, aBorderSize,
+                      GetSizeX() - aBorderSize, GetSizeY() - aBorderSize,
+                      aIndexProcessorInside,
+                      aIndexProcessorOutside);
   }
 
   const TValueType& GetMin() const {
@@ -309,7 +460,7 @@ public:
 private:
 
   template <typename T>
-  inline T Clamp(const T& aValue, const T& aValueMin, const T& aValueMax) {
+  inline static T Clamp(const T& aValue, const T& aValueMin, const T& aValueMax) {
     return aValue < aValueMin ? aValueMin : (aValue > aValueMax ? aValueMax : aValue);
   }
 

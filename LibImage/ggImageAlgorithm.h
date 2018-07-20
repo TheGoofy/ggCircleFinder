@@ -1,6 +1,7 @@
 #ifndef GGIMAGEALGORITHM_H
 #define GGIMAGEALGORITHM_H
 
+#include <algorithm>
 
 #include "LibBase/ggSpotT.h"
 #include "LibBase/ggRunningAverages.h"
@@ -32,9 +33,35 @@ namespace ggImageAlgorithm {
 
 
   template <typename TValueType>
-  ggImageT<TValueType> CalculateHoughImage(const ggImageT<TValueType>& aImage,
-                                           const ggFloat aCircleModelDiameter,
-                                           const ggFloat aCircleModelLineThickness)
+  void Clamp(ggImageT<TValueType>& aImage,
+             const TValueType& aValueMin,
+             const TValueType& aValueMax) {
+    aImage.ProcessValues([aValueMin, aValueMax] (TValueType& aValue) {
+      aValue = aValue < aValueMin ? aValueMin : (aValueMax < aValue ? aValueMax : aValue);
+    });
+  }
+
+
+  template <typename TValueType, typename TValueIsComponent>
+  ggImageT<ggUInt32> CalculateConnectedComponents(const ggImageT<TValueType>& aImage,
+                                                  TValueIsComponent aValueIsComponent)
+  {
+    ggImageT<ggUInt32> vImageConnectedComponents(aImage.GetSize(), 0);
+    for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) {
+        if (aValueIsComponent(aImage(vIndexX, vIndexY))) {
+
+        }
+      }
+    }
+    return vImageConnectedComponents;
+  }
+
+
+  template <typename TValueType>
+  ggImageT<ggFloat> CalculateHoughImage(const ggImageT<TValueType>& aImage,
+                                        const ggFloat aCircleModelDiameter,
+                                        const ggFloat aCircleModelLineThickness)
   {
     // calculate gradient vector field
     ggImageT<ggVector2Float> vGradientVectorField(aImage.GetSize());
