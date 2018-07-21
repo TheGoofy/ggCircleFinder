@@ -183,11 +183,9 @@ void MainWindow::on_mGenerateImagePushButton_clicked()
   if (vCameraImageSizeX == 0) return;
   if (vCameraImageSizeY == 0) return;
 
-  ggImageT<ggFloat> vImageFloat(vCameraImageSizeX, vCameraImageSizeY);
+  // prepare an empty image for painting
+  ggImageT<ggFloat> vImageFloat(vCameraImageSizeX, vCameraImageSizeY, 0.0f);
   ggImagePainterT<ggFloat> vImagePainter(vImageFloat);
-
-  // init image
-  vImageFloat = 0.0f;
 
   // draw a circle
   ggVector2Double vCenter(vCircleCenterX, vCircleCenterY);
@@ -244,10 +242,6 @@ void MainWindow::on_mLoadImagePushButton_clicked()
 void MainWindow::on_mFindCirclesPushButton_clicked()
 {
   // read parameters from GUI
-  const ggVector2Float vOriginalCircleCenter(UI().mCircleCenterXLineEdit->text().toFloat(),
-                                             UI().mCircleCenterYLineEdit->text().toFloat());
-  const ggFloat vOriginalCircleDiameter = UI().mCircleDiameterLineEdit->text().toFloat();
-  const ggFloat vCircleThickness = UI().mCircleLineThicknessLineEdit->text().toFloat();
   const bool vCircleModelGaussianFilter = UI().mCircleModelGaussianFilterCheckBox->isChecked();
   const ggFloat vCircleModelGaussianFilterWidth = UI().mCircleModelGaussianFilterWidthLineEdit->text().toFloat();
   const ggFloat vCircleModelDiameter = UI().mCircleModelDiameterLineEdit->text().toFloat();
