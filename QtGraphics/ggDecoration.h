@@ -34,14 +34,14 @@ public:
   ggDecoration();
 
   ggDecoration(cType aType,
-               float aLength = 12.0f,
+               double aLength = 12.0,
                cFill aFill = cFill::eSolid);
 
   void SetType(cType aType);
   cType GetType() const;
 
-  void SetLength(float aLength);
-  float GetLength() const;
+  void SetLength(double aLength);
+  double GetLength() const;
 
   void SetFill(cFill aFill);
   cFill GetFill() const;
@@ -49,7 +49,7 @@ public:
   bool GetFillSolid() const;
 
   void Set(cType aType,
-           float aLength = 12.0f,
+           double aLength = 12.0,
            cFill aFill = cFill::eSolid);
 
   typedef std::vector<cType> tTypes;
@@ -58,7 +58,7 @@ public:
 private:
 
   cType mType;
-  float mLength;
+  double mLength;
   cFill mFill;
 
 };

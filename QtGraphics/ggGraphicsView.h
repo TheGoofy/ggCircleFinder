@@ -23,7 +23,7 @@ public:
 
   explicit ggGraphicsView(QWidget* aParent = nullptr);
 
-  ggSubjectFloat* GetSubjectZoom();
+  ggSubjectDouble* GetSubjectZoom();
   void SetZoomReset();
   void SetZoomFit();
 
@@ -42,11 +42,11 @@ protected:
 private:
 
   void NotifyZoom();
-  float GetSceneScale() const;
-  void SetSceneScale(float aSceneScale);
+  qreal GetSceneScale() const;
+  void SetSceneScale(qreal aSceneScale);
   QPoint ToPoint(const QSize& aSize) const;
 
-  ggSubjectFloat mSubjectZoom;
+  ggSubjectDouble mSubjectZoom;
 
   bool mMouseDrag;
   QPoint mMouseDragStartPos;

@@ -13,9 +13,9 @@
 
 ggColorWheelWidget::ggColorWheelWidget(QWidget* aParent) :
   QWidget(aParent),
-  mColorValue(0.0f),
+  mColorValue(0.0),
   mAdaptToValue(false),
-  mSelectorRadius(3.0f),
+  mSelectorRadius(3.0),
   mMouseDragging(false)
 {
   setMouseTracking(true);
@@ -27,7 +27,7 @@ ggColorWheelWidget::ggColorWheelWidget(QWidget* aParent) :
 void ggColorWheelWidget::SetColor(const QColor& aColor)
 {
   // calculate saturized color and brightness
-  float vColorValue = aColor.valueF();
+  qreal vColorValue = aColor.valueF();
   QColor vColorSaturized = ggUtilityQt::GetColorSaturized(aColor);
 
   // update colors, if changed
@@ -66,24 +66,24 @@ bool ggColorWheelWidget::GetAdaptToValue() const
 
 void ggColorWheelWidget::UpdateCornerColors()
 {
-  float vVal = mAdaptToValue ? mColorValue : 1.0f;
-  mColorR = QColor::fromRgbF(vVal, 0.0f, 0.0f); // red
-  mColorY = QColor::fromRgbF(vVal, vVal, 0.0f); // yellow
-  mColorG = QColor::fromRgbF(0.0f, vVal, 0.0f); // green
-  mColorC = QColor::fromRgbF(0.0f, vVal, vVal); // cyan
-  mColorB = QColor::fromRgbF(0.0f, 0.0f, vVal); // blue
-  mColorM = QColor::fromRgbF(vVal, 0.0f, vVal); // magenta
+  qreal vVal = mAdaptToValue ? mColorValue : 1.0;
+  mColorR = QColor::fromRgbF(vVal,  0.0,  0.0); // red
+  mColorY = QColor::fromRgbF(vVal, vVal,  0.0); // yellow
+  mColorG = QColor::fromRgbF( 0.0, vVal,  0.0); // green
+  mColorC = QColor::fromRgbF( 0.0, vVal, vVal); // cyan
+  mColorB = QColor::fromRgbF( 0.0,  0.0, vVal); // blue
+  mColorM = QColor::fromRgbF(vVal,  0.0, vVal); // magenta
 }
 
 
-QPointF GetPosition(float aScale, float aColorA, float aColorB,
-                    const QPointF& aPosition,
-                    const QVector2D& aDirectionA,
-                    const QVector2D& aDirectionB)
+static QPointF GetPosition(qreal aScale, qreal aColorA, qreal aColorB,
+                           const QPointF& aPosition,
+                           const QVector2D& aDirectionA,
+                           const QVector2D& aDirectionB)
 {
-  if (aScale != 0.0f) {
-    float vFactorA = 1.0f - aColorA / aScale;
-    float vFactorB = 1.0f - aColorB / aScale;
+  if (aScale != 0.0) {
+    float vFactorA = static_cast<float>(1.0 - aColorA / aScale);
+    float vFactorB = static_cast<float>(1.0 - aColorB / aScale);
     return aPosition - (vFactorA * aDirectionA).toPointF()
                      - (vFactorB * aDirectionB).toPointF();
   }
@@ -108,16 +108,16 @@ QPointF ggColorWheelWidget::GetPosition(const QColor& aColor) const
 }
 
 
-void GetFactors(const QVector2D& aDirectionA,
-                const QVector2D& aDirectionB,
-                const QVector2D& aPosition,
-                float& aFactorA,
-                float& aFactorB)
+static void GetFactors(const QVector2D& aDirectionA,
+                       const QVector2D& aDirectionB,
+                       const QVector2D& aPosition,
+                       qreal& aFactorA,
+                       qreal& aFactorB)
 {
   float vArea = aDirectionA.x() * aDirectionB.y() - aDirectionA.y() * aDirectionB.x();
   if (vArea != 0.0f) {
-    aFactorA = (aDirectionB.y() * aPosition.x() - aDirectionB.x() * aPosition.y()) / vArea;
-    aFactorB = (aDirectionA.x() * aPosition.y() - aDirectionA.y() * aPosition.x()) / vArea;
+    aFactorA = static_cast<qreal>((aDirectionB.y() * aPosition.x() - aDirectionB.x() * aPosition.y()) / vArea);
+    aFactorB = static_cast<qreal>((aDirectionA.x() * aPosition.y() - aDirectionA.y() * aPosition.x()) / vArea);
   }
 }
 
@@ -172,18 +172,18 @@ QPointF ggColorWheelWidget::ClampPosition(const QPointF& aPosition) const
 QColor ggColorWheelWidget::GetColorSaturized(const QPointF& aPosition) const
 {
   QVector2D vDir(ClampPosition(aPosition) - mPosCenter);
-  float vScaleR1 = 0.0f; float vScaleR2 = 0.0f;
-  float vScaleG1 = 0.0f; float vScaleG2 = 0.0f;
-  float vScaleB1 = 0.0f; float vScaleB2 = 0.0f;
+  qreal vScaleR1 = 0.0; qreal vScaleR2 = 0.0;
+  qreal vScaleG1 = 0.0; qreal vScaleG2 = 0.0;
+  qreal vScaleB1 = 0.0; qreal vScaleB2 = 0.0;
   GetFactors(mDirR, mDirG, vDir, vScaleR1, vScaleG2);
   GetFactors(mDirG, mDirB, vDir, vScaleG1, vScaleB2);
   GetFactors(mDirB, mDirR, vDir, vScaleB1, vScaleR2);
-  float vColorR = 1.0f + ggUtility::Min(vScaleR1, vScaleR2);
-  float vColorG = 1.0f + ggUtility::Min(vScaleG1, vScaleG2);
-  float vColorB = 1.0f + ggUtility::Min(vScaleB1, vScaleB2);
-  return QColor::fromRgbF(ggUtility::Clamp(vColorR, 0.0f, 1.0f),
-                          ggUtility::Clamp(vColorG, 0.0f, 1.0f),
-                          ggUtility::Clamp(vColorB, 0.0f, 1.0f),
+  qreal vColorR = 1.0 + ggUtility::Min(vScaleR1, vScaleR2);
+  qreal vColorG = 1.0 + ggUtility::Min(vScaleG1, vScaleG2);
+  qreal vColorB = 1.0 + ggUtility::Min(vScaleB1, vScaleB2);
+  return QColor::fromRgbF(ggUtility::Clamp(vColorR, 0.0, 1.0),
+                          ggUtility::Clamp(vColorG, 0.0, 1.0),
+                          ggUtility::Clamp(vColorB, 0.0, 1.0),
                           mColorSaturized.alphaF());
 }
 
@@ -218,7 +218,7 @@ bool ggColorWheelWidget::hasHeightForWidth() const
 int ggColorWheelWidget::heightForWidth(int aWidth) const
 {
   const float vRatio = sqrt(3.0f) / 2.0f;
-  return vRatio * aWidth;
+  return static_cast<int>(vRatio * aWidth);
 }
 
 
@@ -360,8 +360,8 @@ QBrush GetGradientBrush(const QPointF& aPosition,
 
   // setup gradient
   QLinearGradient vGradient(aPosition, aPosition + vDirectionBN.toPointF());
-  vGradient.setColorAt(0.0f, aColorA);
-  vGradient.setColorAt(1.0f, aColorB);
+  vGradient.setColorAt(0.0, aColorA);
+  vGradient.setColorAt(1.0, aColorB);
 
   // return the gratent brush
   return QBrush(vGradient);
@@ -396,15 +396,15 @@ void DrawGradientRhomb(QPainter& aPainter,
 }
 
 
-void DrawLine(QPainter& aPainter,
-              const QPointF& aPosition,
-              const QVector2D& aDirection,
-              float aOffset,
-              float aLength)
+static void DrawLine(QPainter& aPainter,
+                     const QPointF& aPosition,
+                     const QVector2D& aDirection,
+                     qreal aOffset,
+                     qreal aLength)
 {
   QVector2D vDirection(aDirection.normalized());
-  aPainter.drawLine(aPosition + (aOffset*vDirection).toPointF(),
-                    aPosition + ((aOffset+aLength)*vDirection).toPointF());
+  aPainter.drawLine(aPosition + (static_cast<float>(aOffset)*vDirection).toPointF(),
+                    aPosition + (static_cast<float>(aOffset+aLength)*vDirection).toPointF());
 }
 
 
@@ -427,18 +427,18 @@ void ggColorWheelWidget::paintEvent(QPaintEvent* aEvent)
   DrawPolygon(vPainter, mPosCenter, mDirR, mDirY, mDirG, mDirC, mDirB, mDirM);
 
   // indicator of selected color
-  const float vSelectorRadiusLarge = 9.0f;
-  const float vRadius = mMouseDragging ? vSelectorRadiusLarge : mSelectorRadius;
-  vPainter.setPen(QPen(Qt::white, 1.5f));
-  vPainter.drawEllipse(mColorPosition, vRadius + 1.0f, vRadius + 1.0f);
+  const qreal vSelectorRadiusLarge = 9.0;
+  const qreal vRadius = mMouseDragging ? vSelectorRadiusLarge : mSelectorRadius;
+  vPainter.setPen(QPen(Qt::white, 1.5));
+  vPainter.drawEllipse(mColorPosition, vRadius + 1.0, vRadius + 1.0);
   vPainter.setPen(Qt::black);
   vPainter.setBrush(GetColor());
   vPainter.drawEllipse(mColorPosition, vRadius, vRadius);
 
   // center crosshair
   vPainter.setPen(ggUtilityQt::GetColorContrast(GetColorFromWheel(mPosCenter)));
-  float vOffset = mSelectorRadius;
-  float vLength = vSelectorRadiusLarge - mSelectorRadius - 2.5f;
+  qreal vOffset = mSelectorRadius;
+  qreal vLength = vSelectorRadiusLarge - mSelectorRadius - 2.5;
   DrawLine(vPainter, mPosCenter, mDirR, vOffset, vLength);
   DrawLine(vPainter, mPosCenter, mDirG, vOffset, vLength);
   DrawLine(vPainter, mPosCenter, mDirB, vOffset, vLength);

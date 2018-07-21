@@ -20,15 +20,15 @@ class ggGraphicsConnectionPointItem :
 
 public:
 
-  ggGraphicsConnectionPointItem(float aSize = 11.0f,
+  ggGraphicsConnectionPointItem(qreal aSize = 11.0,
                                 QGraphicsItem* aParent = nullptr);
 
-  void SetSize(float aSize);
-  float GetSize() const;
+  void SetSize(qreal aSize);
+  qreal GetSize() const;
 
   void SetPointPosition(const QPointF& aPosition);
 
-  void SetPointDirection(float aAngle);
+  void SetPointDirection(qreal aAngle);
   void SetPointDirection(const QVector2D& aDirection);
   void SetPointDirectionRight();
   void SetPointDirectionLeft();

@@ -34,11 +34,11 @@ public:
   void InsertPointsDst(const tPointSet& aPoints);
 
   void SetDecorationSrc(ggDecoration::cType aType,
-                        float aLength = 12.0f,
+                        qreal aLength = 12.0,
                         ggDecoration::cFill aFill = ggDecoration::cFill::eSolid);
 
   void SetDecorationDst(ggDecoration::cType aType,
-                        float aLength = 12.0f,
+                        qreal aLength = 12.0,
                         ggDecoration::cFill aFill = ggDecoration::cFill::eSolid);
 
 protected:
@@ -50,7 +50,7 @@ private:
   void Attach(const tPointSet& aPoints);
   void Detach(const tPointSet& aPoints);
 
-  float GetDistanceCost(const ggConnectionPoint& aPointSrc,
+  qreal GetDistanceCost(const ggConnectionPoint& aPointSrc,
                         const ggConnectionPoint& aPointDst) const;
 
   void RebuildPath();

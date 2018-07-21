@@ -10,8 +10,8 @@
 
 ggGraphicsShadowRectItem::ggGraphicsShadowRectItem(QGraphicsItem* aParent) :
   QGraphicsRectItem(aParent),
-  mRadius(1.0f),
-  mWidth(1.0f),
+  mRadius(1.0),
+  mWidth(1.0),
   mOuterColor(Qt::black)
 {
 }
@@ -27,13 +27,13 @@ ggGraphicsShadowRectItem::ggGraphicsShadowRectItem(const QRectF& aInnerRect, qre
 }
 
 
-float ggGraphicsShadowRectItem::GetRadius() const
+qreal ggGraphicsShadowRectItem::GetRadius() const
 {
   return mRadius;
 }
 
 
-void ggGraphicsShadowRectItem::SetRadius(float aRadius)
+void ggGraphicsShadowRectItem::SetRadius(qreal aRadius)
 {
   if (aRadius != mRadius) {
     mRadius = aRadius;
@@ -42,13 +42,13 @@ void ggGraphicsShadowRectItem::SetRadius(float aRadius)
 }
 
 
-float ggGraphicsShadowRectItem::GetShadowWidth() const
+qreal ggGraphicsShadowRectItem::GetShadowWidth() const
 {
   return mWidth;
 }
 
 
-void ggGraphicsShadowRectItem::SetShadowWidth(float aWidth)
+void ggGraphicsShadowRectItem::SetShadowWidth(qreal aWidth)
 {
   if (aWidth != mWidth) {
     mWidth = aWidth;
@@ -101,9 +101,9 @@ void ggGraphicsShadowRectItem::paint(QPainter* aPainter,
 
   // adjust radius, if rect too small
   qreal vRadius = mRadius;
-  if (vRadius > 2.0f * rect().width()) vRadius = rect().width() / 2.0f;
-  if (vRadius > 2.0f * rect().height()) vRadius = rect().height() / 2.0f;
-  qreal vDiameter = 2.0f * vRadius;
+  if (vRadius > 2.0 * rect().width()) vRadius = rect().width() / 2.0;
+  if (vRadius > 2.0 * rect().height()) vRadius = rect().height() / 2.0;
+  qreal vDiameter = 2.0 * vRadius;
 
   // inner and rectangle dimensions
   const QRectF& vRect(rect());
@@ -148,19 +148,19 @@ void ggGraphicsShadowRectItem::paint(QPainter* aPainter,
 
 qreal ggGraphicsShadowRectItem::GetGradientMiddle() const
 {
-  if ((mRadius > 0.0f) && (mWidth > 0.0f) && (mRadius >= mWidth)) {
+  if ((mRadius > 0.0) && (mWidth > 0.0) && (mRadius >= mWidth)) {
     return (mRadius - mWidth) / mRadius;
   }
-  return 0.999f;
+  return 0.999;
 }
 
 
 QBrush ggGraphicsShadowRectItem::GetLinearBrush(qreal aX1, qreal aY1, qreal aX2, qreal aY2) const
 {
   QLinearGradient vGradient(aX1, aY1, aX2, aY2);
-  vGradient.setColorAt(0.0f, brush().color());
+  vGradient.setColorAt(0.0, brush().color());
   vGradient.setColorAt(GetGradientMiddle(), brush().color());
-  vGradient.setColorAt(1.0f, mOuterColor);
+  vGradient.setColorAt(1.0, mOuterColor);
   return vGradient;
 }
 
@@ -168,8 +168,8 @@ QBrush ggGraphicsShadowRectItem::GetLinearBrush(qreal aX1, qreal aY1, qreal aX2,
 QBrush ggGraphicsShadowRectItem::GetRadialBrush(const QPointF& aCenter, qreal aRadius) const
 {
   QRadialGradient vGradient(aCenter, aRadius);
-  vGradient.setColorAt(0.0f, brush().color());
+  vGradient.setColorAt(0.0, brush().color());
   vGradient.setColorAt(GetGradientMiddle(), brush().color());
-  vGradient.setColorAt(1.0f, mOuterColor);
+  vGradient.setColorAt(1.0, mOuterColor);
   return vGradient;
 }

@@ -8,8 +8,8 @@
 
 
 ggConnectionPoint::ggConnectionPoint() :
-  mPosition(0.0f, 0.0f),
-  mDirection(1.0f, 0.0f)
+  mPosition(0.0, 0.0),
+  mDirection(1.0, 0.0)
 {
 }
 
@@ -38,23 +38,23 @@ const QVector2D& ggConnectionPoint::GetDirection() const
 }
 
 
-float ggConnectionPoint::GetDirectionAngle() const
+qreal ggConnectionPoint::GetDirectionAngle() const
 {
-  if (mDirection.isNull()) return 0.0f;
+  if (mDirection.isNull()) return 0.0;
   return atan2(mDirection.y(), mDirection.x());
 }
 
 
-void ggConnectionPoint::SetDirectionAngle(float aAngle)
+void ggConnectionPoint::SetDirectionAngle(qreal aAngle)
 {
-  mDirection.setX(cos(aAngle));
-  mDirection.setY(sin(aAngle));
+  mDirection.setX(static_cast<float>(cos(aAngle)));
+  mDirection.setY(static_cast<float>(sin(aAngle)));
 }
 
 
 void ggConnectionPoint::SetDirectionRight()
 {
-  SetDirectionAngle(0.0f);
+  SetDirectionAngle(0.0);
 }
 
 
@@ -76,9 +76,9 @@ void ggConnectionPoint::SetDirectionDown()
 }
 
 
-QPointF ggConnectionPoint::GetControlPoint(float aDistance) const
+QPointF ggConnectionPoint::GetControlPoint(qreal aDistance) const
 {
   QPointF vControlPoint(mPosition);
-  vControlPoint += (aDistance * mDirection).toPointF();
+  vControlPoint += (static_cast<float>(aDistance) * mDirection).toPointF();
   return vControlPoint;
 }

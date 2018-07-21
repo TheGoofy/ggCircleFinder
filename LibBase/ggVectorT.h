@@ -1,12 +1,14 @@
 #ifndef GGVECTORT_H
 #define GGVECTORT_H
 
-#include "ggAssert.h"
 #include <math.h>
+
+#include "ggAssert.h"
+#include "ggTypes.h"
 
 
 template <class TValueType,
-          unsigned int TDimensions>
+          ggUSize TDimensions>
 class ggVectorT
 {
 public:
@@ -14,24 +16,24 @@ public:
   typedef TValueType tValueType;
   typedef TValueType value_type;
 
-  inline static unsigned int GetDimensions() {
+  inline static ggUSize GetDimensions() {
     return TDimensions;
   }
 
   inline ggVectorT() {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       mValues[vDimension] = TValueType();
     }
   }
 
   inline ggVectorT(const ggVectorT& aOther) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       mValues[vDimension] = aOther.mValues[vDimension];
     }
   }
 
   inline ggVectorT& operator = (const  ggVectorT& aOther) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       mValues[vDimension] = aOther.mValues[vDimension];
     }
     return *this;
@@ -40,7 +42,7 @@ public:
   template <typename TValueTypeConverted>
   inline ggVectorT<TValueTypeConverted, TDimensions> GetConverted() const {
     ggVectorT<TValueTypeConverted, TDimensions> vVectorConverted;
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       vVectorConverted[vDimension] = mValues[vDimension];
     }
     return vVectorConverted;
@@ -48,58 +50,58 @@ public:
 
   template <typename TValueTypeOther>
   inline void SetConverted(const ggVectorT<TValueTypeOther, TDimensions>& aOther) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       mValues[vDimension] = aOther[vDimension];
     }
   }
 
-  template <unsigned int TAdaptedDimensions>
+  template <ggUSize TAdaptedDimensions>
   inline ggVectorT<TValueType, TAdaptedDimensions> GetAdaped() const {
     ggVectorT<TValueType, TAdaptedDimensions> vAdapted;
-    for (unsigned int vDimension = 0; vDimension < vAdapted.GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < vAdapted.GetDimensions(); vDimension++) {
       vAdapted[vDimension] = vDimension < GetDimensions() ? mValues[vDimension] : TValueType();
     }
     return vAdapted;
   }
 
-  template <unsigned int TAdaptedDimensions>
+  template <ggUSize TAdaptedDimensions>
   inline void SetAdaped(const ggVectorT<TValueType, TAdaptedDimensions>& aOther) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       mValues[vDimension] = vDimension < aOther.GetDimensions() ? aOther[vDimension] : TValueType();
     }
   }
 
-  inline TValueType& operator [] (unsigned int aDimension) {
+  inline TValueType& operator [] (ggUSize aDimension) {
     GG_ASSERT(aDimension < GetDimensions());
     return mValues[aDimension];
   }
 
-  inline const TValueType& operator [] (unsigned int aDimension) const {
+  inline const TValueType& operator [] (ggUSize aDimension) const {
     GG_ASSERT(aDimension < GetDimensions());
     return mValues[aDimension];
   }
 
-  inline TValueType& Get(unsigned int aDimension) {
+  inline TValueType& Get(ggUSize aDimension) {
     return operator [] (aDimension);
   }
 
-  inline const TValueType& Get(unsigned int aDimension) const {
+  inline const TValueType& Get(ggUSize aDimension) const {
     return operator [] (aDimension);
   }
 
-  inline void Set(unsigned int aDimension, const TValueType& aValue) {
+  inline void Set(ggUSize aDimension, const TValueType& aValue) {
     operator [] (aDimension) = aValue;
   }
 
   inline bool operator == (const ggVectorT& aOther) const {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       if (!(mValues[vDimension] == aOther.mValues[vDimension])) return false;
     }
     return true;
   }
 
   inline bool operator != (const ggVectorT& aOther) const {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       if (mValues[vDimension] != aOther.mValues[vDimension]) return true;
     }
     return false;
@@ -107,7 +109,7 @@ public:
 
   template <typename TOtherVector>
   inline ggVectorT& operator += (const TOtherVector& aOther) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       (*this)[vDimension] += aOther[vDimension];
     }
     return *this;
@@ -115,7 +117,7 @@ public:
 
   template <typename TOtherVector>
   inline ggVectorT& operator -= (const TOtherVector& aOther) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       (*this)[vDimension] -= aOther[vDimension];
     }
     return *this;
@@ -123,7 +125,7 @@ public:
 
   template <typename TScalarType>
   inline ggVectorT& operator *= (const TScalarType& aScalar) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       (*this)[vDimension] *= aScalar;
     }
     return *this;
@@ -131,7 +133,7 @@ public:
 
   template <typename TScalarType>
   inline ggVectorT& operator /= (const TScalarType& aScalar) {
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       (*this)[vDimension] /= aScalar;
     }
     return *this;
@@ -165,7 +167,7 @@ public:
 
   inline TValueType Dot(const ggVectorT& aOther) const {
     TValueType vResult = 0;
-    for (unsigned int vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       vResult += mValues[vDimension] * aOther.mValues[vDimension];
     }
     return vResult;
@@ -192,7 +194,7 @@ public:
 
   inline const TValueType& Max() const {
     const TValueType& vMaxValue = mValues[0];
-    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
       if (vMaxValue < mValues[vDimension]) vMaxValue = mValues[vDimension];
     }
     return vMaxValue;
@@ -200,16 +202,16 @@ public:
 
   inline const TValueType& Min() const {
     const TValueType& vMinValue = mValues[0];
-    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
       if (vMinValue > mValues[vDimension]) vMinValue = mValues[vDimension];
     }
     return vMinValue;
   }
 
-  inline unsigned int MaxDimension() const {
-    unsigned int vMaxDimension = 0;
+  inline ggUSize MaxDimension() const {
+    ggUSize vMaxDimension = 0;
     const TValueType& vMaxValue = mValues[0];
-    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
       if (vMaxValue < mValues[vDimension]) {
         vMaxDimension = vDimension;
         vMaxValue = mValues[vDimension];
@@ -218,10 +220,10 @@ public:
     return vMaxDimension;
   }
 
-  inline unsigned int MinDimension() const {
-    unsigned int vMinDimension = 0;
+  inline ggUSize MinDimension() const {
+    ggUSize vMinDimension = 0;
     const TValueType& vMinValue = mValues[0];
-    for (unsigned int vDimension = 1; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
       if (vMinValue > mValues[vDimension]) {
         vMinDimension = vDimension;
         vMinValue = mValues[vDimension];
@@ -264,7 +266,7 @@ private:
 };
 
 
-template <typename TScalarType, class TValueType, unsigned int TDimensions>
+template <typename TScalarType, class TValueType, ggUSize TDimensions>
 ggVectorT<TValueType, TDimensions> operator * (const TScalarType& aScalar,
                                                const ggVectorT<TValueType, TDimensions>& aVector)
 {

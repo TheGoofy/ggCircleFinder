@@ -33,7 +33,7 @@ public:
   ggObserver();
   ggObserver(const ggObserver& aOther);
   ggObserver& operator = (const ggObserver& aOther);
-  virtual ~ggObserver();
+  virtual ~ggObserver() override;
 
   void Attach(const ggSubject* aSubject);
   void Detach(const ggSubject* aSubject);

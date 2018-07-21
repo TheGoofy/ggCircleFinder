@@ -135,7 +135,7 @@ public:
   template <typename TConvertedValueType>
   inline ggColorT<TConvertedValueType> GetConverted() const {
     ggColorT<TConvertedValueType> vColorConverted;
-    double vScale = (double)vColorConverted.MaxLimit() / (double)MaxLimit();
+    double vScale = static_cast<double>(vColorConverted.MaxLimit()) / static_cast<double>(MaxLimit());
     for (unsigned int vDimension = 0; vDimension < TBaseVector::GetDimensions(); vDimension++) {
       vColorConverted[vDimension] = vScale * (*this)[vDimension];
     }
@@ -144,7 +144,7 @@ public:
 
   template <typename TConvertedValueType>
   inline void SetConverted(const ggColorT<TConvertedValueType>& aOther) {
-    double vScale = (double)MaxLimit() / (double)aOther.MaxLimit();
+    double vScale = static_cast<double>(MaxLimit()) / static_cast<double>(aOther.MaxLimit());
     for (unsigned int vDimension = 0; vDimension < TBaseVector::GetDimensions(); vDimension++) {
       (*this)[vDimension] = vScale * aOther[vDimension];
     }
@@ -176,9 +176,9 @@ public:
   }
 
   inline void Saturize() {
-    double vMax = (double)TBaseVector::Max();
+    double vMax = static_cast<double>(TBaseVector::Max());
     if (vMax != 0.0) {
-      (*this) *= (double)MaxLimit() / vMax;
+      (*this) *= static_cast<double>(MaxLimit()) / vMax;
       ClampRGBA();
     }
   }
@@ -230,32 +230,32 @@ private:
 
 template <>
 inline float ggColorT<float>::MinLimit() {
-  return 0.0f;
+  return 0;
 }
 
 template <>
 inline double ggColorT<double>::MinLimit() {
-  return 0.0;
+  return 0;
 }
 
 template <>
 inline long double ggColorT<long double>::MinLimit() {
-  return 0.0;
+  return 0;
 }
 
 template <>
 inline float ggColorT<float>::MaxLimit() {
-  return 1.0f;
+  return 1;
 }
 
 template <>
 inline double ggColorT<double>::MaxLimit() {
-  return 1.0;
+  return 1;
 }
 
 template <>
 inline long double ggColorT<long double>::MaxLimit() {
-  return 1.0;
+  return 1;
 }
 
 #endif // GGCOLORT_H

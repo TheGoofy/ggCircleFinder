@@ -52,8 +52,8 @@ private:
   QColor mColor;
 
   // selector / indicator
-  float mSelectorRadius;
-  float mSelectorRadiusLarge;
+  qreal mSelectorRadius;
+  qreal mSelectorRadiusLarge;
 
   // geometry / laout
   enum class cLayout {

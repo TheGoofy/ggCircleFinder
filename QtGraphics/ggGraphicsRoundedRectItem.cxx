@@ -9,8 +9,8 @@
 
 ggGraphicsRoundedRectItem::ggGraphicsRoundedRectItem(QGraphicsItem* aParent) :
   QGraphicsRectItem(aParent),
-  mRadiusX(3.0f),
-  mRadiusY(3.0f)
+  mRadiusX(3.0),
+  mRadiusY(3.0)
 {
 }
 
@@ -80,7 +80,7 @@ QPainterPath ggGraphicsRoundedRectItem::shape() const
 {
   if (brush().style() != Qt::NoBrush) {
     QPainterPath vPath;
-    qreal vPenWidth2 = (pen().style() != Qt::NoPen) ? pen().widthF()/2.0f : 0.0f;
+    qreal vPenWidth2 = (pen().style() != Qt::NoPen) ? pen().widthF()/2.0 : 0.0;
     QRectF vRect = rect() + QMarginsF(vPenWidth2, vPenWidth2, vPenWidth2, vPenWidth2);
     vPath.addRoundedRect(vRect, mRadiusX + vPenWidth2, mRadiusY + vPenWidth2);
     return vPath;

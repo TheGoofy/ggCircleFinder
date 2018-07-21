@@ -57,23 +57,23 @@ private:
   QColor GetColorMin() const;
   QColor GetColorMid() const;
   QColor GetColorMax() const;
-  QPointF GetPosition(const float aChannelValue) const;
+  QPointF GetPosition(const qreal aChannelValue) const;
   QPointF ClampPosition(const QPointF& aPosition) const;
-  float GetChannelValue(const QPointF& aPosition) const;
-  float GetChannelValue(const QColor& aColor) const;
+  qreal GetChannelValue(const QPointF& aPosition) const;
+  qreal GetChannelValue(const QColor& aColor) const;
   bool IsInside(const QPointF& aPosition) const;
   QBrush GetGradientBrush() const;
-  QRectF GetSelectorRect(float aSize) const;
+  QRectF GetSelectorRect(qreal aSize) const;
 
   // THE color
   QColor mColor;
-  float mChannelValue;
+  qreal mChannelValue;
   cChannel mChannel;
 
   // selector / indicator
   QPointF mColorPosition;
-  float mSelectorRadius;
-  float mSelectorRadiusLarge;
+  qreal mSelectorRadius;
+  qreal mSelectorRadiusLarge;
   bool mMouseDragging;
 
   // geometry / laout

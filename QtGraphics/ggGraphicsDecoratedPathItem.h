@@ -28,11 +28,11 @@ public:
   const ggDecoration& DecorationDst() const;
 
   void SetDecorationSrc(ggDecoration::cType aType,
-                        float aLength = 12.0f,
+                        qreal aLength = 12.0,
                         ggDecoration::cFill aFill = ggDecoration::cFill::eSolid);
 
   void SetDecorationDst(ggDecoration::cType aType,
-                        float aLength = 12.0f,
+                        qreal aLength = 12.0,
                         ggDecoration::cFill aFill = ggDecoration::cFill::eSolid);
 
   void setPen(const QPen& aPen);

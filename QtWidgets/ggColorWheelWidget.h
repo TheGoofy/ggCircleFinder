@@ -52,14 +52,14 @@ private:
 
   // the selected color
   QColor mColorSaturized;
-  float mColorValue;
+  qreal mColorValue;
 
   // adjust brightness of the wheel according to the color
   bool mAdaptToValue;
 
   // selector / indicator
   QPointF mColorPosition;
-  float mSelectorRadius;
+  qreal mSelectorRadius;
 
   // color wheel corner colors
   QColor mColorR; // red

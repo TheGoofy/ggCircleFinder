@@ -17,6 +17,10 @@
    from the observed variance of the points around the best fit line.
 */
 
+#ifndef size_t
+#define size_t __SIZE_TYPE__
+#endif
+
 template <typename T>
 void
 gsl_fit_linear (const T *x, const size_t xstride,

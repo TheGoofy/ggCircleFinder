@@ -17,13 +17,13 @@ ggGraphicsCheckBoxItem::ggGraphicsCheckBoxItem(QGraphicsItem* aParent) :
   setAcceptHoverEvents(true);
   setCursor(Qt::PointingHandCursor);
   setToolTip("Click to show or hide.");
-  setZValue(1.0f);
+  setZValue(1.0);
   setPen(Qt::NoPen);
 
   // create the lines
   mCrossLineA = new QGraphicsLineItem(this);
   mCrossLineB = new QGraphicsLineItem(this);
-  SetCrossLineWidth(1.5f);
+  SetCrossLineWidth(1.5);
   SetHighlightOff();
   UpdateCross();
   UpdateColor();
@@ -49,14 +49,14 @@ const ggSubjectBool* ggGraphicsCheckBoxItem::GetSubjectChecked() const
 }
 
 
-void ggGraphicsCheckBoxItem::SetSize(float aSize)
+void ggGraphicsCheckBoxItem::SetSize(qreal aSize)
 {
-  setRect(QRectF(0.0f, 0.0f, aSize, aSize));
+  setRect(QRectF(0.0, 0.0, aSize, aSize));
   UpdateCross();
 }
 
 
-void ggGraphicsCheckBoxItem::SetCrossLineWidth(float aWidth)
+void ggGraphicsCheckBoxItem::SetCrossLineWidth(qreal aWidth)
 {
   QPen vPen(mCrossLineA->pen());
   vPen.setWidthF(aWidth);

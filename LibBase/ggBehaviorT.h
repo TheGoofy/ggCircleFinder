@@ -2,6 +2,8 @@
 #define GGBEHAVIORT_H
 
 // 1) include system
+#include <set>
+
 // 2) include own project-related (sort by component dependency)
 // 3) forward declarations
 

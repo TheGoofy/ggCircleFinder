@@ -24,10 +24,10 @@ ggGraphicsTextItem::ggGraphicsTextItem(QGraphicsItem* aParent) :
   mSuppressRichText(true),
   mSuppressLineBreaks(false),
   mEnterKeyFinishesEdit(false),
-  mLastMousePressPos(0.0f, 0.0f),
+  mLastMousePressPos(0.0, 0.0),
   mBrush(Qt::NoBrush)
 {
-  document()->setDocumentMargin(3.0f);
+  document()->setDocumentMargin(3.0);
   setToolTip("Click twice in order to edit the text.");
   SetEditable(false);
   connect(document(), SIGNAL(contentsChanged()),

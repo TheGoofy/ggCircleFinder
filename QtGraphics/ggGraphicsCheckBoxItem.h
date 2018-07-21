@@ -23,8 +23,8 @@ public:
   void SetChecked(bool aChecked);
   bool GetChecked() const;
   const ggSubjectBool* GetSubjectChecked() const;
-  void SetSize(float aSize);
-  void SetCrossLineWidth(float aWidth);
+  void SetSize(qreal aSize);
+  void SetCrossLineWidth(qreal aWidth);
   void SetColor(const QColor& aColor);
   void SetHighlightOn();
   void SetHighlightOff();

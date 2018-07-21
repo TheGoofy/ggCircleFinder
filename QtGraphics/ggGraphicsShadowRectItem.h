@@ -18,10 +18,10 @@ public:
   ggGraphicsShadowRectItem(const QRectF& aInnerRect, qreal aRadius,
                            QGraphicsItem* aParent = nullptr);
 
-  float GetRadius() const;
-  void SetRadius(float aRadius);
-  float GetShadowWidth() const;
-  void SetShadowWidth(float aWidth);
+  qreal GetRadius() const;
+  void SetRadius(qreal aRadius);
+  qreal GetShadowWidth() const;
+  void SetShadowWidth(qreal aWidth);
   QRectF GetInnerRect() const;
   void SetInnerRect(const QRectF& aRect);
   const QColor& GetOuterColor() const;

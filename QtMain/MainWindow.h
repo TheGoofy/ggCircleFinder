@@ -1,8 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+
 #include <QMainWindow>
 
+#include "LibBase/ggTypes.h"
 #include "LibBase/ggObserver.h"
 
 namespace Ui {
@@ -19,8 +22,8 @@ class MainWindow :
 
 public:
 
-  explicit MainWindow(QWidget *aParent = 0);
-  ~MainWindow();
+  explicit MainWindow(QWidget *aParent = nullptr);
+  virtual ~MainWindow() override;
 
   Ui::MainWindow& UI();
 
@@ -58,8 +61,8 @@ private:
   void UpdateUserInterfaceROI();
   void WriteSettings();
   void ReadSettings();
-  QString ZoomToString(float aZoomFloat) const;
-  float StringToZoom(const QString& aZoomString) const;
+  QString ZoomToString(ggDouble aZoomFloat) const;
+  ggDouble StringToZoom(const QString& aZoomString) const;
   
   Ui::MainWindow* mUserInterface;
   

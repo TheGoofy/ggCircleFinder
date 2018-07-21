@@ -35,7 +35,7 @@ public:
   ggSubject();
   ggSubject(const ggSubject& aOther);
   ggSubject& operator = (const ggSubject& aOther);
-  virtual ~ggSubject();
+  virtual ~ggSubject() override;
 
   void Attach(const ggSubject* aSubject);
   void Detach(const ggSubject* aSubject);

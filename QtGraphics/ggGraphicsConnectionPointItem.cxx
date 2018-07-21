@@ -9,9 +9,9 @@
 // 2) include own project-related (sort by component dependency)
 
 
-ggGraphicsConnectionPointItem::ggGraphicsConnectionPointItem(float aSize,
+ggGraphicsConnectionPointItem::ggGraphicsConnectionPointItem(qreal aSize,
                                                              QGraphicsItem* aParent) :
-  QGraphicsEllipseItem(QRect(-aSize/2.0f, -aSize/2.0f, aSize, aSize), aParent),
+  QGraphicsEllipseItem(QRectF(-aSize/2.0, -aSize/2.0, aSize, aSize), aParent),
   mDirectionLine(nullptr)
 {
   setFlag(ItemIsMovable);
@@ -20,12 +20,12 @@ ggGraphicsConnectionPointItem::ggGraphicsConnectionPointItem(float aSize,
   setAcceptHoverEvents(true);
   setCursor(Qt::DragMoveCursor);
   setToolTip("Click and drag.");
-  setZValue(1.0f);
+  setZValue(1.0);
   setPen(Qt::NoPen);
   setBrush(Qt::red);
 
   QPen vPen(Qt::DotLine);
-  vPen.setWidthF(0.8f);
+  vPen.setWidthF(0.8);
   vPen.setCapStyle(Qt::RoundCap);
   mDirectionLine = new QGraphicsLineItem(this);
   mDirectionLine->setPen(vPen);
@@ -36,13 +36,13 @@ ggGraphicsConnectionPointItem::ggGraphicsConnectionPointItem(float aSize,
 }
 
 
-void ggGraphicsConnectionPointItem::SetSize(float aSize)
+void ggGraphicsConnectionPointItem::SetSize(qreal aSize)
 {
-  setRect(-aSize/2.0f, -aSize/2.0f, aSize, aSize);
+  setRect(-aSize/2.0, -aSize/2.0, aSize, aSize);
 }
 
 
-float ggGraphicsConnectionPointItem::GetSize() const
+qreal ggGraphicsConnectionPointItem::GetSize() const
 {
   return rect().width();
 }
@@ -55,7 +55,7 @@ void ggGraphicsConnectionPointItem::SetPointPosition(const QPointF& aPosition)
 }
 
 
-void ggGraphicsConnectionPointItem::SetPointDirection(float aAngle)
+void ggGraphicsConnectionPointItem::SetPointDirection(qreal aAngle)
 {
   mConnectionPoint.SetDirectionAngle(aAngle);
   mConnectionPoint.Notify();
@@ -126,8 +126,8 @@ QVariant ggGraphicsConnectionPointItem::itemChange(GraphicsItemChange aChange,
 
 void ggGraphicsConnectionPointItem::wheelEvent(QGraphicsSceneWheelEvent* aEvent)
 {
-  float vAngle = mConnectionPoint.GetDirectionAngle();
-  vAngle -= 0.001f * aEvent->delta();
+  qreal vAngle = mConnectionPoint.GetDirectionAngle();
+  vAngle -= 0.001 * aEvent->delta();
   mConnectionPoint.SetDirectionAngle(vAngle);
   mConnectionPoint.Notify();
 }
@@ -139,7 +139,7 @@ void ggGraphicsConnectionPointItem::UpdateConnectionPoint()
   setPos(mConnectionPoint.GetPosition());
 
   // adjust direction indicator line
-  QPointF vPointA(0.0f, 0.0f);
-  QPointF vPointB = (5.0f * GetSize() * mConnectionPoint.GetDirection()).toPointF();
+  QPointF vPointA(0.0, 0.0);
+  QPointF vPointB = (5.0f * static_cast<float>(GetSize()) * mConnectionPoint.GetDirection()).toPointF();
   mDirectionLine->setLine(QLineF(vPointA, vPointB));
 }

@@ -23,7 +23,7 @@ class ggGraphicsTextItem :
 public:
 
   ggGraphicsTextItem(QGraphicsItem* aParent = nullptr);
-  virtual ~ggGraphicsTextItem();
+  virtual ~ggGraphicsTextItem() override;
 
   void SetSuppressRichText(bool aSuppressRichText);
   bool GetSuppressRichText() const;

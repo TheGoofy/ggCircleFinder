@@ -23,7 +23,7 @@ ggGraphicsDecoratedPathItem::ggGraphicsDecoratedPathItem(QGraphicsItem* aParent)
   vPen.setJoinStyle(Qt::MiterJoin);
   setPen(vPen);
   setBrush(Qt::NoBrush);
-  setZValue(-1.0f);
+  setZValue(-1.0);
 }
 
 
@@ -61,7 +61,7 @@ const ggDecoration& ggGraphicsDecoratedPathItem::DecorationDst() const
 
 
 void ggGraphicsDecoratedPathItem::SetDecorationSrc(ggDecoration::cType aType,
-                                                   float aLength,
+                                                   qreal aLength,
                                                    ggDecoration::cFill aFill)
 {
   mDecorationSrc.Set(aType, aLength, aFill);
@@ -70,7 +70,7 @@ void ggGraphicsDecoratedPathItem::SetDecorationSrc(ggDecoration::cType aType,
 
 
 void ggGraphicsDecoratedPathItem::SetDecorationDst(ggDecoration::cType aType,
-                                                   float aLength,
+                                                   qreal aLength,
                                                    ggDecoration::cFill aFill)
 {
   mDecorationDst.Set(aType, aLength, aFill);
@@ -147,15 +147,15 @@ QPainterPath ggGraphicsDecoratedPathItem::GetPath(const ggConnectionPoint& aPoin
   // calculate the key points
   QPointF vPointSrcBase = aPointSrc.GetControlPoint(mDecorationSrc.GetLength());
   QPointF vPointDstBase = aPointDst.GetControlPoint(mDecorationDst.GetLength());
-  float vDistance = QLineF(vPointSrcBase, vPointDstBase).length();
-  QPointF vPointSrcControl = aPointSrc.GetControlPoint(mDecorationSrc.GetLength() + vDistance/2.5f);
-  QPointF vPointDstControl = aPointDst.GetControlPoint(mDecorationDst.GetLength() + vDistance/2.5f);
+  qreal vDistance = QLineF(vPointSrcBase, vPointDstBase).length();
+  QPointF vPointSrcControl = aPointSrc.GetControlPoint(mDecorationSrc.GetLength() + vDistance/2.5);
+  QPointF vPointDstControl = aPointDst.GetControlPoint(mDecorationDst.GetLength() + vDistance/2.5);
 
   // some decorations need a bit a longer path
   bool vExtraSrcPath = ggPainterPath::ConnectToCenter(mDecorationSrc.GetType(), mDecorationSrc.GetFill());
   bool vExtraDstPath = ggPainterPath::ConnectToCenter(mDecorationDst.GetType(), mDecorationDst.GetFill());
-  QPointF vPointSrcExtraBase = vExtraSrcPath ? aPointSrc.GetControlPoint(mDecorationSrc.GetLength()/2.0f) : vPointSrcBase;
-  QPointF vPointDstExtraBase = vExtraDstPath ? aPointDst.GetControlPoint(mDecorationDst.GetLength()/2.0f) : vPointDstBase;
+  QPointF vPointSrcExtraBase = vExtraSrcPath ? aPointSrc.GetControlPoint(mDecorationSrc.GetLength()/2.0) : vPointSrcBase;
+  QPointF vPointDstExtraBase = vExtraDstPath ? aPointDst.GetControlPoint(mDecorationDst.GetLength()/2.0) : vPointDstBase;
 
   // compile path
   QPainterPath vPath;

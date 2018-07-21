@@ -31,7 +31,7 @@ public:
 
   inline ggInt64 GetBinIndex(const TValueType& aValue) const {
     if (mBinValueDelta == 0) return 0;
-    return (ggInt64)floor((aValue - mBinValueMin) / mBinValueDelta);
+    return static_cast<ggInt64>(floor((aValue - mBinValueMin) / mBinValueDelta));
   }
 
   inline ggInt64 GetBinIndexMin() const {
@@ -44,7 +44,7 @@ public:
 
   inline ggUInt64 GetCountBin(ggInt64 aBinIndex) const {
     if (aBinIndex < 0) return 0;
-    if (aBinIndex >= (ggInt64)TNumberOfBins) return 0;
+    if (aBinIndex >= static_cast<ggInt64>(TNumberOfBins)) return 0;
     return mCountBins[aBinIndex];
   }
 
@@ -82,7 +82,7 @@ public:
       // if its value is different than the previous samples, the vector with the bins can be initialized
       if (aValue < mValueMin) {
         mValueMin = aValue;
-        mBinValueDelta = (ggDouble)(mValueMax - mValueMin) / (ggDouble)(TNumberOfBins - 1);
+        mBinValueDelta = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TNumberOfBins - 1);
         mBinValueMin = mValueMin - mBinValueDelta / 2;
         mBinValueMax = mValueMax + mBinValueDelta / 2;
         mCountBins.front() = 1;
@@ -90,7 +90,7 @@ public:
       }
       if (aValue > mValueMax) {
         mValueMax = aValue;
-        mBinValueDelta = (ggDouble)(mValueMax - mValueMin) / (ggDouble)(TNumberOfBins - 1);
+        mBinValueDelta = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TNumberOfBins - 1);
         mBinValueMin = mValueMin - mBinValueDelta / 2;
         mBinValueMax = mValueMax + mBinValueDelta / 2;
         mCountBins.front() = mCountTotal;
@@ -108,11 +108,11 @@ public:
         } while (vBinIndex < 0);
       }
       // if the bin index is too high, the bins are packed and shifted left (down)
-      else if (vBinIndex >= (ggInt64)TNumberOfBins) {
+      else if (vBinIndex >= static_cast<ggInt64>(TNumberOfBins)) {
         do {
           PackBinsLeft();
           vBinIndex = GetBinIndex(aValue);
-        } while (vBinIndex >= (ggInt64)TNumberOfBins);
+        } while (vBinIndex >= static_cast<ggInt64>(TNumberOfBins));
       }
       // now count the sample
       if (aValue < mValueMin) mValueMin = aValue;

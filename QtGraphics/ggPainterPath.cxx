@@ -9,37 +9,36 @@
 
 ggPainterPath::ggPainterPath() :
   QPainterPath(),
-  mDecorationRatio(0.0f)
+  mDecorationRatio(0.0)
 {
 }
 
 
-void ggPainterPath::SetDecorationRatio(float aRatio)
+void ggPainterPath::SetDecorationRatio(qreal aRatio)
 {
   mDecorationRatio = aRatio;
 }
 
 
-float ggPainterPath::GetDecorationRatio() const
+qreal ggPainterPath::GetDecorationRatio() const
 {
   return mDecorationRatio;
 }
 
 
-float ggPainterPath::GetDecorationRatio(ggDecoration::cType aType) const
+qreal ggPainterPath::GetDecorationRatio(ggDecoration::cType aType) const
 {
-  if (mDecorationRatio != 0.0f) return mDecorationRatio;
+  if (mDecorationRatio != 0.0) return mDecorationRatio;
   switch (aType) {
-    case ggDecoration::cType::eNothing: return 0.0f;
-    case ggDecoration::cType::eLine: return 0.0f;
-    case ggDecoration::cType::eArrow: return 0.8f;
-    case ggDecoration::cType::eArrowBack: return 0.8f;
-    case ggDecoration::cType::eTriangle: return 0.8f;
-    case ggDecoration::cType::eTriangleBack: return 0.8f;
-    case ggDecoration::cType::eDiamond: return 0.7f;
-    case ggDecoration::cType::eCross: return 1.0f;
-    case ggDecoration::cType::eCircle: return 1.0f;
-    default: return 1.0f;
+    case ggDecoration::cType::eNothing: return 0.0;
+    case ggDecoration::cType::eLine: return 0.0;
+    case ggDecoration::cType::eArrow: return 0.8;
+    case ggDecoration::cType::eArrowBack: return 0.8;
+    case ggDecoration::cType::eTriangle: return 0.8;
+    case ggDecoration::cType::eTriangleBack: return 0.8;
+    case ggDecoration::cType::eDiamond: return 0.7;
+    case ggDecoration::cType::eCross: return 1.0;
+    case ggDecoration::cType::eCircle: return 1.0;
   }
 }
 
@@ -48,7 +47,7 @@ void ggPainterPath::AddDecoration(const ggDecoration& aDecoration,
                                   const QPointF& aEnd,
                                   const QVector2D& aDirection)
 {
-  QPointF vStart(aEnd + (aDecoration.GetLength() * aDirection.normalized()).toPointF());
+  QPointF vStart(aEnd + (static_cast<float>(aDecoration.GetLength()) * aDirection.normalized()).toPointF());
   AddDecoration(aDecoration.GetType(), vStart, aEnd);
 }
 
@@ -67,7 +66,6 @@ void ggPainterPath::AddDecoration(ggDecoration::cType aType,
     case ggDecoration::cType::eDiamond: AddDiamond(aStart, aEnd); break;
     case ggDecoration::cType::eCross: AddCross(aStart, aEnd); break;
     case ggDecoration::cType::eCircle: AddCircle(aStart, aEnd); break;
-    default: break;
   }
 }
 
@@ -108,7 +106,7 @@ bool ggPainterPath::ConnectToCenter(ggDecoration::cType aType,
 QPointF ggPainterPath::CalculateCenter(const QPointF& aStart,
                                        const QPointF& aEnd) const
 {
-  return (aStart + aEnd) / 2.0f;
+  return (aStart + aEnd) / 2.0;
 }
 
 
@@ -124,7 +122,7 @@ void ggPainterPath::CalculateDimensions(ggDecoration::cType aType,
   aLength = aDirection.length();
   if (aLength != 0.0f) aDirection /= aLength;
   aNormal = QVector2D(aDirection.y(), -aDirection.x());
-  aWidth2 = aLength * GetDecorationRatio(aType) / 2.0f;
+  aWidth2 = aLength * static_cast<float>(GetDecorationRatio(aType)) / 2.0f;
 }
 
 
@@ -221,7 +219,7 @@ void ggPainterPath::AddCross(const QPointF& aStart, const QPointF& aEnd)
 
 void ggPainterPath::AddCircle(const QPointF& aStart, const QPointF& aEnd)
 {
-  float vRadius = QLineF(aStart, aEnd).length() / 2.0f;
+  qreal vRadius = QLineF(aStart, aEnd).length() / 2.0;
   QPointF vCenter = CalculateCenter(aStart, aEnd);
   addEllipse(vCenter, vRadius, vRadius);
 }

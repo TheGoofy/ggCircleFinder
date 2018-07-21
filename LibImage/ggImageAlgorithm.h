@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "LibBase/ggSpotT.h"
+#include "LibBase/ggGeometry.h"
 #include "LibBase/ggRunningAverages.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
@@ -86,8 +87,8 @@ namespace ggImageAlgorithm {
           bool vHorizontal = fabs(vGradient.X()) > fabs(vGradient.Y());
           ggDouble vSlope = vHorizontal ? (vGradient.Y() / vGradient.X()) : (vGradient.X() / vGradient.Y());
           // position of two (intersecting) lines
-          ggVector2Int32 vIndexA(vIndexX, vIndexY);
-          ggVector2Int32 vIndexB(vIndexX, vIndexY);
+          ggVector2Size vIndexA(vIndexX, vIndexY);
+          ggVector2Size vIndexB(vIndexX, vIndexY);
           if (fabs(vSlope) < 0.4142) { // tan(22.5) = sqrt(2) - 1
             vIndexA += ggVector2Int32(vHorizontal ? 0 : 1, vHorizontal ? 1 : 0);
             vIndexB += ggVector2Int32(vHorizontal ? 0 : -1, vHorizontal ? -1 : 0);
@@ -119,7 +120,7 @@ namespace ggImageAlgorithm {
             // the position of the center point may varies by the thickenss of the circle line
             ggVector2Double vRadiusRange(0.5f * aCircleModelLineThickness * vGradient.Normalized());
             // if the length of the gradient is high, it's more likely we've detected some reasonable structures (not noise)
-            ggFloat vIntensity = vGradient.Length();
+            ggFloat vIntensity = static_cast<ggFloat>(vGradient.Length());
 
             // voting for center point candidates on one side of the (potential) circle point ...
             vPainterHough.DrawLine(vCirclePoint + vCenterDirection - vRadiusRange,
@@ -220,12 +221,12 @@ namespace ggImageAlgorithm {
       const ggDouble vCircleRadiusSquare = aCircleRadius * aCircleRadius;
       ggVector2T<ggRunningAveragesT<ggDouble>> vCenterOfGravity;
 
-      for (ggInt32 vOffY = -aCircleRadius; vOffY <= aCircleRadius; vOffY++) {
-        for (ggInt32 vOffX = -aCircleRadius; vOffX <= aCircleRadius; vOffX++) {
+      for (ggSize vOffY = -aCircleRadius; vOffY <= aCircleRadius; vOffY++) {
+        for (ggSize vOffX = -aCircleRadius; vOffX <= aCircleRadius; vOffX++) {
           const ggDouble vDistanceSquare = vOffX * vOffX + vOffY * vOffY;
           if (vDistanceSquare <= vCircleRadiusSquare) {
-            const ggInt32 vIndexX = aCircleCenterIndexX + vOffX;
-            const ggInt32 vIndexY = aCircleCenterIndexY + vOffY;
+            const ggSize vIndexX = aCircleCenterIndexX + vOffX;
+            const ggSize vIndexY = aCircleCenterIndexY + vOffY;
             const TValueType& vImageValue(aImage(vIndexX, vIndexY));
             vCenterOfGravity.X().AddSample(vIndexX, vImageValue);
             vCenterOfGravity.Y().AddSample(vIndexY, vImageValue);

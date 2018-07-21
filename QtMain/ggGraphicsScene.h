@@ -52,34 +52,34 @@ public:
 
   void PrepareCameraImage(const ggImageT<ggFloat>& aImageFloat,
                           ggFloat aCameraNoise,
-                          ggInt32 aCameraNumberOfBits)
+                          ggUInt8 aCameraNumberOfBits)
   {
     ggFloat vMin = 0.0f;
     ggFloat vMax = 0.0f;
 
     ggImageT<ggFloat> vImageFloat(aImageFloat);
     vImageFloat.GetMinMax(vMin, vMax);
-    ggImageFilter::AddNoise(vImageFloat, aCameraNoise * (vMin != vMax ?  vMax - vMin : 1.0f));
+    ggImageFilter::AddNoise(vImageFloat, aCameraNoise * (vMin < vMax ?  vMax - vMin : 1.0f));
     vImageFloat.GetMinMax(vMin, vMax);
 
-    ggUInt16 vCameraValueMax = (1 << aCameraNumberOfBits) - 1;
-    ggFloat vScaleCameraToDisplay = 255.0f / (ggFloat)vCameraValueMax;
+    ggUInt16 vCameraValueMax = (static_cast<ggUInt16>(1 << aCameraNumberOfBits) - 1);
+    ggFloat vScaleCameraToDisplay = 255.0f / static_cast<ggFloat>(vCameraValueMax);
     mImageCamera.Resize(vImageFloat.GetSizeX(), vImageFloat.GetSizeY());
     ggImageT<ggUChar> vImageUChar(vImageFloat.GetSizeX(), vImageFloat.GetSizeY());
     for (ggSize vIndexY = 0; vIndexY < vImageFloat.GetSizeY(); vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < vImageFloat.GetSizeX(); vIndexX++) {
         float vValue = (vImageFloat(vIndexX, vIndexY) - vMin) / (vMax - vMin);
-        ggUInt16 vCameraValue = (ggInt16)(vCameraValueMax * vValue + 0.5f);
+        ggUInt16 vCameraValue = static_cast<ggUInt16>(vCameraValueMax * vValue + 0.5f);
         mImageCamera(vIndexX, vIndexY) = vCameraValue;
-        ggUChar vDisplayValue = (ggUChar)(vScaleCameraToDisplay * vCameraValue);
+        ggUChar vDisplayValue = static_cast<ggUChar>(vScaleCameraToDisplay * vCameraValue);
         vImageUChar(vIndexX, vIndexY) = vDisplayValue;
       }
     }
 
     QImage vImage(vImageUChar.GetValues(),
-                  vImageUChar.GetSizeX(),
-                  vImageUChar.GetSizeY(),
-                  vImageUChar.GetSizeX(),
+                  static_cast<int>(vImageUChar.GetSizeX()),
+                  static_cast<int>(vImageUChar.GetSizeY()),
+                  static_cast<int>(vImageUChar.GetSizeX()),
                   QImage::Format_Grayscale8);
 
     mImageCameraPixmapItem->setPixmap(QPixmap::fromImage(vImage));
@@ -116,7 +116,7 @@ public:
     tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima(vImageHough, true);
 
     // stop the timer
-    ggFloat vCalculationTimeMicroSeconds = 0.001f * vTimer.nsecsElapsed();
+    ggDouble vCalculationTimeMicroSeconds = 0.001 * vTimer.nsecsElapsed();
     QString vResults = "Calculation Time = " + QString::number(vCalculationTimeMicroSeconds) + " us\n";
 
     // convert hough image for rendering with QT
@@ -130,14 +130,17 @@ public:
     std::for_each(mCircleItems.begin(), mCircleItems.end(), [] (QGraphicsItem* aItem) { delete aItem; });
     mCircleItems.clear();
     vResults += "Found " + QString::number(vCenterSpots.size()) + " Candidates\n";
-    ggInt32 vCenterIndexMax = std::min<ggInt32>(vCenterSpots.size() - 1, aCircleModelNumberOfCircles - 1);
+    ggInt32 vCenterIndexMax = std::min<ggInt32>(static_cast<ggInt32>(vCenterSpots.size()) - 1, aCircleModelNumberOfCircles - 1);
     ggFloat vCenterSpotValueMax = vCenterSpots.empty() ? 0.0f : vCenterSpots.front().GetValue();
     for (ggInt32 vSpotIndex = vCenterIndexMax; vSpotIndex >= 0; vSpotIndex--) {
-      const tSpot& vCenterSpot = vCenterSpots[vSpotIndex];
+      const tSpot& vCenterSpot = vCenterSpots[static_cast<ggUSize>(vSpotIndex)];
       const ggVector2Double vCircleCenter = vCenterSpot.GetConverted<ggDouble>() + ggVector2Double(GetROIPosition().x(), GetROIPosition().y());
       QPointF vCenterSpotPointF(ggUtilityQt::GetPointF(vCircleCenter));
-      QPen vPen(QColor(vSpotIndex == 0 ? 0 : 255, (int)(255.0f * vCenterSpot.GetValue() / vCenterSpotValueMax + 0.5f), 0, 255), aCircleModelLineThickness);
-      AddCircle(vCenterSpotPointF, aCircleModelDiameter / 2.0, vCenterSpot.GetValue(), vPen);
+      QColor vColor = QColor::fromRgbF(vSpotIndex == 0 ? 0.0 : 1.0,
+                                       static_cast<qreal>(vCenterSpot.GetValue() / vCenterSpotValueMax),
+                                       0.0);
+      QPen vPen(vColor, static_cast<qreal>(aCircleModelLineThickness));
+      AddCircle(vCenterSpotPointF, static_cast<qreal>(aCircleModelDiameter) / 2.0, static_cast<qreal>(vCenterSpot.GetValue()), vPen);
       vResults += QString::number(vSpotIndex) + " : " + ggUtility::ToString(vCircleCenter, 2).c_str() + " : " +
                   ggUtility::ToString(ggUtility::RoundToSD(vCenterSpot.GetValue(), 3)).c_str() + "\n";
     }
@@ -146,12 +149,12 @@ public:
     return vResults;
   }
 
-  void SetHoughImageOpacity(ggFloat aOpacity)
+  void SetHoughImageOpacity(qreal aOpacity)
   {
     mImageHoughPixmapItem->setOpacity(aOpacity);
   }
 
-  void SetCirclesOpacity(ggFloat aOpacity)
+  void SetCirclesOpacity(qreal aOpacity)
   {
     std::for_each(mCircleItems.begin(), mCircleItems.end(), [aOpacity] (QGraphicsItem* aItem) {
       aItem->setOpacity(aOpacity);
@@ -160,7 +163,7 @@ public:
 
 private:
 
-  void SetCirclesZValue(ggFloat aZValue)
+  void SetCirclesZValue(qreal aZValue)
   {
     std::for_each(mCircleItems.begin(), mCircleItems.end(), [aZValue] (QGraphicsItem* aItem) {
       aItem->setZValue(aZValue);

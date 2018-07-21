@@ -12,8 +12,8 @@
 
 ggColorPreviewWidget::ggColorPreviewWidget(QWidget* aParent) :
   QWidget(aParent),
-  mSelectorRadius(3.0f),
-  mSelectorRadiusLarge(9.0f),
+  mSelectorRadius(3.0),
+  mSelectorRadiusLarge(9.0),
   mLayout(cLayout::eVertical),
   mClickable(false)
 {
@@ -87,7 +87,7 @@ bool ggColorPreviewWidget::IsClickable() const
 
 QSize ggColorPreviewWidget::sizeHint() const
 {
-  int vSize = 2.0f * mSelectorRadiusLarge;
+  int vSize = static_cast<int>(2.0 * mSelectorRadiusLarge);
   QSize vSizeHint(vSize, vSize);
   if (IsHorizontal()) vSizeHint += QSize(vSize, 0);
   if (IsVertical()) vSizeHint += QSize(0, vSize);
@@ -116,8 +116,8 @@ void ggColorPreviewWidget::resizeEvent(QResizeEvent* aEvent)
 {
   // color bar corners
   mColorBar = QRectF(mSelectorRadius, mSelectorRadius,
-                     aEvent->size().width() - 2.0f * mSelectorRadius,
-                     aEvent->size().height() - 2.0f * mSelectorRadius);
+                     aEvent->size().width() - 2.0 * mSelectorRadius,
+                     aEvent->size().height() - 2.0 * mSelectorRadius);
 
   // color indicator
   mColorIndicatorSmall = GetIndicatorRect(1.0);
@@ -135,13 +135,13 @@ QRectF ggColorPreviewWidget::GetIndicatorRect(qreal aMargin) const
     return QRectF(mColorBar.left() + mColorBar.width() / 5.0 + aMargin,
                   vRect.top() + aMargin,
                   mColorBar.width() * 3.0 / 5.0 - 2.0 * aMargin,
-                  vRect.height() - 2.0f * aMargin);
+                  vRect.height() - 2.0 * aMargin);
   }
   else {
     return QRectF(vRect.left() + aMargin,
                   mColorBar.top() + mColorBar.height() / 5.0 + aMargin,
                   vRect.width() - 2.0 * aMargin,
-                  mColorBar.height() * 3.0 / 5.0 - 2.0f * aMargin);
+                  mColorBar.height() * 3.0 / 5.0 - 2.0 * aMargin);
   }
 }
 
@@ -169,7 +169,7 @@ void ggColorPreviewWidget::paintEvent(QPaintEvent* aEvent)
 
   // draw main color
   qreal vRadius = 2.0 * mSelectorRadius;
-  vPainter.setBrush(ggUtilityQt::GetColorWithAlpha(mColor, (mColor.alpha() != 255 ? 1.0f : 0.33f)));
+  vPainter.setBrush(ggUtilityQt::GetColorWithAlpha(mColor, (mColor.alpha() != 255 ? 1.0 : 0.33)));
   vPainter.drawRoundedRect(mColorBar, vRadius, vRadius);
 
   // draw checkered background (if the color is transparent)
@@ -178,14 +178,14 @@ void ggColorPreviewWidget::paintEvent(QPaintEvent* aEvent)
     vPainter.setBrush(QColor(130, 130, 130, 255));
     vPainter.drawRoundedRect(vColorBarLowerRect, vRadius, vRadius);
     vPainter.drawRoundedRect(mColorIndicatorSmall, mSelectorRadiusLarge, mSelectorRadiusLarge);
-    vPainter.setBrush(ggUtilityQt::GetCheckerBoardBrush(1.5f * mSelectorRadius));
+    vPainter.setBrush(ggUtilityQt::GetCheckerBoardBrush(static_cast<int>(1.5 * mSelectorRadius)));
     vPainter.drawRoundedRect(vColorBarLowerRect, vRadius, vRadius);
     vPainter.drawRoundedRect(mColorIndicatorSmall, mSelectorRadiusLarge, mSelectorRadiusLarge);
   }
 
   // indicator of selected color
   vRadius = mSelectorRadiusLarge - 1.0;
-  vPainter.setPen(QPen(Qt::white, 1.5f));
+  vPainter.setPen(QPen(Qt::white, 1.5));
   vPainter.setBrush(Qt::NoBrush);
   vPainter.drawRoundedRect(mColorIndicatorLarge, vRadius + 1.0, vRadius + 1.0);
   vPainter.setPen(Qt::black);
@@ -196,7 +196,7 @@ void ggColorPreviewWidget::paintEvent(QPaintEvent* aEvent)
   if (!isEnabled()) {
     vPainter.setPen(Qt::NoPen);
     const QColor& vBackgroundColor = palette().color(QPalette::Disabled, QPalette::Window);
-    vPainter.setBrush(ggUtilityQt::GetColorWithAlpha(vBackgroundColor, 0.75f));
+    vPainter.setBrush(ggUtilityQt::GetColorWithAlpha(vBackgroundColor, 0.75));
     vPainter.drawRect(rect());
   }
 

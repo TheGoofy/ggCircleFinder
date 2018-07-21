@@ -1,13 +1,13 @@
-#ifndef __GG_RUNNING_AVERAGES__
-#define __GG_RUNNING_AVERAGES__
+#ifndef GGRUNNINGAVERAGEST_H
+#define GGRUNNINGAVERAGEST_H
 
 #include "ggTypes.h"
 
 /**
  * Computes the averages: Sum, Min, Max, Mean, StdDev, and
  * Variation. The class requires a minimum amount of memory, and
- * does not store individual samples. For this reason it can not
- * compute the Median.
+ * does not store individual samples (for this reason it can not
+ * compute the Median).
  */
 template <class TValueType>
 class ggRunningAveragesT
@@ -110,5 +110,4 @@ private:
 
 };
 
-#endif // __GG_RUNNING_AVERAGES__
-
+#endif // GGRUNNINGAVERAGEST_H__

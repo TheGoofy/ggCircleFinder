@@ -132,30 +132,30 @@ namespace ggUtility {
   template <>
   inline std::string ToString(const ggInt8& aValue) {
     std::ostringstream vStrStream;
-    vStrStream << (ggInt16)aValue;
+    vStrStream << static_cast<ggInt16>(aValue);
     return vStrStream.str();
   }
 
   template <>
   inline std::string ToString(const ggUInt8& aValue) {
     std::ostringstream vStrStream;
-    vStrStream << (ggUInt16)aValue;
+    vStrStream << static_cast<ggUInt16>(aValue);
     return vStrStream.str();
   }
 
-  template <typename TValueType, unsigned int TDimensions>
+  template <typename TValueType, ggUSize TDimensions>
   inline std::string VectorToString(const ggVectorT<TValueType, TDimensions>& aVector) {
     std::string vString("(");
-    for (ggSize vDimension = 0; vDimension < aVector.GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < aVector.GetDimensions(); vDimension++) {
       vString += ToString(aVector[vDimension]) + std::string((vDimension + 1 < aVector.GetDimensions()) ? "/" : ")");
     }
     return vString;
   }
 
-  template <typename TValueType, unsigned int TDimensions>
+  template <typename TValueType, ggUSize TDimensions>
   inline std::string VectorToString(const ggVectorT<TValueType, TDimensions>& aVector, int aPrecision) {
     std::string vString("(");
-    for (ggSize vDimension = 0; vDimension < aVector.GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < aVector.GetDimensions(); vDimension++) {
       vString += ToString(aVector[vDimension], aPrecision) + std::string((vDimension + 1 < aVector.GetDimensions()) ? "/" : ")");
     }
     return vString;

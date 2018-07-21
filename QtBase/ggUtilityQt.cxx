@@ -15,28 +15,28 @@ int ggUtilityQt::GetColorMax(const QColor& aColor)
 }
 
 
-float ggUtilityQt::GetColorMaxF(const QColor& aColor)
+qreal ggUtilityQt::GetColorMaxF(const QColor& aColor)
 {
   return ggUtility::Max(aColor.redF(), aColor.greenF(), aColor.blueF());
 }
 
 
-float ggUtilityQt::GetColorLuma(const QColor& aColor)
+qreal ggUtilityQt::GetColorLuma(const QColor& aColor)
 {
-  return 0.299f * aColor.redF() +
-         0.587f * aColor.greenF() +
-         0.114f * aColor.blueF();
+  return 0.299 * aColor.redF() +
+         0.587 * aColor.greenF() +
+         0.114 * aColor.blueF();
 }
 
 
 QColor ggUtilityQt::GetColorSaturized(const QColor& aColor)
 {
-  float vColorBrightness = ggUtilityQt::GetColorMaxF(aColor);
-  if (vColorBrightness != 0.0f) {
-    float vScale = 1.0f / vColorBrightness;
-    return QColor::fromRgbF(ggUtility::Clamp<float>(vScale * aColor.redF(), 0.0f, 1.0f),
-                            ggUtility::Clamp<float>(vScale * aColor.greenF(), 0.0f, 1.0f),
-                            ggUtility::Clamp<float>(vScale * aColor.blueF(), 0.0f, 1.0f),
+  qreal vColorBrightness = ggUtilityQt::GetColorMaxF(aColor);
+  if (vColorBrightness != 0.0) {
+    qreal vScale = 1.0 / vColorBrightness;
+    return QColor::fromRgbF(ggUtility::Clamp<qreal>(vScale * aColor.redF(), 0.0, 1.0),
+                            ggUtility::Clamp<qreal>(vScale * aColor.greenF(), 0.0, 1.0),
+                            ggUtility::Clamp<qreal>(vScale * aColor.blueF(), 0.0, 1.0),
                             aColor.alphaF());
   }
   else {
@@ -47,26 +47,26 @@ QColor ggUtilityQt::GetColorSaturized(const QColor& aColor)
 }
 
 
-QColor ggUtilityQt::GetColorScaled(const QColor& aColor, float aScale)
+QColor ggUtilityQt::GetColorScaled(const QColor& aColor, qreal aScale)
 {
-  return QColor::fromRgbF(ggUtility::Clamp<float>(aScale * aColor.redF(), 0.0f, 1.0f),
-                          ggUtility::Clamp<float>(aScale * aColor.greenF(), 0.0f, 1.0f),
-                          ggUtility::Clamp<float>(aScale * aColor.blueF(), 0.0f, 1.0f),
+  return QColor::fromRgbF(ggUtility::Clamp<qreal>(aScale * aColor.redF(), 0.0, 1.0),
+                          ggUtility::Clamp<qreal>(aScale * aColor.greenF(), 0.0, 1.0),
+                          ggUtility::Clamp<qreal>(aScale * aColor.blueF(), 0.0, 1.0),
                           aColor.alphaF());
 }
 
 
-QColor ggUtilityQt::GetColorInterpolated(const QColor& aColorA, const QColor& aColorB, float aWeightA)
+QColor ggUtilityQt::GetColorInterpolated(const QColor& aColorA, const QColor& aColorB, qreal aWeightA)
 {
-  const float vWeightB = 1.0f - aWeightA;
-  return QColor::fromRgbF(ggUtility::Clamp<float>(aWeightA * aColorA.redF() + vWeightB * aColorB.redF(), 0.0f, 1.0f),
-                          ggUtility::Clamp<float>(aWeightA * aColorA.greenF() + vWeightB * aColorB.greenF(), 0.0f, 1.0f),
-                          ggUtility::Clamp<float>(aWeightA * aColorA.blueF() + vWeightB * aColorB.blueF(), 0.0f, 1.0f),
-                          ggUtility::Clamp<float>(aWeightA * aColorA.alphaF() + vWeightB * aColorB.alphaF(), 0.0f, 1.0f));
+  const qreal vWeightB = 1.0 - aWeightA;
+  return QColor::fromRgbF(ggUtility::Clamp<qreal>(aWeightA * aColorA.redF() + vWeightB * aColorB.redF(), 0.0, 1.0),
+                          ggUtility::Clamp<qreal>(aWeightA * aColorA.greenF() + vWeightB * aColorB.greenF(), 0.0, 1.0),
+                          ggUtility::Clamp<qreal>(aWeightA * aColorA.blueF() + vWeightB * aColorB.blueF(), 0.0, 1.0),
+                          ggUtility::Clamp<qreal>(aWeightA * aColorA.alphaF() + vWeightB * aColorB.alphaF(), 0.0, 1.0));
 }
 
 
-QColor ggUtilityQt::GetColorWithValue(const QColor& aColor, float aValue)
+QColor ggUtilityQt::GetColorWithValue(const QColor& aColor, qreal aValue)
 {
   qreal vH, vS, vV, vA;
   aColor.getHsvF(&vH, &vS, &vV, &vA);
@@ -74,7 +74,7 @@ QColor ggUtilityQt::GetColorWithValue(const QColor& aColor, float aValue)
 }
 
 
-QColor ggUtilityQt::GetColorWithLightness(const QColor& aColor, float aLightness)
+QColor ggUtilityQt::GetColorWithLightness(const QColor& aColor, qreal aLightness)
 {
   qreal vH, vS, vL, vA;
   aColor.getHslF(&vH, &vS, &vL, &vA);
@@ -88,7 +88,7 @@ QColor ggUtilityQt::GetColorContrast(const QColor& aColor)
 }
 
 
-QColor ggUtilityQt::GetColorWithAlpha(const QColor& aColor, float aAlpha)
+QColor ggUtilityQt::GetColorWithAlpha(const QColor& aColor, qreal aAlpha)
 {
   return QColor::fromRgbF(aColor.redF(), aColor.greenF(), aColor.blueF(), aAlpha);
 }
@@ -100,12 +100,12 @@ QColor ggUtilityQt::GetColorQt(const ggColorUInt8& aColor)
 }
 
 
-QRectF ggUtilityQt::GetRectInflated(const QRectF& aRect, float aDelta)
+QRectF ggUtilityQt::GetRectInflated(const QRectF& aRect, qreal aDelta)
 {
   return QRectF(aRect.x() - aDelta,
                 aRect.y() - aDelta,
-                aRect.width() + 2.0f * aDelta,
-                aRect.height() + 2.0f * aDelta).normalized();
+                aRect.width() + 2.0 * aDelta,
+                aRect.height() + 2.0 * aDelta).normalized();
 }
 
 
@@ -166,9 +166,9 @@ QImage ggUtilityQt::GetImage(const ggImageT<ggUChar>& aImage,
                              const std::vector<ggColorUInt8>& aColorTable)
 {
   QImage vImageQt(aImage.GetValues(),
-                  aImage.GetSizeX(),
-                  aImage.GetSizeY(),
-                  aImage.GetSizeX(),
+                  static_cast<int>(aImage.GetSizeX()),
+                  static_cast<int>(aImage.GetSizeY()),
+                  static_cast<int>(aImage.GetSizeX()),
                   QImage::Format_Indexed8);
 
   QVector<QRgb> vColorTableQt;

@@ -16,7 +16,7 @@ public:
   ggGraphicsRoundedRectItem(QGraphicsItem* aParent = nullptr);
 
   ggGraphicsRoundedRectItem(const QRectF& aRect,
-                            const qreal aRadius = 3.0f,
+                            const qreal aRadius = 3.0,
                             QGraphicsItem* aParent = nullptr);
 
   qreal GetRadiusX() const;

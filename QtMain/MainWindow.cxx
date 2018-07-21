@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
   UI().statusBar->addPermanentWidget(UI().mZoomResetPushButton);
   UI().centralWidget->layout()->setMargin(0);
   UI().centralWidget->layout()->setSpacing(0);
-  UI().mZoomComboBox->setCompleter(0);
+  UI().mZoomComboBox->setCompleter(nullptr);
   UI().mZoomComboBox->setFocusPolicy(Qt::ClickFocus);
 
   connect(UI().mZoomComboBox->lineEdit(), SIGNAL(editingFinished()), this, SLOT(on_mZoomComboBox_editingFinished()));
@@ -103,30 +103,30 @@ void MainWindow::Update(const ggSubject* aSubject)
 }
 
 
-QString MainWindow::ZoomToString(float aZoomFloat) const
+QString MainWindow::ZoomToString(ggDouble aZoomFloat) const
 {
-  return QString::number((int)(100.0f*aZoomFloat + 0.5f)) + "%";
+  return QString::number(static_cast<int>(100.0*aZoomFloat + 0.5)) + "%";
 }
 
 
-float MainWindow::StringToZoom(const QString& aZoomString) const
+ggDouble MainWindow::StringToZoom(const QString& aZoomString) const
 {
   QStringList vZoomStrings = aZoomString.split("%");
-  float vZoomFloat = vZoomStrings.first().toFloat() / 100.0f;
+  ggDouble vZoomFloat = vZoomStrings.first().toDouble() / 100.0;
   return vZoomFloat;
 }
 
 
 void MainWindow::on_mZoomComboBox_activated(int aIndex)
 {
-  float vZoomFloat = StringToZoom(UI().mZoomComboBox->itemText(aIndex));
+  ggDouble vZoomFloat = StringToZoom(UI().mZoomComboBox->itemText(aIndex));
   UI().mGraphicsView->GetSubjectZoom()->SetValue(vZoomFloat);
 }
 
 
 void MainWindow::on_mZoomComboBox_editingFinished()
 {
-  float vZoomFloat = StringToZoom(UI().mZoomComboBox->lineEdit()->text());
+  ggDouble vZoomFloat = StringToZoom(UI().mZoomComboBox->lineEdit()->text());
   if (vZoomFloat > 0.0f) UI().mGraphicsView->GetSubjectZoom()->SetValue(vZoomFloat);
 }
 
@@ -177,8 +177,8 @@ void MainWindow::on_mGenerateImagePushButton_clicked()
   const ggFloat vCircleDiameter = UI().mCircleDiameterLineEdit->text().toFloat();
   const ggFloat vCircleLineThickness = UI().mCircleLineThicknessLineEdit->text().toFloat();
   const ggFloat vCircleLineFragmentation = UI().mCircleLineFragmentationSpinBox->value() / 100.0f;
-  const ggFloat vCameraNoise = UI().mCameraNoiseDoubleSpinBox->value() / 100.0f;
-  const ggInt32 vCameraNumberOfBits = UI().mCameraBitDepthSpinBox->value();
+  const ggFloat vCameraNoise = static_cast<ggFloat>(UI().mCameraNoiseDoubleSpinBox->value() / 100.0);
+  const ggUInt8 vCameraNumberOfBits = static_cast<ggUInt8>(UI().mCameraBitDepthSpinBox->value());
 
   if (vCameraImageSizeX == 0) return;
   if (vCameraImageSizeY == 0) return;
@@ -192,7 +192,7 @@ void MainWindow::on_mGenerateImagePushButton_clicked()
   // draw a circle
   ggVector2Double vCenter(vCircleCenterX, vCircleCenterY);
   ggDouble vRadius(vCircleDiameter / 2.0f);
-  ggInt32 vNumSteps = std::max<ggInt32>(1, vCircleLineThickness);
+  ggInt32 vNumSteps = std::max<ggInt32>(1, static_cast<ggInt32>(vCircleLineThickness));
   ggDouble vStepLength = vCircleLineThickness / vNumSteps;
   for (ggInt32 vStep = 0; vStep < vNumSteps; vStep++) {
     vImagePainter.DrawCircle(vCenter, vRadius - (vNumSteps - 1) * vStepLength / 2.0 + vStep * vStepLength,
@@ -221,13 +221,14 @@ void MainWindow::on_mLoadImagePushButton_clicked()
       ggImageT<ggFloat> vImageFloat(vImage.width(), vImage.height());
       for (ggSize vIndexY = 0; vIndexY < vImageFloat.GetSizeY(); vIndexY++) {
         for (ggSize vIndexX = 0; vIndexX < vImageFloat.GetSizeX(); vIndexX++) {
-          vImageFloat(vIndexX, vIndexY) = vImage.pixelColor(vIndexX, vIndexY).lightnessF();
+          const QColor& vColor(vImage.pixelColor(static_cast<int>(vIndexX), static_cast<int>(vIndexY)));
+          vImageFloat(vIndexX, vIndexY) = static_cast<ggFloat>(vColor.lightnessF());
         }
       }
 
       // settings from user interface
-      const ggFloat vCameraNoise = UI().mCameraNoiseDoubleSpinBox->value() / 100.0f;
-      const ggInt32 vCameraNumberOfBits = UI().mCameraBitDepthSpinBox->value();
+      const ggFloat vCameraNoise = static_cast<ggFloat>(UI().mCameraNoiseDoubleSpinBox->value() / 100.0);
+      const ggUInt8 vCameraNumberOfBits = static_cast<ggUInt8>(UI().mCameraBitDepthSpinBox->value());
 
       // calculate camera image and image for rendering on screen
       mScene->PrepareCameraImage(vImageFloat,
@@ -276,8 +277,8 @@ void MainWindow::on_mOverlayOpacitySlider_valueChanged(int /*aValue*/)
   const ggInt32 vValueMin = UI().mOverlayOpacitySlider->minimum();
   const ggInt32 vValueMax = UI().mOverlayOpacitySlider->maximum();
 
-  const ggFloat vOpacity = (ggFloat)(vValue - vValueMin) /
-                           (ggFloat)(vValueMax - vValueMin);
+  const ggFloat vOpacity = static_cast<ggFloat>(vValue - vValueMin) /
+                           static_cast<ggFloat>(vValueMax - vValueMin);
 
   mScene->SetHoughImageOpacity(vOpacity);
 }
@@ -289,8 +290,8 @@ void MainWindow::on_mCirclesOpacitySlider_valueChanged(int /*aValue*/)
   const ggInt32 vValueMin = UI().mCirclesOpacitySlider->minimum();
   const ggInt32 vValueMax = UI().mCirclesOpacitySlider->maximum();
 
-  const ggFloat vOpacity = (ggFloat)(vValue - vValueMin) /
-                           (ggFloat)(vValueMax - vValueMin);
+  const ggFloat vOpacity = static_cast<ggFloat>(vValue - vValueMin) /
+                           static_cast<ggFloat>(vValueMax - vValueMin);
 
   mScene->SetCirclesOpacity(vOpacity);
 }

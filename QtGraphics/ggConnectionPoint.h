@@ -24,15 +24,15 @@ public:
   void SetDirection(const QVector2D& aDirection);
   const QVector2D& GetDirection() const;
 
-  float GetDirectionAngle() const;
-  void SetDirectionAngle(float aAngle);
+  qreal GetDirectionAngle() const;
+  void SetDirectionAngle(qreal aAngle);
 
   void SetDirectionRight();
   void SetDirectionLeft();
   void SetDirectionUp();
   void SetDirectionDown();
 
-  QPointF GetControlPoint(float aDistance) const;
+  QPointF GetControlPoint(qreal aDistance) const;
 
 private:
 

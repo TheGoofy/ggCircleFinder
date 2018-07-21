@@ -77,7 +77,7 @@ void ggGraphicsAutoConnectPathItem::InsertPointsDst(const tPointSet& aPoints)
 
 
 void ggGraphicsAutoConnectPathItem::SetDecorationSrc(ggDecoration::cType aType,
-                                                     float aLength,
+                                                     qreal aLength,
                                                      ggDecoration::cFill aFill)
 {
   ggGraphicsDecoratedPathItem::SetDecorationSrc(aType, aLength, aFill);
@@ -86,7 +86,7 @@ void ggGraphicsAutoConnectPathItem::SetDecorationSrc(ggDecoration::cType aType,
 
 
 void ggGraphicsAutoConnectPathItem::SetDecorationDst(ggDecoration::cType aType,
-                                                     float aLength,
+                                                     qreal aLength,
                                                      ggDecoration::cFill aFill)
 {
   ggGraphicsDecoratedPathItem::SetDecorationDst(aType, aLength, aFill);
@@ -120,31 +120,31 @@ void ggGraphicsAutoConnectPathItem::Detach(const tPointSet& aPoints)
 }
 
 
-float ggGraphicsAutoConnectPathItem::GetDistanceCost(const ggConnectionPoint& aPointSrc,
+qreal ggGraphicsAutoConnectPathItem::GetDistanceCost(const ggConnectionPoint& aPointSrc,
                                                      const ggConnectionPoint& aPointDst) const
 {
   // distance between base points
   QPointF vPointSrcBase = aPointSrc.GetControlPoint(DecorationSrc().GetLength());
   QPointF vPointDstBase = aPointDst.GetControlPoint(DecorationDst().GetLength());
-  float vBaseDistance = QLineF(vPointSrcBase, vPointDstBase).length();
+  qreal vBaseDistance = QLineF(vPointSrcBase, vPointDstBase).length();
 
   // distance between control points (depends on connection direction)
-  QPointF vPointSrcControl = aPointSrc.GetControlPoint(DecorationSrc().GetLength() + vBaseDistance/4.0f);
-  QPointF vPointDstControl = aPointDst.GetControlPoint(DecorationDst().GetLength() + vBaseDistance/4.0f);
-  float vControlDistance = QLineF(vPointSrcControl, vPointDstControl).length();
+  QPointF vPointSrcControl = aPointSrc.GetControlPoint(DecorationSrc().GetLength() + vBaseDistance/4.0);
+  QPointF vPointDstControl = aPointDst.GetControlPoint(DecorationDst().GetLength() + vBaseDistance/4.0);
+  qreal vControlDistance = QLineF(vPointSrcControl, vPointDstControl).length();
 
   // distance along direction (negative direction means that one point is behind the other point)
   QVector2D vDirectionSrcToDst(vPointDstBase - vPointSrcBase);
   QVector2D vDirectionDstToSrc(vPointSrcBase - vPointDstBase);
-  float vDistanceDst = QVector2D::dotProduct(vDirectionSrcToDst, aPointSrc.GetDirection());
-  float vDistanceSrc = QVector2D::dotProduct(vDirectionDstToSrc, aPointDst.GetDirection());
+  qreal vDistanceDst = static_cast<qreal>(QVector2D::dotProduct(vDirectionSrcToDst, aPointSrc.GetDirection()));
+  qreal vDistanceSrc = static_cast<qreal>(QVector2D::dotProduct(vDirectionDstToSrc, aPointDst.GetDirection()));
 
   // conditions for low costs:
   // - control points are close to each other
   // - points do not point away from each other (very bad)
-  float vCost = vControlDistance;
-  if (vDistanceSrc < 0.0f) vCost += -5.0f * vDistanceSrc;
-  if (vDistanceDst < 0.0f) vCost += -5.0f * vDistanceDst;
+  qreal vCost = vControlDistance;
+  if (vDistanceSrc < 0.0) vCost += -5.0 * vDistanceSrc;
+  if (vDistanceDst < 0.0) vCost += -5.0 * vDistanceDst;
 
   return vCost;
 }
@@ -153,7 +153,7 @@ float ggGraphicsAutoConnectPathItem::GetDistanceCost(const ggConnectionPoint& aP
 void ggGraphicsAutoConnectPathItem::RebuildPath()
 {
   // connection points with the shortest distance
-  float vDistanceCostsMin = std::numeric_limits<float>::max();
+  qreal vDistanceCostsMin = std::numeric_limits<qreal>::max();
   const ggConnectionPoint* vPointSrc = nullptr;
   const ggConnectionPoint* vPointDst = nullptr;
 
@@ -166,7 +166,7 @@ void ggGraphicsAutoConnectPathItem::RebuildPath()
       while (vPointsDstWalker) {
 
         if ((**vPointsDstWalker).GetVisible()) {
-          float vDistanceCosts = GetDistanceCost(**vPointsSrcWalker, **vPointsDstWalker);
+          qreal vDistanceCosts = GetDistanceCost(**vPointsSrcWalker, **vPointsDstWalker);
           if (vDistanceCosts < vDistanceCostsMin) {
             vDistanceCostsMin = vDistanceCosts;
             vPointSrc = *vPointsSrcWalker;

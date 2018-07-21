@@ -20,8 +20,8 @@ public:
 
   ggPainterPath();
 
-  void SetDecorationRatio(float aRatio);
-  float GetDecorationRatio() const;
+  void SetDecorationRatio(qreal aRatio);
+  qreal GetDecorationRatio() const;
 
   void AddDecoration(const ggDecoration& aDecoration,
                      const QPointF& aEnd,
@@ -58,9 +58,9 @@ private:
                            float& aLength,
                            float& aWidth2) const;
 
-  float GetDecorationRatio(ggDecoration::cType aType) const;
+  qreal GetDecorationRatio(ggDecoration::cType aType) const;
 
-  float mDecorationRatio;
+  qreal mDecorationRatio;
 
 };
 

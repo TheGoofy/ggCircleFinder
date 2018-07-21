@@ -66,7 +66,7 @@ public:
     ggSubject::cExecutorBlocking vBlocker(&mSubjectPosition);
     TBaseItem::setPos(aPosition);
     QRectF vRect(TBaseItem::rect());
-    vRect.moveTo(0.0f, 0.0f);
+    vRect.moveTo(0.0, 0.0);
     TBaseItem::setRect(vRect);
   }
 
@@ -141,8 +141,8 @@ private:
 
   void UpdateRect() {
     QRectF vRect(TBaseItem::rect());
-    float vWidth = mHandleItemTR->pos().x() - mHandleItemTL->pos().x();
-    float vHeight = vRect.height();
+    qreal vWidth = mHandleItemTR->pos().x() - mHandleItemTL->pos().x();
+    qreal vHeight = vRect.height();
     vRect.setTopLeft(mHandleItemTL->pos());
     vRect.setSize(QSizeF(vWidth, vHeight));
     TBaseItem::setRect(vRect.normalized());

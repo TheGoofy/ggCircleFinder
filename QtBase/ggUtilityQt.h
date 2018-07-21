@@ -20,19 +20,19 @@ namespace ggUtilityQt
 {
 
   int GetColorMax(const QColor& aColor);
-  float GetColorMaxF(const QColor& aColor);
-  float GetColorLuma(const QColor& aColor);
+  qreal GetColorMaxF(const QColor& aColor);
+  qreal GetColorLuma(const QColor& aColor);
 
-  QColor GetColorScaled(const QColor& aColor, float aScale);
-  QColor GetColorInterpolated(const QColor& aColorA, const QColor& aColorB, float aWeightA);
+  QColor GetColorScaled(const QColor& aColor, qreal aScale);
+  QColor GetColorInterpolated(const QColor& aColorA, const QColor& aColorB, qreal aWeightA);
   QColor GetColorContrast(const QColor& aColor);
   QColor GetColorSaturized(const QColor& aColor);
-  QColor GetColorWithAlpha(const QColor& aColor, float aAlpha);
-  QColor GetColorWithValue(const QColor& aColor, float aValue);
-  QColor GetColorWithLightness(const QColor& aColor, float aLightness);
+  QColor GetColorWithAlpha(const QColor& aColor, qreal aAlpha);
+  QColor GetColorWithValue(const QColor& aColor, qreal aValue);
+  QColor GetColorWithLightness(const QColor& aColor, qreal aLightness);
   QColor GetColorQt(const ggColorUInt8& aColor);
 
-  QRectF GetRectInflated(const QRectF& aRect, float aDelta);
+  QRectF GetRectInflated(const QRectF& aRect, qreal aDelta);
 
   QString ToString(const QColor& aColor);
   bool FromString(const QString& aColorARGB, QColor& aColor);

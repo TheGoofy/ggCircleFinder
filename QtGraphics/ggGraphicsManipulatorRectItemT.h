@@ -72,7 +72,7 @@ public:
     ggSubject::cExecutorBlocking vBlocker(&mSubjectPosition);
     TBaseItem::setPos(aPosition);
     QRectF vRect(TBaseItem::rect());
-    vRect.moveTo(0.0f, 0.0f);
+    vRect.moveTo(0.0, 0.0);
     TBaseItem::setRect(vRect);
     UpdateHandlePositions();
   }

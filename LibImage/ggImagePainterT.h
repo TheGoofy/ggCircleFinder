@@ -44,7 +44,6 @@ public:
       switch (aBlendType) {
         case ggPainterBlendType::eSet: vPixel = (1.0f - aOpacity) * vPixel + aOpacity * aValue; break;
         case ggPainterBlendType::eAdd: vPixel += aOpacity * aValue; break;
-        default: break;
       }
     }
   }
@@ -65,8 +64,8 @@ public:
     const ggDouble vOffset = 0.0; //-0.5;
 
     // index of involved 4 pixels
-    ggInt32 vIndexX0 = floor(aIndex.X() + vOffset);
-    ggInt32 vIndexY0 = floor(aIndex.Y() + vOffset);
+    ggInt32 vIndexX0 = static_cast<ggInt32>(floor(aIndex.X() + vOffset));
+    ggInt32 vIndexY0 = static_cast<ggInt32>(floor(aIndex.Y() + vOffset));
     ggInt32 vIndexX1 = vIndexX0 + 1;
     ggInt32 vIndexY1 = vIndexY0 + 1;
 
@@ -119,7 +118,7 @@ public:
   {
     ggVector2Double vDirection(aPos1 - aPos0);
     ggDouble vLength = vDirection.Length();
-    ggInt32 vNumSteps = vLength + 0.5f;
+    ggInt32 vNumSteps = static_cast<ggInt32>(vLength + 0.5);
     if (vNumSteps <= 0) vNumSteps = 1;
     ggDouble vStepLength = vLength / vNumSteps;
     if (vLength != 0.0f) vDirection /= vLength;
@@ -150,7 +149,7 @@ public:
                   const ggFloat aFragmentaion = 0.0f)
   {
     ggDouble vStepLength = atan2(1.0, aRadius);
-    ggInt32 vNumSteps = M_PI_2 / vStepLength + 0.5f;
+    ggInt32 vNumSteps = static_cast<ggInt32>(M_PI_2 / vStepLength + 0.5);
     if (vNumSteps <= 0) vNumSteps = 1;
     vStepLength = M_PI_2 / vNumSteps;
     for (ggInt32 vStep = 0; vStep < vNumSteps; vStep++) {

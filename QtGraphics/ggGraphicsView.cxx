@@ -34,7 +34,7 @@ void ggGraphicsView::NotifyZoom()
 }
 
 
-ggSubjectFloat* ggGraphicsView::GetSubjectZoom()
+ggSubjectDouble* ggGraphicsView::GetSubjectZoom()
 {
   return &mSubjectZoom;
 }
@@ -59,15 +59,15 @@ void ggGraphicsView::SetZoomFit()
 }
 
 
-float ggGraphicsView::GetSceneScale() const
+qreal ggGraphicsView::GetSceneScale() const
 {
-  return transform().mapRect(QRectF(0.0f,0.0f,1.0f,1.0f)).width();
+  return transform().mapRect(QRectF(0.0, 0.0, 1.0, 1.0)).width();
 }
 
 
-void ggGraphicsView::SetSceneScale(float aSceneScale)
+void ggGraphicsView::SetSceneScale(qreal aSceneScale)
 {
-  float vScale = aSceneScale / GetSceneScale();
+  qreal vScale = aSceneScale / GetSceneScale();
   setTransform(transform().scale(vScale, vScale));
 }
 
@@ -120,10 +120,10 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
     // zoom at mouse pointer position
     if (aWheelEvent->modifiers() == Qt::NoModifier) {
       aWheelEvent->accept();
-      float vScale = 1.0f;
-      if (aWheelEvent->delta() > 0) vScale = 1.1f / 1.0f;
-      if (aWheelEvent->delta() < 0) vScale = 1.0f / 1.1f;
-      vScale = ggUtility::RoundToSD(vScale * GetSceneScale(), 2);
+      qreal vScale = 1.0f;
+      if (aWheelEvent->delta() > 0) vScale = 1.1 / 1.0;
+      if (aWheelEvent->delta() < 0) vScale = 1.0 / 1.1;
+      vScale = ggUtility::RoundToSD(static_cast<ggFloat>(vScale * GetSceneScale()), 2);
       SetSceneScale(vScale);
       NotifyZoom();
     }
@@ -131,7 +131,7 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
     // rotate around mouse pointer position
     if (aWheelEvent->modifiers() & Qt::AltModifier) {
       aWheelEvent->accept();
-      float vAngle = aWheelEvent->delta() > 0 ? -5.0f : 5.0f;
+      qreal vAngle = aWheelEvent->delta() > 0 ? -5.0 : 5.0;
       QPointF vPos = mapToScene(aWheelEvent->pos());
       setTransformationAnchor(NoAnchor);
       translate(vPos.x(), vPos.y());
