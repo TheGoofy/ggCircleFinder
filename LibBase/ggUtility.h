@@ -69,13 +69,6 @@ namespace ggUtility {
   }
 
   template <typename T>
-  inline void Swap(T& aValueA, T& aValueB) {
-    T vValueT = aValueA;
-    aValueA = aValueB;
-    aValueB = vValueT;
-  }
-
-  template <typename T>
   inline const T& Min(const T& aA, const T& aB) {
     return (aA < aB) ? aA : aB;
   }
@@ -254,7 +247,9 @@ namespace ggUtility {
     aItemsVector.insert(aItemsVector.end(), vItemsVectorB.begin(), vItemsVectorB.end());
   }
 
-  std::vector<ggColorUInt8> ColorTable();
+  std::vector<ggColorUInt8> ColorTableHot();
+  std::vector<ggColorUInt8> ColorTableRainbow();
+  std::vector<ggColorUInt8> ColorTableRandom();
 
 }
 

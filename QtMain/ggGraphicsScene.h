@@ -92,7 +92,7 @@ public:
                       const bool aCircleModelCenterVotesFilter,
                       const ggFloat aCircleModelCenterVotesFilterWidth,
                       const ggInt32 aCircleModelNumberOfCircles)
-  {    
+  {
     // start a timer
     QElapsedTimer vTimer;
     vTimer.start();
@@ -121,7 +121,7 @@ public:
 
     // convert hough image for rendering with QT
     ggImageT<ggUChar> vImageUChar = vImageHough.GetConvertedFitMinMax<ggUChar>();
-    std::vector<ggColorUInt8> vColorTableUInt8 = ggUtility::ColorTable();
+    std::vector<ggColorUInt8> vColorTableUInt8 = ggUtility::ColorTableHot();
     QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTableUInt8);
     mImageHoughPixmapItem->setPos(GetROIPosition());
     mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
