@@ -61,8 +61,8 @@ namespace ggImageAlgorithm {
 
   template <typename TValueType>
   ggImageT<ggFloat> CalculateHoughImage(const ggImageT<TValueType>& aImage,
-                                        const ggFloat aCircleModelDiameter,
-                                        const ggFloat aCircleModelLineThickness)
+                                        const ggDouble aCircleModelDiameter,
+                                        const ggDouble aCircleModelLineThickness)
   {
     // calculate gradient vector field
     ggImageT<ggVector2Float> vGradientVectorField(aImage.GetSize());
@@ -74,7 +74,7 @@ namespace ggImageAlgorithm {
     for (ggSize vIndexY = 1; vIndexY+1 < vGradientVectorField.GetSizeY(); vIndexY++) {
       for (ggSize vIndexX = 1; vIndexX+1 < vGradientVectorField.GetSizeX(); vIndexX++) {
         const ggVector2Double vGradient(vGradientVectorField(vIndexX, vIndexY).GetConverted<ggDouble>());
-        if (vGradient.Length() > 0.0f) {
+        if (vGradient.Length() > 0.0) {
 
           // try to figure out some sort of circle curvature depending on the neighbor gradients.
           // - triangulate a virtual center-point (accuracy might be a problem due to the close
@@ -83,7 +83,7 @@ namespace ggImageAlgorithm {
           // - the two triangulation points are selected perpendicular to the actual gradient
 
           // calculate the two triangulation points A and B
-          bool vDiagonalQ1 = vGradient.X() * vGradient.Y() > 0.0f;
+          bool vDiagonalQ1 = vGradient.X() * vGradient.Y() > 0.0;
           bool vHorizontal = fabs(vGradient.X()) > fabs(vGradient.Y());
           ggDouble vSlope = vHorizontal ? (vGradient.Y() / vGradient.X()) : (vGradient.X() / vGradient.Y());
           // position of two (intersecting) lines
@@ -118,7 +118,7 @@ namespace ggImageAlgorithm {
             // use the actual gradient (and not the gradient from neighbors) for the center voting
             vCenterDirection = vRadius * vGradient.Normalized();
             // the position of the center point may varies by the thickenss of the circle line
-            ggVector2Double vRadiusRange(0.5f * aCircleModelLineThickness * vGradient.Normalized());
+            ggVector2Double vRadiusRange(0.5 * aCircleModelLineThickness * vGradient.Normalized());
             // if the length of the gradient is high, it's more likely we've detected some reasonable structures (not noise)
             ggFloat vIntensity = static_cast<ggFloat>(vGradient.Length());
 

@@ -481,7 +481,7 @@ inline double ggImageT<double>::GetMinLimit() {
 
 template <>
 inline long double ggImageT<long double>::GetMinLimit() {
-  return 0.0;
+  return 0.0L;
 }
 
 template <>
@@ -496,7 +496,7 @@ inline double ggImageT<double>::GetMaxLimit() {
 
 template <>
 inline long double ggImageT<long double>::GetMaxLimit() {
-  return 1.0;
+  return 1.0L;
 }
 
 #endif // GGIMAGET_H

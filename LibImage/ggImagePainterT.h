@@ -76,8 +76,8 @@ public:
       // calculate weights depending on index location
       ggDouble vWeightX1 = aIndex.X() + vOffset - vIndexX0;
       ggDouble vWeightY1 = aIndex.Y() + vOffset - vIndexY0;
-      ggDouble vWeightX0 = 1.0f - vWeightX1;
-      ggDouble vWeightY0 = 1.0f - vWeightY1;
+      ggDouble vWeightX0 = 1.0 - vWeightX1;
+      ggDouble vWeightY0 = 1.0 - vWeightY1;
 
       // blend the 4 pixels
       BlendPixel(vIndexX0, vIndexY0, aValue, aOpacity * vWeightX0 * vWeightY0, aBlendType);
@@ -121,7 +121,7 @@ public:
     ggInt32 vNumSteps = static_cast<ggInt32>(vLength + 0.5);
     if (vNumSteps <= 0) vNumSteps = 1;
     ggDouble vStepLength = vLength / vNumSteps;
-    if (vLength != 0.0f) vDirection /= vLength;
+    if (vLength != 0.0) vDirection /= vLength;
     for (ggInt32 vStep = 0; vStep <= vNumSteps; vStep++) {
       ggVector2Double vDelta(vStep * vStepLength * vDirection);
       ggFloat vOpacity = GetOpacity(aOpacity, aFragmentaion);

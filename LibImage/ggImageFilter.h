@@ -160,7 +160,7 @@ namespace ggImageFilter {
     // set up random generator
     std::random_device vRandomDevice;
     std::mt19937 vEngine(vRandomDevice());
-    std::normal_distribution<> vRandom(0.0f, aSigma);
+    std::normal_distribution<TValueType> vRandom(0, aSigma);
     // add random values
     aImage.ProcessValues([&vRandom, &vEngine] (TValueType& aValue) {
       aValue += vRandom(vEngine);

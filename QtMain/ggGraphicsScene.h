@@ -87,8 +87,8 @@ public:
 
   QString FindCircles(const bool aCircleModelGaussianFilter,
                       const ggFloat aCircleModelGaussianFilterWidth,
-                      const ggFloat aCircleModelDiameter,
-                      const ggFloat aCircleModelLineThickness,
+                      const ggDouble aCircleModelDiameter,
+                      const ggDouble aCircleModelLineThickness,
                       const bool aCircleModelCenterVotesFilter,
                       const ggFloat aCircleModelCenterVotesFilterWidth,
                       const ggInt32 aCircleModelNumberOfCircles)
