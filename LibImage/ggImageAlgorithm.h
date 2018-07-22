@@ -14,6 +14,38 @@ namespace ggImageAlgorithm {
 
 
   template <typename TValueType>
+  void Invert(ggImageT<TValueType>& aImage,
+              const TValueType& aReference) {
+    aImage.ProcessValues([aReference] (TValueType& aValue) {
+      aValue = aReference - aValue;
+    });
+  }
+
+
+  template <typename TValueType>
+  void Invert(ggImageT<TValueType>& aImage) {
+    Invert(aImage, aImage.GetMinLimit() + aImage.GetMaxLimit());
+  }
+
+
+  template <typename TValueType>
+  ggImageT<TValueType> Inverted(const ggImageT<TValueType>& aImage,
+                                const TValueType& aReference) {
+    ggImageT<TValueType> vImageInverted(aImage);
+    vImageInverted.Invert(aReference);
+    return vImageInverted;
+  }
+
+
+  template <typename TValueType>
+  ggImageT<TValueType> Inverted(const ggImageT<TValueType>& aImage) {
+    ggImageT<TValueType> vImageInverted(aImage);
+    vImageInverted.Invert();
+    return vImageInverted;
+  }
+
+
+  template <typename TValueType>
   void MirrorX(ggImageT<TValueType>& aImage) {
     for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX() / 2; vIndexX++) {
@@ -249,32 +281,38 @@ namespace ggImageAlgorithm {
 
     std::vector<TSpotType> vLocalMaxima;
 
-    const ggInt32 vDelta = 1;
+    // region size around the center ("radius")
+    const ggSize vDelta = 1;
 
-    for (ggSize vIndexY = vDelta; vIndexY + vDelta < aImage.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = vDelta; vIndexX + vDelta < aImage.GetSizeX(); vIndexX++) {
+    // lambda function which checks, if a pixel at a certain location (index-xy) is a local maximum
+    auto vLocalMaximumCheck = [&aImage, &vLocalMaxima, aInterpolatePosition] (ggSize aIndexX, ggSize aIndexY) {
 
-        bool vIsLocalMaximum = true;
-        const TValueType& vImageValue = aImage(vIndexX, vIndexY);
+      const TValueType& vValue = aImage(aIndexX, aIndexY);
+      bool vIsLocalMaximum = true;
 
-        for (ggInt32 vOffY = -vDelta; (vOffY <= vDelta) && vIsLocalMaximum; vOffY++) {
-          for (ggInt32 vOffX = -vDelta; (vOffX <= vDelta) && vIsLocalMaximum; vOffX++) {
-            if ((vOffX != 0) || (vOffY != 0)) {
-              vIsLocalMaximum = vIsLocalMaximum && (vImageValue > aImage(vIndexX + vOffX, vIndexY + vOffY));
-            }
+      // loop over local region (no special handling for border in order to improve performance)
+      for (ggSize vOffY = -vDelta; (vOffY <= vDelta) && vIsLocalMaximum; vOffY++) {
+        for (ggSize vOffX = -vDelta; (vOffX <= vDelta) && vIsLocalMaximum; vOffX++) {
+          // center pixel needs to be excluded
+          if ((vOffX != 0) || (vOffY != 0)) {
+            const TValueType& vNeighborValue = aImage(aIndexX + vOffX, aIndexY + vOffY);
+            vIsLocalMaximum &= vValue > vNeighborValue;
           }
         }
-
-        if (vIsLocalMaximum) {
-          typedef typename TSpotType::tVectorType tVector;
-          TSpotType vSpot(tVector(vIndexX, vIndexY), vImageValue);
-          if (aInterpolatePosition) CalculateParabolaVertex(aImage, vIndexX, vIndexY, vSpot[0], vSpot[1], *vSpot);
-          // if (aInterpolatePosition) CalculateCenterOfGravity(aImage, vIndexX, vIndexY, 10, vSpot[0], vSpot[1]);
-          vLocalMaxima.push_back(vSpot);
-        }
       }
-    }
 
+      if (vIsLocalMaximum) {
+        typedef typename TSpotType::tVectorType tVector;
+        TSpotType vSpot(tVector(aIndexX, aIndexY), vValue);
+        if (aInterpolatePosition) CalculateParabolaVertex(aImage, aIndexX, aIndexY, vSpot[0], vSpot[1], *vSpot);
+        vLocalMaxima.push_back(vSpot);
+      }
+    };
+
+    // actual processing (exclude outer border since our lambda is not implemented for border pixels)
+    aImage.ProcessIndexBorderInside(vDelta, vLocalMaximumCheck);
+
+    // sort the spots from highest to lowest
     std::sort(vLocalMaxima.begin(), vLocalMaxima.end(), [] (const TSpotType& aSpotA, const TSpotType& aSpotB) {
       return aSpotA.GetValue() > aSpotB.GetValue();
     });

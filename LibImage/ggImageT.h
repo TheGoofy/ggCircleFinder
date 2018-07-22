@@ -254,8 +254,8 @@ public:
                                       const ggVector2T<TIndexType>& aIndexEnd,
                                       TIndexProcessor aIndexProcessor) const {
     ProcessIndexRangeInside(aIndexBegin.X(), aIndexBegin.Y(),
-                      aIndexEnd.X(), aIndexEnd.Y(),
-                      aIndexProcessor);
+                            aIndexEnd.X(), aIndexEnd.Y(),
+                            aIndexProcessor);
   }
 
   template <typename TIndexProcessor>
@@ -343,8 +343,8 @@ public:
   inline void ProcessIndexBorderInside(ggSize aBorderSize,
                                        TIndexProcessor aIndexProcessor) const {
     ProcessIndexRangeInside(aBorderSize, aBorderSize,
-                      GetSizeX() - aBorderSize, GetSizeY() - aBorderSize,
-                      aIndexProcessor);
+                            GetSizeX() - aBorderSize, GetSizeY() - aBorderSize,
+                            aIndexProcessor);
   }
 
   template <typename TIndexProcessor>
@@ -365,18 +365,18 @@ public:
                       aIndexProcessorOutside);
   }
 
-  const TValueType& GetMin() const {
+  TValueType GetMin() const {
     GG_ASSERT(!Empty());
-    const TValueType& vMin = mValues[0];
+    TValueType vMin = mValues[0];
     ProcessValues([&vMin] (const TValueType& aValue) {
       if (aValue < vMin) vMin = aValue;
     });
     return vMin;
   }
 
-  const TValueType& GetMax() const {
+  TValueType GetMax() const {
     GG_ASSERT(!Empty());
-    const TValueType& vMax = mValues[0];
+    TValueType vMax = mValues[0];
     ProcessValues([&vMax] (const TValueType& aValue) {
       if (aValue > vMax) vMax = aValue;
     });
@@ -395,28 +395,6 @@ public:
     ggVectorT<TValueType, 2> vMinMax;
     GetMinMax(vMinMax[0], vMinMax[1]);
     return vMinMax;
-  }
-
-  void Invert(const TValueType& aReference) {
-    ProcessValues([aReference] (TValueType& aValue) {
-      aValue = aReference - aValue;
-    });
-  }
-
-  void Invert() {
-    Invert(GetMinLimit() + GetMaxLimit());
-  }
-
-  ggImageT<TValueType> Inverted(const TValueType& aReference) {
-    ggImageT<TValueType> vImageInverted(*this);
-    vImageInverted.Invert(aReference);
-    return vImageInverted;
-  }
-
-  ggImageT<TValueType> Inverted() {
-    ggImageT<TValueType> vImageInverted(*this);
-    vImageInverted.Invert();
-    return vImageInverted;
   }
 
   template <typename TValueTypeProcessed, typename TProcessor>
