@@ -410,6 +410,13 @@ public:
   }
 
   template <typename TValueTypeConverted>
+  inline ggImageT<TValueTypeConverted> GetConverted() const {
+    return GetProcessed<TValueTypeConverted>([] (const TValueType& aValue) {
+      return static_cast<TValueTypeConverted>(aValue);
+    });
+  }
+
+  template <typename TValueTypeConverted>
   inline ggImageT<TValueTypeConverted> GetConvertedFitMinMax(const TValueTypeConverted& aMinConverted,
                                                              const TValueTypeConverted& aMaxConverted) const {
     ggVectorT<tValueType, 2> vMinMax(GetMinMax());
