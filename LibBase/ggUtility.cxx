@@ -97,7 +97,7 @@ std::vector<ggColorUInt8> ggUtility::ColorTableHot()
 }
 
 
-std::vector<ggColorUInt8> ggUtility::ColorTableRainbow()
+std::vector<ggColorUInt8> ggUtility::ColorTableRainbow(bool aIndexZeroTransparent)
 {
   std::vector<ggColorUInt8> vColorTable(256);
   for (ggUSize vIndex = 0; vIndex < 256; vIndex++) {
@@ -109,18 +109,20 @@ std::vector<ggColorUInt8> ggUtility::ColorTableRainbow()
     else if (vIndex < 206) vColorTable[vIndex].Set(             0, 250-5*(vI-156),          255, 255); // 50 steps (250..005): cyan => blue
     else                   vColorTable[vIndex].Set(  5+5*(vI-206),              0,          255, 255); // 50 steps (005..250): blue => purple
   }
+  if (aIndexZeroTransparent) vColorTable[0].SetA(0);
   return vColorTable;
 }
 
 
-std::vector<ggColorUInt8> ggUtility::ColorTableRandom()
+std::vector<ggColorUInt8> ggUtility::ColorTableRandom(bool aIndexZeroTransparent)
 {
   // use rainbow table, pick random color and swap it with the last color
-  std::vector<ggColorUInt8> vColorTable(ColorTableRainbow());
+  std::vector<ggColorUInt8> vColorTable(ColorTableRainbow(false));
   for (ggUSize vIndex = 1; vIndex < vColorTable.size(); vIndex++) {
     ggUSize vIndexLast = vColorTable.size() - vIndex;
     ggUSize vIndexRand = static_cast<ggUSize>(rand()) % vIndexLast;
     std::swap(vColorTable[vIndexRand], vColorTable[vIndexLast]);
   }
+  if (aIndexZeroTransparent) vColorTable[0].SetA(0);
   return vColorTable;
 }
