@@ -70,7 +70,7 @@ public:
   }
 
   inline bool Empty() const {
-    return (mSize.X() > 0) && (mSize.Y() > 0);
+    return (mSize.X() == 0) || (mSize.Y() == 0);
   }
 
   inline void Resize(ggSize aSizeX, ggSize aSizeY) {
@@ -227,8 +227,8 @@ public:
 
   template <typename TIndexProcessor>
   inline void ProcessIndex(TIndexProcessor aIndexProcessor) const {
-    for (ggSize vIndexY = 0; vIndexY < GetSizeX(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < GetSizeY(); vIndexX++) {
+    for (ggSize vIndexY = 0; vIndexY < GetSizeY(); vIndexY++) {
+      for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
         aIndexProcessor(vIndexX, vIndexY);
       }
     }
