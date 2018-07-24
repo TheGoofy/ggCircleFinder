@@ -146,8 +146,8 @@ public:
   }
 
   inline ggImageT<TValueType>& operator = (const ggImageT<TValueType>& aOther) {
-    Resize(aOther.mSizeX, aOther.mSizeY);
-    std::memcpy(mValues, aOther.mValues, GetSizeTotal() * sizeof(TValueType));
+    Resize(aOther.mSize);
+    std::memcpy(mValues, aOther.mValues, aOther.GetSizeTotal() * sizeof(TValueType));
     return *this;
   }
 

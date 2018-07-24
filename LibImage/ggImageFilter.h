@@ -132,6 +132,68 @@ namespace ggImageFilter {
 
 
   template <typename TValueType>
+  void Median(ggImageT<TValueType>& aImageDst,
+              const ggImageT<TValueType>& aImageSrc,
+              const ggSize aWidth)
+  {
+    // src- and dst-image must have same size
+    GG_ASSERT(aImageSrc.GetSize() == aImageDst.GetSize());
+
+    // check if filter width is 2 or larger
+    if (aWidth > 1) {
+
+      // calculate kernel offsets
+      const ggSize vOffBegin = - (aWidth - 1) / 2;
+      const ggSize vOffEnd = vOffBegin + aWidth;
+
+      // the median filter kernel (index processor)
+      auto vMedianKernel = [&aImageDst, &aImageSrc, &vOffBegin, &vOffEnd] (ggSize aIndexX, ggSize aIndexY) {
+
+        // calculate proper index range (consider image borders)
+        const ggSize vIndexBeginX = std::max<ggSize>(aIndexX + vOffBegin, 0);
+        const ggSize vIndexBeginY = std::max<ggSize>(aIndexY + vOffBegin, 0);
+        const ggSize vIndexEndX = std::min<ggSize>(aIndexX + vOffEnd, aImageSrc.GetSizeY());
+        const ggSize vIndexEndY = std::min<ggSize>(aIndexY + vOffEnd, aImageSrc.GetSizeY());
+
+        // container for image values inside kernel region
+        std::vector<TValueType> vValues;
+        vValues.reserve((vIndexEndX - vIndexBeginX) * (vIndexEndY - vIndexBeginY));
+        for (ggSize vIndexY = vIndexBeginY; vIndexY < vIndexEndY; vIndexY++) {
+          for (ggSize vIndexX = vIndexBeginX; vIndexX < vIndexEndX; vIndexX++) {
+            vValues.push_back(aImageSrc(vIndexX, vIndexY));
+          }
+        }
+
+        // sort the values (partially)
+        std::nth_element(vValues.begin(), vValues.begin() + vValues.size() / 2, vValues.end());
+
+        // assign the meddian value (from the middle of the partially sorted vector)
+        aImageDst(aIndexX, aIndexY) = vValues[vValues.size() / 2];
+      };
+
+      // apply the median filter kernel
+      aImageSrc.ProcessIndex(vMedianKernel);
+    }
+    else {
+
+      // for filter width of 0 or 1 there is no median to calculate => just copy the image values
+      aImageDst = aImageSrc;
+    }
+  }
+
+
+  template <typename TValueType>
+  void Median(ggImageT<TValueType>& aImage,
+              const ggSize aSize)
+  {
+    // can't do median in-place, make a temporary copy
+    ggImageT<TValueType> vImageMedian(aImage.GetSize());
+    Median(vImageMedian, aImage, aSize);
+    aImage = vImageMedian;
+  }
+
+
+  template <typename TValueType>
   std::vector<ggSize> GetHistogram(const ggImageT<TValueType>& aImage)
   {
     std::vector<ggSize> vHistogram;
@@ -218,8 +280,7 @@ namespace ggImageFilter {
   void Gradient(ggImageT<TValueType>& aImageDst,
                 const ggImageT<TValueType>& aImageSrc)
   {
-    GG_ASSERT(aImageSrc.GetSizeX() == aImageDst.GetSizeX());
-    GG_ASSERT(aImageSrc.GetSizeY() == aImageDst.GetSizeY());
+    GG_ASSERT(aImageSrc.GetSize() == aImageDst.GetSize());
     auto vFunctionGradient = [&aImageSrc, &aImageDst] (ggSize aIndexX, ggSize aIndexY) {
       aImageDst(aIndexX, aIndexY) = Gradient(aImageSrc, aIndexX, aIndexY).Length();
     };
@@ -233,8 +294,7 @@ namespace ggImageFilter {
   template <typename TValueType>
   void Gradient(ggImageT<ggVector2Float>& aImageDst,
                 const ggImageT<TValueType>& aImageSrc) {
-    GG_ASSERT(aImageSrc.GetSizeX() == aImageDst.GetSizeX());
-    GG_ASSERT(aImageSrc.GetSizeY() == aImageDst.GetSizeY());
+    GG_ASSERT(aImageSrc.GetSize() == aImageDst.GetSize());
     auto vFunctionGradient = [&aImageSrc, &aImageDst] (ggSize aIndexX, ggSize aIndexY) {
       aImageDst(aIndexX, aIndexY) = Gradient(aImageSrc, aIndexX, aIndexY);
     };
