@@ -6,6 +6,7 @@
 #include <QElapsedTimer>
 
 #include "LibBase/ggGeometry.h"
+#include "LibBase/ggFilterT.h"
 #include "LibImage/ggImageT.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImageAlgorithm.h"
@@ -62,6 +63,16 @@ public:
     ggImageFilter::AddNoise(vImageFloat, aCameraNoise * (vMin < vMax ?  vMax - vMin : 1.0f));
     vImageFloat.GetMinMax(vMin, vMax);
 
+    /*
+    ggFilterMedianFloat vFilter(10);
+    vImageFloat.ProcessValues([&vFilter] (ggFloat& aValue) {
+      aValue = vFilter.Filter(aValue);
+    });
+    */
+    /*
+    ggImageFilter::Median(vImageFloat, 4);
+    */
+
     ggUInt16 vCameraValueMax = (static_cast<ggUInt16>(1 << aCameraNumberOfBits) - 1);
     ggFloat vScaleCameraToDisplay = 255.0f / static_cast<ggFloat>(vCameraValueMax);
     mImageCamera.Resize(vImageFloat.GetSizeX(), vImageFloat.GetSizeY());
@@ -102,6 +113,30 @@ public:
     mImageCamera.Copy(vImageCameraROI, GetROIPosition().x(), GetROIPosition().y());
     if (aCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, aCircleModelGaussianFilterWidth);
 
+    /*
+    {
+      ggFloat vMin, vMax;
+      vImageCameraROI.GetMinMax(vMin, vMax);
+      ggFloat vThreshold = (vMin + vMax) / 2.0f;
+
+      auto vThresholdCheck = [vThreshold] (const ggFloat& aValue) {
+        return aValue > vThreshold;
+      };
+
+      ggImageT<ggUInt32> vImageLabeled(ggImageAlgorithm::CalculateConnectedComponents(vImageCameraROI,
+                                                                                      vThresholdCheck));
+
+      // convert hough image for rendering with QT
+      ggImageT<ggUChar> vImageUChar = vImageLabeled.GetConverted<ggUChar>();
+      std::vector<ggColorUInt8> vColorTableUInt8 = ggUtility::ColorTableRandom(true);
+      QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTableUInt8);
+      mImageHoughPixmapItem->setPos(GetROIPosition());
+      mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
+
+      return "connected components test";
+    }
+    */
+
     // do gradient based hough transformation
     ggImageT<ggFloat> vImageHough(ggImageAlgorithm::CalculateHoughImage(vImageCameraROI,
                                                                         aCircleModelDiameter,
@@ -114,6 +149,16 @@ public:
     typedef ggSpotT<ggFloat, ggVector2Double> tSpot;
     typedef std::vector<tSpot> tSpots;
     tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima(vImageHough, true);
+
+    // interpolate the brightest spot centers by calculating the center of gravity
+    ggUSize vNumberOfInterestingSpots = std::min<ggSize>(vCenterSpots.size(), aCircleModelNumberOfCircles);
+    for (ggUSize vSpotIndex = 0; vSpotIndex < vNumberOfInterestingSpots; vSpotIndex++) {
+      tSpot& vSpot = vCenterSpots[vSpotIndex];
+      ggImageAlgorithm::CalculateCenterOfGravity(vImageHough,
+                                                 static_cast<ggSize>(vSpot[0] + 0.5), static_cast<ggSize>(vSpot[1] + 0.5),
+                                                 static_cast<ggSize>(aCircleModelLineThickness + 0.5),
+                                                 vSpot[0], vSpot[1]);
+    }
 
     // stop the timer
     ggDouble vCalculationTimeMicroSeconds = 0.001 * vTimer.nsecsElapsed();

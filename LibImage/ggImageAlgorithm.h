@@ -79,15 +79,47 @@ namespace ggImageAlgorithm {
   ggImageT<ggUInt32> CalculateConnectedComponents(const ggImageT<TValueType>& aImage,
                                                   TValueIsComponent aValueIsComponent)
   {
-    ggImageT<ggUInt32> vImageConnectedComponents(aImage.GetSize(), 0);
-    for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) {
-        if (aValueIsComponent(aImage(vIndexX, vIndexY))) {
+    const ggUInt32 vBackgroundLabel = std::numeric_limits<ggUInt32>::max();
+    ggImageT<ggUInt32> vImageLabeled(aImage.GetSize(), vBackgroundLabel);
+    ggUInt32 vComponentLabel = 1;
 
+    auto vConnectionCheck = [&aImage, &aValueIsComponent, &vImageLabeled, &vComponentLabel] (ggSize aIndexX, ggSize aIndexY) {
+      if (aValueIsComponent(aImage(aIndexX, aIndexY))) {
+        ggUInt32 vNeighborLabel1 = vBackgroundLabel;
+        ggUInt32 vNeighborLabel2 = vBackgroundLabel;
+        ggUInt32 vNeighborLabel3 = vBackgroundLabel;
+        ggUInt32 vNeighborLabel4 = vBackgroundLabel;
+        if (aIndexX > 0) {
+          vNeighborLabel1 = vImageLabeled(aIndexX-1, aIndexY);
+          if (aIndexY > 0) {
+            vNeighborLabel2 = vImageLabeled(aIndexX-1, aIndexY-1);
+          }
+        }
+        if (aIndexY > 0) {
+          vNeighborLabel3 = vImageLabeled(aIndexX, aIndexY-1);
+          if (aIndexX + 1 < aImage.GetSizeX()) {
+            vNeighborLabel4 = vImageLabeled(aIndexX+1, aIndexY-1);
+          }
+        }
+        ggUInt32 vNeighborLabel = ggUtility::Min(vNeighborLabel1, vNeighborLabel2, vNeighborLabel3, vNeighborLabel4);
+        if (vNeighborLabel == vBackgroundLabel) {
+          vImageLabeled(aIndexX, aIndexY) = vComponentLabel++;
+        }
+        else {
+          vImageLabeled(aIndexX, aIndexY) = vNeighborLabel;
         }
       }
-    }
-    return vImageConnectedComponents;
+    };
+
+    aImage.ProcessIndex(vConnectionCheck);
+
+    auto vApplyLabelMap = [] (ggUInt32& aValue) {
+      if (aValue == vBackgroundLabel) aValue = 0;
+    };
+
+    vImageLabeled.ProcessValues(vApplyLabelMap);
+
+    return vImageLabeled;
   }
 
 
