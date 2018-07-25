@@ -17,7 +17,7 @@ ggGraphicsView::ggGraphicsView(QWidget* aParent)
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setTransformationAnchor(AnchorUnderMouse);
-  setSceneRect(QRectF(-10000.0f, -10000.0f, 20000.0f, 20000.0f));
+  setSceneRect(QRectF(-10000.0, -10000.0, 20000.0, 20000.0));
 
   // enable box-selection, and dragging multiple items
   setDragMode(RubberBandDrag);
@@ -120,7 +120,7 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
     // zoom at mouse pointer position
     if (aWheelEvent->modifiers() == Qt::NoModifier) {
       aWheelEvent->accept();
-      qreal vScale = 1.0f;
+      qreal vScale = 1.0;
       if (aWheelEvent->delta() > 0) vScale = 1.1 / 1.0;
       if (aWheelEvent->delta() < 0) vScale = 1.0 / 1.1;
       vScale = ggUtility::RoundToSD(static_cast<ggFloat>(vScale * GetSceneScale()), 2);
@@ -164,8 +164,10 @@ QPoint ggGraphicsView::ToPoint(const QSize& aSize) const
 void ggGraphicsView::resizeEvent(QResizeEvent* aEvent)
 {
   // fix the center
+  setTransformationAnchor(NoAnchor);
   QPointF vCenterDelta = mapToScene(ToPoint(aEvent->size())) - mapToScene(ToPoint(aEvent->oldSize()));
-  setTransform(transform().translate(vCenterDelta.x() / 2.0f, vCenterDelta.y() / 2.0f));
+  setTransform(transform().translate(vCenterDelta.x() / 2.0, vCenterDelta.y() / 2.0));
+  setTransformationAnchor(AnchorUnderMouse);
 
   // reset zoom and center scene
   if (mZoomResetOnResize) {
