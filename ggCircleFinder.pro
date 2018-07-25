@@ -106,7 +106,8 @@ HEADERS += \
     QtWidgets/ggColorPreviewWidget.h \
     QtWidgets/ggColorWheelWidget.h \
     LibImage/ggImageAlgorithm.h \
-    QtMain/ggGraphicsScene.h
+    QtMain/ggGraphicsScene.h \
+    LibBase/ggFilterT.h
 
 FORMS += \
     QtMain/MainWindow.ui \
