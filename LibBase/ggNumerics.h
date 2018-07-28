@@ -5,21 +5,8 @@
 
 template <typename T1, typename T2>
 inline bool ggIsLess(const T1& aValue1, const T2& aValue2) {
-  if (std::is_signed<T1>()) {
-    if (std::is_signed<T2>()) return aValue1 < aValue2;
-    else if (aValue1 < 0) return true;
-    else return static_cast<T2>(aValue1) < aValue2;
-  }
-  else {
-    if (std::is_unsigned<T2>()) return aValue1 < aValue2;
-    else if (aValue2 < 0) return false;
-    else return aValue1 < static_cast<T1>(aValue2);
-  }
-}
-
-template <typename T1, typename T2>
-inline bool ggIsGreater(const T1& aValue1, const T2& aValue2) {
-  return ggIsLess(aValue2, aValue1);
+  typedef typename std::common_type<T1,T2>::type tCommonType;
+  return static_cast<tCommonType>(aValue1) < static_cast<tCommonType>(aValue2);
 }
 
 template <typename T1, typename T2>

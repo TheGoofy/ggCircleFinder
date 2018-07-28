@@ -51,7 +51,8 @@ SOURCES += \
     QtWidgets/ggColorWheelWidget.cxx \
     QtMain/ggGraphicsScene.cxx \
     LibImage/ggImageFilter.cxx \
-    LibBase/ggRound.cxx
+    LibBase/ggRound.cxx \
+    LibBase/ggRoundTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -112,7 +113,8 @@ HEADERS += \
     LibImage/ggImageLabeling.h \
     LibBase/ggRound.h \
     LibBase/ggNumberTypes.h \
-    LibBase/ggNumerics.h
+    LibBase/ggNumerics.h \
+    LibBase/ggRoundTest.h
 
 FORMS += \
     QtMain/MainWindow.ui \

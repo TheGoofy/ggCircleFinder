@@ -3,6 +3,8 @@
 #include <QSettings>
 #include <QDebug>
 
+#include "LibBase/ggRoundTest.h"
+
 int main(int argc, char *argv[])
 {
   QApplication a(argc, argv);
@@ -13,6 +15,8 @@ int main(int argc, char *argv[])
   qDebug() << __PRETTY_FUNCTION__ << a.organizationName();
   QSettings vSettings;
   qDebug() << __PRETTY_FUNCTION__ << vSettings.fileName();
+
+  ggRoundTest::Execute();
 
   MainWindow w;
   w.show();
