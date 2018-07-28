@@ -113,8 +113,8 @@ public:
     mImageCamera.Copy(vImageCameraROI, GetROIPosition().x(), GetROIPosition().y());
     if (aCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, aCircleModelGaussianFilterWidth);
 
-    /*
     {
+      /*
       ggFloat vMin, vMax;
       vImageCameraROI.GetMinMax(vMin, vMax);
       ggFloat vThreshold = (vMin + vMax) / 2.0f;
@@ -123,19 +123,51 @@ public:
         return aValue > vThreshold;
       };
 
-      ggImageT<ggUInt32> vImageLabeled(ggImageAlgorithm::CalculateConnectedComponents(vImageCameraROI,
-                                                                                      vThresholdCheck));
+      ggImageT<ggInt32> vImageLabeled(ggImageAlgorithm::CalculateConnectedComponents(vImageCameraROI,
+                                                                                     vThresholdCheck,
+                                                                                     ggImageAlgorithm::cConnectivity::eCorner));
 
-      // convert hough image for rendering with QT
-      ggImageT<ggUChar> vImageUChar = vImageLabeled.GetConverted<ggUChar>();
-      std::vector<ggColorUInt8> vColorTableUInt8 = ggUtility::ColorTableRandom(true);
-      QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTableUInt8);
+      // convert label image for rendering with QT
+      ggImageT<ggUChar> vImageUChar = vImageLabeled.GetProcessed<ggUChar>([] (const ggInt32& aValue) {
+        return aValue > 0 ? static_cast<ggUChar>( aValue % 128) + 0 :
+                            static_cast<ggUChar>(-aValue % 128) + 128;
+      });
+      std::vector<ggColorUInt8> vColorTableFG = ggUtility::ColorTableRandomHot();
+      std::vector<ggColorUInt8> vColorTableBG = ggUtility::ColorTableRandomCold();
+      std::vector<ggColorUInt8> vColorTable;
+      vColorTable.insert(vColorTable.end(), vColorTableFG.begin(), vColorTableFG.begin() + 128);
+      vColorTable.insert(vColorTable.end(), vColorTableBG.begin(), vColorTableBG.begin() + 128);
+      QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTable);
       mImageHoughPixmapItem->setPos(GetROIPosition());
       mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
-
-      return "connected components test";
+      */
+      /*
+      // draw color bar(s)
+      ggImageT<ggUChar> vImageColorBar(256, 10);
+      vImageColorBar.ProcessIndex([&vImageColorBar] (ggSize aIndexX, ggSize aIndexY) {
+        vImageColorBar(aIndexX, aIndexY) = static_cast<ggUChar>(aIndexX);
+      });
+      for (ggSize vColorBarIndex = 0; vColorBarIndex < 5; vColorBarIndex++) {
+        std::vector<ggColorUInt8> vColorTable;
+        switch (vColorBarIndex) {
+          case 0: vColorTable = ggUtility::ColorTableHot(); break;
+          case 1: vColorTable = ggUtility::ColorTableRainbow(); break;
+          case 2: vColorTable = ggUtility::ColorTableRandomRainbow(); break;
+          case 3: vColorTable = ggUtility::ColorTableRandomHot(); break;
+          case 4: vColorTable = ggUtility::ColorTableRandomCold(); break;
+          default: break;
+        }
+        QImage vImageColorBarQt = ggUtilityQt::GetImage(vImageColorBar, vColorTable);
+        QGraphicsItem* vColorBarPixmapItem = addPixmap(QPixmap::fromImage(vImageColorBarQt));
+        vColorBarPixmapItem->setPos(0, vColorBarIndex * vImageColorBar.GetSizeY());
+      }
+      */
+      /*
+      return "Calculate Connected Components:\n" +
+             QString::number(vImageLabeled.GetMax()) + " Foreground Components\n" +
+             QString::number(-vImageLabeled.GetMin()) + " Background Components\n";
+      */
     }
-    */
 
     // do gradient based hough transformation
     ggImageT<ggFloat> vImageHough(ggImageAlgorithm::CalculateHoughImage(vImageCameraROI,

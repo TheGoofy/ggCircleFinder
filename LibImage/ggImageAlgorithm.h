@@ -75,48 +75,212 @@ namespace ggImageAlgorithm {
   }
 
 
-  template <typename TValueType, typename TValueIsComponent>
-  ggImageT<ggUInt32> CalculateConnectedComponents(const ggImageT<TValueType>& aImage,
-                                                  TValueIsComponent aValueIsComponent)
+  /**
+   * Adds a translation from one label to the other label.
+   * The "aLabelMap" will be modified, that the label with the bigger value can
+   * be translated to the label with the lower value (the bigger label will be
+   * the key of this map).
+   *
+   *  A)              | B)              | C)
+   *        ==>       |       ==>       |       ==>
+   *  1 -> 1 : 1 -> 1 | 1 -> 1 : 1 -> 1 | 1 -> 1 : 1 -> 1
+   *  2 -> 1 : 2 -> 1 | 2 -> 2 : 2 -> 1 | 2 -> 2 : 2 -> 1
+   *         : 3 -> 1 | 3 -> 2 : 3 -> 1 | 3 -> 2 : 3 -> 1
+   *    +    :        | 4 -> 2 : 4 -> 1 | 4 -> 2 : 4 -> 1
+   *         :        |        :        |        :
+   *  3 -> 2 :        |   +    :        |   +    :
+   *                  |        :        |        :
+   *                  | 2 -> 1 :        | 3 -> 1 :
+   *
+   */
+  inline void AddLabelConnection(ggUSize aLabelA,
+                                 ggUSize aLabelB,
+                                 std::vector<ggUSize>& aLabelMap)
   {
-    const ggUInt32 vBackgroundLabel = std::numeric_limits<ggUInt32>::max();
-    ggImageT<ggUInt32> vImageLabeled(aImage.GetSize(), vBackgroundLabel);
-    ggUInt32 vComponentLabel = 1;
+    // sort the labels for translation from higher label A to lower label B
+    if (aLabelA < aLabelB) {
+      std::swap(aLabelA, aLabelB);
+    }
 
-    auto vConnectionCheck = [&aImage, &aValueIsComponent, &vImageLabeled, &vComponentLabel] (ggSize aIndexX, ggSize aIndexY) {
-      if (aValueIsComponent(aImage(aIndexX, aIndexY))) {
-        ggUInt32 vNeighborLabel1 = vBackgroundLabel;
-        ggUInt32 vNeighborLabel2 = vBackgroundLabel;
-        ggUInt32 vNeighborLabel3 = vBackgroundLabel;
-        ggUInt32 vNeighborLabel4 = vBackgroundLabel;
+    // adjust label map size (translation of new labels into itself)
+    ggUSize vLabelLast = aLabelMap.size();
+    while (aLabelA >= vLabelLast) aLabelMap.push_back(vLabelLast++);
+
+    // translation to itself is handled when adjusting the map size
+    if (aLabelA == aLabelB) return;
+
+    // translate label B into final label (Case A)
+    aLabelB = aLabelMap[aLabelB];
+
+    // check previous translation of label A
+    if (aLabelMap[aLabelA] == aLabelA) {
+      // label A was not translated to another label -> add new translation (Case B)
+      ggUSize vLabelMapSize = aLabelMap.size();
+      for (ggUSize vLabel = 0; vLabel < vLabelMapSize; vLabel++) {
+        if (aLabelMap[vLabel] == aLabelA) {
+          aLabelMap[vLabel] = aLabelB;
+        }
+      }
+    }
+    else {
+      // label A is already translated into other label but not to label B -> adjust translation (Case C)
+      if (aLabelMap[aLabelA] != aLabelB) {
+        // (don't panic! recursion depth is maximum 2)
+        AddLabelConnection(aLabelB, aLabelMap[aLabelA], aLabelMap);
+      }
+    }
+  }
+
+
+  inline void AdjustLabelToNeighborFG(ggInt32& aLabel,
+                                      const ggInt32& aNeighborLabel,
+                                      std::vector<ggUSize>& aLabelMapFG)
+  {
+    // only needs to be adjusted, if foreground, and different
+    if ((aNeighborLabel > 0) && (aLabel != aNeighborLabel)) {
+      // check if current label is not yet assigned
+      if (aLabel == 0) {
+        // an unassigned pixel get's the label from its neighbor
+        aLabel = aNeighborLabel;
+      }
+      else {
+        // differently labelled neighbors ==> connect them
+        AddLabelConnection(static_cast<ggUSize>(aLabel), static_cast<ggUSize>(aNeighborLabel), aLabelMapFG);
+      }
+    }
+  }
+
+
+  inline void AdjustLabelToNeighborBG(ggInt32& aLabel,
+                                      const ggInt32& aNeighborLabel,
+                                      std::vector<ggUSize>& aLabelMapBG)
+  {
+    // only needs to be adjusted, if background, and different
+    if ((aNeighborLabel < 0) && (aLabel != aNeighborLabel)) {
+      // check if current label is not yet assigned
+      if (aLabel == 0) {
+        // an unassigned pixel get's the label from its neighbor
+        aLabel = aNeighborLabel;
+      }
+      else {
+        // differently labelled neighbors ==> connect them
+        AddLabelConnection(static_cast<ggUSize>(-aLabel), static_cast<ggUSize>(-aNeighborLabel), aLabelMapBG);
+      }
+    }
+  }
+
+
+  inline void CompactLabelMap(std::vector<ggUSize>& aLabelMap)
+  {
+    // create map which translate the translated label B into a new B (with smaller value)
+    std::vector<ggUSize> vRemapB(aLabelMap.size(), 0);
+    // 0 indicates that a value for B is not used, 1 for used
+    for (ggUSize vLabelA = 0; vLabelA < aLabelMap.size(); vLabelA++) {
+      vRemapB[aLabelMap[vLabelA]] = 1;
+    }
+    // re-enumerate values for label B
+    ggUSize vNewLabelB = 0;
+    for (ggUSize vLabelB = 0; vLabelB < vRemapB.size(); vLabelB++) {
+      vRemapB[vLabelB] = (vRemapB[vLabelB] != 0) ? vNewLabelB++ : vNewLabelB;
+    }
+    // change original label translations
+    for (ggUSize vLabelA = 0; vLabelA < aLabelMap.size(); vLabelA++) {
+      aLabelMap[vLabelA] = vRemapB[aLabelMap[vLabelA]];
+    }
+  }
+
+
+  enum class cConnectivity {
+    eEdge,
+    eCorner
+  };
+
+
+  // positive label is foreground region, negative label is background region, zero is unassigned (should not happen)
+  template <typename TValueType, typename TValueIsForeground>
+  ggImageT<ggInt32> CalculateConnectedComponents(const ggImageT<TValueType>& aImage,
+                                                 TValueIsForeground aValueIsForeground,
+                                                 cConnectivity aConnectivity)
+  {
+    ggImageT<ggInt32> vImageLabeled(aImage.GetSize());
+    std::vector<ggUSize> vLabelMapFG;
+    std::vector<ggUSize> vLabelMapBG;
+    AddLabelConnection(0, 0, vLabelMapFG); // unassigned
+    AddLabelConnection(0, 0, vLabelMapBG); // unassigned
+
+    // lamda function which adjusts a pixel label depending on it's neighbors
+    auto vConnectionCheck = [&aImage,
+                             &aValueIsForeground,
+                             &aConnectivity,
+                             &vImageLabeled,
+                             &vLabelMapFG,
+                             &vLabelMapBG]
+                            (ggSize aIndexX,
+                             ggSize aIndexY) {
+
+      // the pixel, which needs to be labelled
+      ggInt32& vLabel = vImageLabeled(aIndexX, aIndexY);
+
+      // initially set it to "unassigned"
+      vLabel = 0;
+
+      // test if the pixel is foreground or background
+      if (aValueIsForeground(aImage(aIndexX, aIndexY))) {
+        // try to connect with foreground neighborhood
         if (aIndexX > 0) {
-          vNeighborLabel1 = vImageLabeled(aIndexX-1, aIndexY);
-          if (aIndexY > 0) {
-            vNeighborLabel2 = vImageLabeled(aIndexX-1, aIndexY-1);
+          AdjustLabelToNeighborFG(vLabel, vImageLabeled(aIndexX-1, aIndexY), vLabelMapFG);
+          if ((aIndexY > 0) && (aConnectivity == cConnectivity::eCorner)) {
+            AdjustLabelToNeighborFG(vLabel, vImageLabeled(aIndexX-1, aIndexY-1), vLabelMapFG);
           }
         }
         if (aIndexY > 0) {
-          vNeighborLabel3 = vImageLabeled(aIndexX, aIndexY-1);
-          if (aIndexX + 1 < aImage.GetSizeX()) {
-            vNeighborLabel4 = vImageLabeled(aIndexX+1, aIndexY-1);
+          AdjustLabelToNeighborFG(vLabel, vImageLabeled(aIndexX, aIndexY-1), vLabelMapFG);
+          if ((aIndexX + 1 < aImage.GetSizeX()) && (aConnectivity == cConnectivity::eCorner)) {
+            AdjustLabelToNeighborFG(vLabel, vImageLabeled(aIndexX+1, aIndexY-1), vLabelMapFG);
           }
         }
-        ggUInt32 vNeighborLabel = ggUtility::Min(vNeighborLabel1, vNeighborLabel2, vNeighborLabel3, vNeighborLabel4);
-        if (vNeighborLabel == vBackgroundLabel) {
-          vImageLabeled(aIndexX, aIndexY) = vComponentLabel++;
-        }
-        else {
-          vImageLabeled(aIndexX, aIndexY) = vNeighborLabel;
+        // in case it's still unassigned, a new label needs to be registered
+        if (vLabel == 0) {
+          vLabel = static_cast<ggInt32>(vLabelMapFG.size());
+          AddLabelConnection(static_cast<ggUSize>(vLabel), static_cast<ggUSize>(vLabel), vLabelMapFG);
         }
       }
+      else {
+        // try to connect with background neighborhood
+        if (aIndexX > 0) {
+          AdjustLabelToNeighborBG(vLabel, vImageLabeled(aIndexX-1, aIndexY), vLabelMapBG);
+          if ((aIndexY > 0) && (aConnectivity != cConnectivity::eCorner)) {
+            AdjustLabelToNeighborBG(vLabel, vImageLabeled(aIndexX-1, aIndexY-1), vLabelMapBG);
+          }
+        }
+        if (aIndexY > 0) {
+          AdjustLabelToNeighborBG(vLabel, vImageLabeled(aIndexX, aIndexY-1), vLabelMapBG);
+          if ((aIndexX + 1 < aImage.GetSizeX()) && (aConnectivity != cConnectivity::eCorner)) {
+            AdjustLabelToNeighborBG(vLabel, vImageLabeled(aIndexX+1, aIndexY-1), vLabelMapBG);
+          }
+        }
+        // in case it's still unassigned, a new label needs to be registered
+        if (vLabel == 0) {
+          vLabel = -static_cast<ggInt32>(vLabelMapBG.size());
+          AddLabelConnection(static_cast<ggUSize>(-vLabel), static_cast<ggUSize>(-vLabel), vLabelMapBG);
+        }
+      }
+
     };
 
+    // calculate all pixel-labels by iterating with index
     aImage.ProcessIndex(vConnectionCheck);
 
-    auto vApplyLabelMap = [] (ggUInt32& aValue) {
-      if (aValue == vBackgroundLabel) aValue = 0;
+    // eliminate unused label values (enumerate components continously from 1..n)
+    CompactLabelMap(vLabelMapFG);
+    CompactLabelMap(vLabelMapBG);
+
+    // lamda function which translates connected labels
+    auto vApplyLabelMap = [&vLabelMapFG, &vLabelMapBG] (ggInt32& aValue) {
+      aValue = aValue > 0 ? vLabelMapFG[static_cast<ggUSize>(aValue)] : -vLabelMapBG[static_cast<ggUSize>(-aValue)];
     };
 
+    // calculate final labels
     vImageLabeled.ProcessValues(vApplyLabelMap);
 
     return vImageLabeled;

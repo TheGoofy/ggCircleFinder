@@ -249,7 +249,9 @@ namespace ggUtility {
 
   std::vector<ggColorUInt8> ColorTableHot();
   std::vector<ggColorUInt8> ColorTableRainbow(bool aIndexZeroTransparent = false);
-  std::vector<ggColorUInt8> ColorTableRandom(bool aIndexZeroTransparent = false);
+  std::vector<ggColorUInt8> ColorTableRandomRainbow(bool aIndexZeroTransparent = false);
+  std::vector<ggColorUInt8> ColorTableRandomHot(bool aIndexZeroTransparent = false);
+  std::vector<ggColorUInt8> ColorTableRandomCold(bool aIndexZeroTransparent = false);
 
 }
 
