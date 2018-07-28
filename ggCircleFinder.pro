@@ -50,7 +50,8 @@ SOURCES += \
     QtWidgets/ggColorPreviewWidget.cxx \
     QtWidgets/ggColorWheelWidget.cxx \
     QtMain/ggGraphicsScene.cxx \
-    LibImage/ggImageFilter.cxx
+    LibImage/ggImageFilter.cxx \
+    LibBase/ggRound.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -109,7 +110,8 @@ HEADERS += \
     LibImage/ggImageAlgorithm.h \
     QtMain/ggGraphicsScene.h \
     LibBase/ggFilterT.h \
-    LibImage/ggImageLabeling.h
+    LibImage/ggImageLabeling.h \
+    LibBase/ggRound.h
 
 FORMS += \
     QtMain/MainWindow.ui \

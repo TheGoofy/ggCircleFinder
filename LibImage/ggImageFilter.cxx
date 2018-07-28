@@ -1,5 +1,7 @@
 #include "LibImage/ggImageFilter.h"
 
+#include "LibBase/ggRound.h"
+
 
 template <typename TValueType>
 static void Deriche1D(const TValueType* aValuesSrcBegin,
@@ -95,9 +97,9 @@ void ggImageFilter::Gauss(ggImageT<TValueType>& aImage, const TValueTypeInternal
     TValueTypeInternal* vSrcBegin = new TValueTypeInternal[aImage.GetSizeX()];
     TValueTypeInternal* vDstBegin = new TValueTypeInternal[aImage.GetSizeX()];
     for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) {
-      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) vSrcBegin[vIndexX] = aImage(vIndexX, vIndexY);
+      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) vSrcBegin[vIndexX] = ggRound<TValueTypeInternal>(aImage(vIndexX, vIndexY));
       Deriche1D<TValueTypeInternal>(vSrcBegin, vSrcBegin + aImage.GetSizeX(), vDstBegin, aSigma);
-      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) aImage(vIndexX, vIndexY) = vDstBegin[vIndexX];
+      for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) aImage(vIndexX, vIndexY) = ggRound<TValueType>(vDstBegin[vIndexX]);
     }
     delete[] vSrcBegin;
     delete[] vDstBegin;
@@ -106,9 +108,9 @@ void ggImageFilter::Gauss(ggImageT<TValueType>& aImage, const TValueTypeInternal
     TValueTypeInternal* vSrcBegin = new TValueTypeInternal[aImage.GetSizeY()];
     TValueTypeInternal* vDstBegin = new TValueTypeInternal[aImage.GetSizeY()];
     for (ggSize vIndexX = 0; vIndexX < aImage.GetSizeX(); vIndexX++) {
-      for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) vSrcBegin[vIndexY] = aImage(vIndexX, vIndexY);
+      for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) vSrcBegin[vIndexY] = ggRound<TValueTypeInternal>(aImage(vIndexX, vIndexY));
       Deriche1D<TValueTypeInternal>(vSrcBegin, vSrcBegin + aImage.GetSizeY(), vDstBegin, aSigma);
-      for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) aImage(vIndexX, vIndexY) = vDstBegin[vIndexY];
+      for (ggSize vIndexY = 0; vIndexY < aImage.GetSizeY(); vIndexY++) aImage(vIndexX, vIndexY) = ggRound<TValueType>(vDstBegin[vIndexY]);
     }
     delete[] vSrcBegin;
     delete[] vDstBegin;

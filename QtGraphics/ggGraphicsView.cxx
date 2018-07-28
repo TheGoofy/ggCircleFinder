@@ -5,7 +5,7 @@
 #include <QMouseEvent>
 
 // 2) include own project-related (sort by component dependency)
-#include "LibBase/ggUtility.h"
+#include "LibBase/ggRound.h"
 
 
 ggGraphicsView::ggGraphicsView(QWidget* aParent)
@@ -123,7 +123,7 @@ void ggGraphicsView::wheelEvent(QWheelEvent* aWheelEvent)
       qreal vScale = 1.0;
       if (aWheelEvent->delta() > 0) vScale = 1.1 / 1.0;
       if (aWheelEvent->delta() < 0) vScale = 1.0 / 1.1;
-      vScale = ggUtility::RoundToSD(static_cast<ggFloat>(vScale * GetSceneScale()), 2);
+      vScale = ggRoundToSD(vScale * GetSceneScale(), 2);
       SetSceneScale(vScale);
       NotifyZoom();
     }

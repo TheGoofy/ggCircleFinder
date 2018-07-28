@@ -7,6 +7,7 @@
 
 #include "LibBase/ggGeometry.h"
 #include "LibBase/ggFilterT.h"
+#include "LibBase/ggRound.h"
 #include "LibImage/ggImageT.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImageAlgorithm.h"
@@ -187,8 +188,8 @@ public:
     for (ggUSize vSpotIndex = 0; vSpotIndex < vNumberOfInterestingSpots; vSpotIndex++) {
       tSpot& vSpot = vCenterSpots[vSpotIndex];
       ggImageAlgorithm::CalculateCenterOfGravity(vImageHough,
-                                                 static_cast<ggSize>(vSpot[0] + 0.5), static_cast<ggSize>(vSpot[1] + 0.5),
-                                                 static_cast<ggSize>(aCircleModelLineThickness + 0.5),
+                                                 ggRound<ggSize>(vSpot[0]), ggRound<ggSize>(vSpot[1]),
+                                                 ggRound<ggSize>(std::min(4 * aCircleModelLineThickness, aCircleModelDiameter / 4)),
                                                  vSpot[0], vSpot[1]);
     }
 
@@ -219,7 +220,7 @@ public:
       QPen vPen(vColor, static_cast<qreal>(aCircleModelLineThickness));
       AddCircle(vCenterSpotPointF, static_cast<qreal>(aCircleModelDiameter) / 2.0, static_cast<qreal>(vCenterSpot.GetValue()), vPen);
       vResults += QString::number(vSpotIndex) + " : " + ggUtility::ToString(vCircleCenter, 2).c_str() + " : " +
-                  ggUtility::ToString(ggUtility::RoundToSD(vCenterSpot.GetValue(), 3)).c_str() + "\n";
+                  ggUtility::ToString(ggRoundToSD(vCenterSpot.GetValue(), 3)).c_str() + "\n";
     }
     SetCirclesZValue(2.0);
 
