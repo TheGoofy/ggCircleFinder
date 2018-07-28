@@ -9,6 +9,8 @@ class ggVector2T : public TBaseVector
 {
 public:
 
+  typedef TBaseVector tBaseVector;
+
   inline ggVector2T()
   : TBaseVector() {
   }

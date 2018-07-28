@@ -9,6 +9,8 @@ class ggVector3T : public TBaseVector
 {
 public:
 
+  typedef TBaseVector tBaseVector;
+
   inline ggVector3T()
   : TBaseVector() {
   }
@@ -18,7 +20,7 @@ public:
   }
 
   inline ggVector3T(const TBaseVector& aOther)
-    : TBaseVector(aOther) {
+  : TBaseVector(aOther) {
   }
 
   inline ggVector3T(const TValueType& aX,
