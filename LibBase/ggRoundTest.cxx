@@ -39,7 +39,7 @@ void ggRoundTest::Execute()
   GG_TEST_EQUAL(ggRound<ggInt16>(-0.6), -1);
   GG_TEST_EQUAL(ggRound<ggInt16>(-1.1), -1);
   GG_TEST_EQUAL(ggRound<ggInt16>(-1.5), -2);
-  GG_TEST_EQUAL(ggRound<ggInt16>(-2.4), -3);
+  GG_TEST_EQUAL(ggRound<ggInt16>(-2.4), -2);
   GG_TEST_EQUAL(ggRound<ggInt16>(-33000.0f), -32768);
   GG_TEST_EQUAL(ggRound<ggInt16>(-33000), -32768);
   GG_TEST_EQUAL(ggRound<ggInt16>(-22000), -22000);
