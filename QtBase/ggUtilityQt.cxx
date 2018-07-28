@@ -7,17 +7,18 @@
 #include <QPainter>
 
 // 2) include own project-related (sort by component dependency)
+#include "LibBase/ggNumerics.h"
 
 
 int ggUtilityQt::GetColorMax(const QColor& aColor)
 {
-  return ggUtility::Max(aColor.red(), aColor.green(), aColor.blue());
+  return ggMax(aColor.red(), aColor.green(), aColor.blue());
 }
 
 
 qreal ggUtilityQt::GetColorMaxF(const QColor& aColor)
 {
-  return ggUtility::Max(aColor.redF(), aColor.greenF(), aColor.blueF());
+  return ggMax(aColor.redF(), aColor.greenF(), aColor.blueF());
 }
 
 
@@ -34,9 +35,9 @@ QColor ggUtilityQt::GetColorSaturized(const QColor& aColor)
   qreal vColorBrightness = ggUtilityQt::GetColorMaxF(aColor);
   if (vColorBrightness != 0.0) {
     qreal vScale = 1.0 / vColorBrightness;
-    return QColor::fromRgbF(ggUtility::Clamp<qreal>(vScale * aColor.redF(), 0.0, 1.0),
-                            ggUtility::Clamp<qreal>(vScale * aColor.greenF(), 0.0, 1.0),
-                            ggUtility::Clamp<qreal>(vScale * aColor.blueF(), 0.0, 1.0),
+    return QColor::fromRgbF(ggClamp<qreal>(vScale * aColor.redF(), 0.0, 1.0),
+                            ggClamp<qreal>(vScale * aColor.greenF(), 0.0, 1.0),
+                            ggClamp<qreal>(vScale * aColor.blueF(), 0.0, 1.0),
                             aColor.alphaF());
   }
   else {
@@ -49,9 +50,9 @@ QColor ggUtilityQt::GetColorSaturized(const QColor& aColor)
 
 QColor ggUtilityQt::GetColorScaled(const QColor& aColor, qreal aScale)
 {
-  return QColor::fromRgbF(ggUtility::Clamp<qreal>(aScale * aColor.redF(), 0.0, 1.0),
-                          ggUtility::Clamp<qreal>(aScale * aColor.greenF(), 0.0, 1.0),
-                          ggUtility::Clamp<qreal>(aScale * aColor.blueF(), 0.0, 1.0),
+  return QColor::fromRgbF(ggClamp<qreal>(aScale * aColor.redF(), 0.0, 1.0),
+                          ggClamp<qreal>(aScale * aColor.greenF(), 0.0, 1.0),
+                          ggClamp<qreal>(aScale * aColor.blueF(), 0.0, 1.0),
                           aColor.alphaF());
 }
 
@@ -59,10 +60,10 @@ QColor ggUtilityQt::GetColorScaled(const QColor& aColor, qreal aScale)
 QColor ggUtilityQt::GetColorInterpolated(const QColor& aColorA, const QColor& aColorB, qreal aWeightA)
 {
   const qreal vWeightB = 1.0 - aWeightA;
-  return QColor::fromRgbF(ggUtility::Clamp<qreal>(aWeightA * aColorA.redF() + vWeightB * aColorB.redF(), 0.0, 1.0),
-                          ggUtility::Clamp<qreal>(aWeightA * aColorA.greenF() + vWeightB * aColorB.greenF(), 0.0, 1.0),
-                          ggUtility::Clamp<qreal>(aWeightA * aColorA.blueF() + vWeightB * aColorB.blueF(), 0.0, 1.0),
-                          ggUtility::Clamp<qreal>(aWeightA * aColorA.alphaF() + vWeightB * aColorB.alphaF(), 0.0, 1.0));
+  return QColor::fromRgbF(ggClamp<qreal>(aWeightA * aColorA.redF() + vWeightB * aColorB.redF(), 0.0, 1.0),
+                          ggClamp<qreal>(aWeightA * aColorA.greenF() + vWeightB * aColorB.greenF(), 0.0, 1.0),
+                          ggClamp<qreal>(aWeightA * aColorA.blueF() + vWeightB * aColorB.blueF(), 0.0, 1.0),
+                          ggClamp<qreal>(aWeightA * aColorA.alphaF() + vWeightB * aColorB.alphaF(), 0.0, 1.0));
 }
 
 
@@ -84,7 +85,7 @@ QColor ggUtilityQt::GetColorWithLightness(const QColor& aColor, qreal aLightness
 
 QColor ggUtilityQt::GetColorContrast(const QColor& aColor)
 {
-  return (GetColorLuma(aColor) < 0.5f) ? QColor(Qt::white) : QColor(Qt::black);
+  return (GetColorLuma(aColor) < 0.5) ? QColor(Qt::white) : QColor(Qt::black);
 }
 
 

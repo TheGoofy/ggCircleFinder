@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "LibBase/ggTypes.h"
+#include "LibBase/ggNumberTypes.h"
 
 
 template <class TValueType, ggUInt64 TNumberOfBins = 512>

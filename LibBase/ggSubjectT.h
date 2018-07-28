@@ -5,7 +5,7 @@
 
 // 2) include own project-related (sort by component dependency)
 #include "LibBase/ggSubject.h"
-#include "LibBase/ggTypes.h"
+#include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggString.h"
 
 // 3) forward declarations

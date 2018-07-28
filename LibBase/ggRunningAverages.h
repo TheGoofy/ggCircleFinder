@@ -1,7 +1,7 @@
 #ifndef GGRUNNINGAVERAGEST_H
 #define GGRUNNINGAVERAGEST_H
 
-#include "ggTypes.h"
+#include "ggNumberTypes.h"
 
 /**
  * Computes the averages: Sum, Min, Max, Mean, StdDev, and

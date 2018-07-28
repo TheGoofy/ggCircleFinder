@@ -1,7 +1,7 @@
 #ifndef GGGEOMETRY_H
 #define GGGEOMETRY_H
 
-#include "ggTypes.h"
+#include "ggNumberTypes.h"
 #include "ggVectorT.h"
 #include "ggVector2T.h"
 #include "ggVector3T.h"

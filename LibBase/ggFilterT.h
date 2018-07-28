@@ -1,7 +1,7 @@
 #ifndef GGFILTERT_H
 #define GGFILTERT_H
 
-#include "LibBase/ggTypes.h"
+#include "LibBase/ggNumberTypes.h"
 
 template <class TValueType>
 class ggFilterInterfaceT {

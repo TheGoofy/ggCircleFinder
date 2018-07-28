@@ -1,7 +1,7 @@
 #ifndef GGCOLORTYPES_H
 #define GGCOLORTYPES_H
 
-#include "ggTypes.h"
+#include "ggNumberTypes.h"
 #include "ggColorT.h"
 
 typedef ggColorT<ggUInt8> ggColorUInt8;

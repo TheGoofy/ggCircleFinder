@@ -5,7 +5,7 @@
 
 #include <QMainWindow>
 
-#include "LibBase/ggTypes.h"
+#include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggObserver.h"
 
 namespace Ui {

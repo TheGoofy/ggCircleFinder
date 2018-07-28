@@ -9,7 +9,7 @@
 #include <QLayout>
 
 // 2) include own project-related (sort by component dependency)
-#include "LibBase/ggUtility.h"
+#include "LibBase/ggNumerics.h"
 #include "QtBase/ggUtilityQt.h"
 
 
@@ -161,8 +161,8 @@ QColor ggColorChannelWidget::GetColorMin() const
 
 QPointF ggColorChannelWidget::ClampPosition(const QPointF& aPosition) const
 {
-  return QPointF(ggUtility::Clamp(aPosition.x(), mColorBar.x(), mColorBar.right()),
-                 ggUtility::Clamp(aPosition.y(), mColorBar.y(), mColorBar.bottom()));
+  return QPointF(ggClamp(aPosition.x(), mColorBar.x(), mColorBar.right()),
+                 ggClamp(aPosition.y(), mColorBar.y(), mColorBar.bottom()));
 }
 
 

@@ -1,9 +1,9 @@
 #ifndef GGIMAGET_H
 #define GGIMAGET_H
 
-#include <cstring>
 
-#include "LibBase/ggTypes.h"
+#include "LibBase/ggNumberTypes.h"
+#include "LibBase/ggNumerics.h"
 #include "LibBase/ggAssert.h"
 #include "LibBase/ggVectorTypes.h"
 
@@ -135,14 +135,14 @@ public:
   }
 
   inline const TValueType& GetClamp(ggSize aIndexX, ggSize aIndexY) const {
-    return Get(Clamp<ggSize>(aIndexX, 0, GetSizeX() - 1),
-               Clamp<ggSize>(aIndexY, 0, GetSizeY() - 1));
+    return Get(ggClamp<ggSize>(aIndexX, 0, GetSizeX() - 1),
+               ggClamp<ggSize>(aIndexY, 0, GetSizeY() - 1));
   }
 
   template <typename TIndexType>
   inline const TValueType& GetClamp(const ggVector2T<TIndexType>& aIndex) const {
-    return Get(Clamp<ggSize>(aIndex.X(), 0, GetSizeX() - 1),
-               Clamp<ggSize>(aIndex.Y(), 0, GetSizeY() - 1));
+    return Get(ggClamp<ggSize>(aIndex.X(), 0, GetSizeX() - 1),
+               ggClamp<ggSize>(aIndex.Y(), 0, GetSizeY() - 1));
   }
 
   inline ggImageT<TValueType>& operator = (const ggImageT<TValueType>& aOther) {
@@ -192,10 +192,10 @@ public:
             const ggSize aPositionSrcX0,
             const ggSize aPositionSrcY0)
   {
-    const ggSize vSrcX0 = Clamp<ggSize>(aPositionSrcX0, 0, GetSizeX());
-    const ggSize vSrcY0 = Clamp<ggSize>(aPositionSrcY0, 0, GetSizeY());
-    const ggSize vSrcX1 = Clamp<ggSize>(aPositionSrcX0 + aImageDst.GetSizeX(), 0, GetSizeX());
-    const ggSize vSrcY1 = Clamp<ggSize>(aPositionSrcY0 + aImageDst.GetSizeY(), 0, GetSizeY());
+    const ggSize vSrcX0 = ggClamp<ggSize>(aPositionSrcX0, 0, GetSizeX());
+    const ggSize vSrcY0 = ggClamp<ggSize>(aPositionSrcY0, 0, GetSizeY());
+    const ggSize vSrcX1 = ggClamp<ggSize>(aPositionSrcX0 + aImageDst.GetSizeX(), 0, GetSizeX());
+    const ggSize vSrcY1 = ggClamp<ggSize>(aPositionSrcY0 + aImageDst.GetSizeY(), 0, GetSizeY());
     for (ggSize vSrcY = vSrcY0; vSrcY < vSrcY1; vSrcY++) {
       ggSize vDstY = vSrcY - aPositionSrcY0;
       for (ggSize vSrcX = vSrcX0; vSrcX < vSrcX1; vSrcX++) {
@@ -238,10 +238,10 @@ public:
   inline void ProcessIndexRangeInside(ggSize aIndexBeginX, ggSize aIndexBeginY,
                                       ggSize aIndexEndX, ggSize aIndexEndY,
                                       TIndexProcessor aIndexProcessor) const {
-    aIndexBeginX = Clamp<ggSize>(aIndexBeginX, 0, GetSizeX());
-    aIndexBeginY = Clamp<ggSize>(aIndexBeginY, 0, GetSizeY());
-    aIndexEndX = Clamp<ggSize>(aIndexEndX, 0, GetSizeX());
-    aIndexEndY = Clamp<ggSize>(aIndexEndY, 0, GetSizeY());
+    aIndexBeginX = ggClamp<ggSize>(aIndexBeginX, 0, GetSizeX());
+    aIndexBeginY = ggClamp<ggSize>(aIndexBeginY, 0, GetSizeY());
+    aIndexEndX = ggClamp<ggSize>(aIndexEndX, 0, GetSizeX());
+    aIndexEndY = ggClamp<ggSize>(aIndexEndY, 0, GetSizeY());
     for (ggSize vIndexY = aIndexBeginY; vIndexY < aIndexEndY; vIndexY++) {
       for (ggSize vIndexX = aIndexBeginX; vIndexX < aIndexEndX; vIndexX++) {
         aIndexProcessor(vIndexX, vIndexY);
@@ -262,10 +262,10 @@ public:
   inline void ProcessIndexRangeOutside(ggSize aIndexBeginX, ggSize aIndexBeginY,
                                        ggSize aIndexEndX, ggSize aIndexEndY,
                                        TIndexProcessor aIndexProcessor) const {
-    aIndexBeginX = Clamp<ggSize>(aIndexBeginX, 0, GetSizeX());
-    aIndexBeginY = Clamp<ggSize>(aIndexBeginY, 0, GetSizeY());
-    aIndexEndX = Clamp<ggSize>(aIndexEndX, 0, GetSizeX());
-    aIndexEndY = Clamp<ggSize>(aIndexEndY, 0, GetSizeY());
+    aIndexBeginX = ggClamp<ggSize>(aIndexBeginX, 0, GetSizeX());
+    aIndexBeginY = ggClamp<ggSize>(aIndexBeginY, 0, GetSizeY());
+    aIndexEndX = ggClamp<ggSize>(aIndexEndX, 0, GetSizeX());
+    aIndexEndY = ggClamp<ggSize>(aIndexEndY, 0, GetSizeY());
     for (ggSize vIndexY = 0; vIndexY < aIndexBeginY; vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
         aIndexProcessor(vIndexX, vIndexY);
@@ -300,10 +300,10 @@ public:
                                 ggSize aIndexEndX, ggSize aIndexEndY,
                                 TIndexProcessorInside aIndexProcessorInside,
                                 TIndexProcessorOutside aIndexProcessorOutside) const {
-    aIndexBeginX = Clamp<ggSize>(aIndexBeginX, 0, GetSizeX());
-    aIndexBeginY = Clamp<ggSize>(aIndexBeginY, 0, GetSizeY());
-    aIndexEndX = Clamp<ggSize>(aIndexEndX, 0, GetSizeX());
-    aIndexEndY = Clamp<ggSize>(aIndexEndY, 0, GetSizeY());
+    aIndexBeginX = ggClamp<ggSize>(aIndexBeginX, 0, GetSizeX());
+    aIndexBeginY = ggClamp<ggSize>(aIndexBeginY, 0, GetSizeY());
+    aIndexEndX = ggClamp<ggSize>(aIndexEndX, 0, GetSizeX());
+    aIndexEndY = ggClamp<ggSize>(aIndexEndY, 0, GetSizeY());
     for (ggSize vIndexY = 0; vIndexY < aIndexBeginY; vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < GetSizeX(); vIndexX++) {
         aIndexProcessorOutside(vIndexX, vIndexY);
@@ -443,11 +443,6 @@ public:
   }
 
 private:
-
-  template <typename T>
-  inline static T Clamp(const T& aValue, const T& aValueMin, const T& aValueMax) {
-    return aValue < aValueMin ? aValueMin : (aValue > aValueMax ? aValueMax : aValue);
-  }
 
   ggVector2Size mSize;
   TValueType* mValues;

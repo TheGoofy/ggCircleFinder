@@ -1,7 +1,7 @@
 #ifndef GGLINETYPES_H
 #define GGLINETYPES_H
 
-#include "ggTypes.h"
+#include "ggNumberTypes.h"
 #include "ggVector2T.h"
 #include "ggVector3T.h"
 #include "ggLineT.h"

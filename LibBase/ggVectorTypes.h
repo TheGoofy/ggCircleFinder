@@ -1,7 +1,7 @@
 #ifndef GGVECTORTYPES_H
 #define GGVECTORTYPES_H
 
-#include "ggTypes.h"
+#include "ggNumberTypes.h"
 #include "ggVector2T.h"
 #include "ggVector3T.h"
 

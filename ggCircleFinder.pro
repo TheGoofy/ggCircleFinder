@@ -73,7 +73,6 @@ HEADERS += \
     LibBase/ggSubject.h \
     LibBase/ggSubjectT.h \
     LibBase/ggSubjectValueT.h \
-    LibBase/ggTypes.h \
     LibBase/ggUtility.h \
     LibBase/ggVector2T.h \
     LibBase/ggVector3T.h \
@@ -111,7 +110,9 @@ HEADERS += \
     QtMain/ggGraphicsScene.h \
     LibBase/ggFilterT.h \
     LibImage/ggImageLabeling.h \
-    LibBase/ggRound.h
+    LibBase/ggRound.h \
+    LibBase/ggNumberTypes.h \
+    LibBase/ggNumerics.h
 
 FORMS += \
     QtMain/MainWindow.ui \

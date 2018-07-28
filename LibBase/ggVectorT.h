@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include "ggAssert.h"
-#include "ggTypes.h"
+#include "ggNumberTypes.h"
 
 
 template <class TValueType,

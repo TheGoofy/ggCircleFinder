@@ -7,7 +7,7 @@
 #include <QMouseEvent>
 
 // 2) include own project-related (sort by component dependency)
-#include "LibBase/ggUtility.h"
+#include "LibBase/ggNumerics.h"
 #include "QtBase/ggUtilityQt.h"
 
 
@@ -147,7 +147,7 @@ QPointF ClampPosition(const QPointF& aPosition,
         if (vLengthAB != 0.0f) vDirAB /= vLengthAB;
         QVector2D vDirAP(aPosition - aCenter - aDirA.toPointF());
         float vScaleAB = QVector2D::dotProduct(vDirAB, vDirAP);
-        vScaleAB = ggUtility::Clamp(vScaleAB, 0.0f, vLengthAB);
+        vScaleAB = ggClamp(vScaleAB, 0.0f, vLengthAB);
         return aCenter + (aDirA + vScaleAB * vDirAB).toPointF();
       }
     }
@@ -178,12 +178,12 @@ QColor ggColorWheelWidget::GetColorSaturized(const QPointF& aPosition) const
   GetFactors(mDirR, mDirG, vDir, vScaleR1, vScaleG2);
   GetFactors(mDirG, mDirB, vDir, vScaleG1, vScaleB2);
   GetFactors(mDirB, mDirR, vDir, vScaleB1, vScaleR2);
-  qreal vColorR = 1.0 + ggUtility::Min(vScaleR1, vScaleR2);
-  qreal vColorG = 1.0 + ggUtility::Min(vScaleG1, vScaleG2);
-  qreal vColorB = 1.0 + ggUtility::Min(vScaleB1, vScaleB2);
-  return QColor::fromRgbF(ggUtility::Clamp(vColorR, 0.0, 1.0),
-                          ggUtility::Clamp(vColorG, 0.0, 1.0),
-                          ggUtility::Clamp(vColorB, 0.0, 1.0),
+  qreal vColorR = 1.0 + ggMin(vScaleR1, vScaleR2);
+  qreal vColorG = 1.0 + ggMin(vScaleG1, vScaleG2);
+  qreal vColorB = 1.0 + ggMin(vScaleB1, vScaleB2);
+  return QColor::fromRgbF(ggClamp(vColorR, 0.0, 1.0),
+                          ggClamp(vColorG, 0.0, 1.0),
+                          ggClamp(vColorB, 0.0, 1.0),
                           mColorSaturized.alphaF());
 }
 
@@ -447,7 +447,7 @@ void ggColorWheelWidget::paintEvent(QPaintEvent* aEvent)
   if (!isEnabled()) {
     vPainter.setPen(Qt::NoPen);
     const QColor& vColor = palette().color(QPalette::Disabled, QPalette::Window);
-    vPainter.setBrush(ggUtilityQt::GetColorWithAlpha(vColor, 0.75f));
+    vPainter.setBrush(ggUtilityQt::GetColorWithAlpha(vColor, 0.75));
     vPainter.drawRect(rect());
   }
 

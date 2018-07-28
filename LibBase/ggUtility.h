@@ -9,7 +9,7 @@
 #include <iomanip>
 
 // 2) include own project-related (sort by component dependency)
-#include "LibBase/ggTypes.h"
+#include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggVectorTypes.h"
 #include "LibBase/ggWalkerT.h"
 #include "LibBase/ggColorTypes.h"
@@ -25,69 +25,6 @@
  * collection of general, simple utilities
  */
 namespace ggUtility {
-
-  enum class cNumberType {
-    eUnknown,
-    eChar,  eInt8,  eInt16,  eInt32,  eInt64,  eSize,
-    eUChar, eUInt8, eUInt16, eUInt32, eUInt64, eUSize,
-    eFloat, eDouble
-  };
-
-  template <typename T> inline cNumberType NumberType() { return cNumberType::eUnknown; }
-
-  template <> inline cNumberType NumberType<ggChar>() { return cNumberType::eChar; }
-  template <> inline cNumberType NumberType<ggInt8>() { return cNumberType::eInt8; }
-  template <> inline cNumberType NumberType<ggInt16>() { return cNumberType::eInt16; }
-  template <> inline cNumberType NumberType<ggInt32>() { return cNumberType::eInt32; }
-  template <> inline cNumberType NumberType<ggInt64>() { return cNumberType::eInt64; }
-  template <> inline cNumberType NumberType<ggSize>() { return cNumberType::eSize; }
-  template <> inline cNumberType NumberType<ggUChar>() { return cNumberType::eUChar; }
-  //template <> inline cNumberType NumberType<ggUInt8>() { return cNumberType::eUInt8; }
-  template <> inline cNumberType NumberType<ggUInt16>() { return cNumberType::eUInt16; }
-  template <> inline cNumberType NumberType<ggUInt32>() { return cNumberType::eUInt32; }
-  template <> inline cNumberType NumberType<ggUInt64>() { return cNumberType::eUInt64; }
-  template <> inline cNumberType NumberType<ggUSize>() { return cNumberType::eUSize; }
-  template <> inline cNumberType NumberType<ggFloat>() { return cNumberType::eFloat; }
-  template <> inline cNumberType NumberType<ggDouble>() { return cNumberType::eDouble; }
-
-  template <typename T>
-  inline const T& Clamp(const T& aValue, const T& aValueMin, const T& aValueMax) {
-    return (aValue < aValueMin) ? aValueMin : ((aValue > aValueMax) ? aValueMax : aValue);
-  }
-
-  template <typename T>
-  inline const T& Min(const T& aA, const T& aB) {
-    return (aA < aB) ? aA : aB;
-  }
-
-  template <typename T>
-  inline const T& Max(const T& aA, const T& aB) {
-    return (aA < aB) ? aB : aA;
-  }
-
-  template <typename T>
-  inline const T& Min(const T& aA, const T& aB, const T& aC) {
-    if (aA < aB) return Min(aA, aC);
-    return Min(aA, aC);
-  }
-
-  template <typename T>
-  inline const T& Max(const T& aA, const T& aB, const T& aC) {
-    if (aA < aB) return Max(aB, aC);
-    return Max(aA, aC);
-  }
-
-  template <typename T>
-  inline const T& Min(const T& aA, const T& aB, const T& aC, const T& aD) {
-    if (aA < aB) return Min(aA, aC, aD);
-    return Min(aB, aC, aD);
-  }
-
-  template <typename T>
-  inline const T& Max(const T& aA, const T& aB, const T& aC, const T& aD) {
-    if (aA < aB) return Max(aB, aC, aD);
-    return Max(aA, aC, aD);
-  }  
 
   template <typename TValueType>
   inline std::string ToString(const TValueType& aValue) {
