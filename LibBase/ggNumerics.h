@@ -25,7 +25,7 @@ inline bool ggIsGreater(const T1& aValue1, const T2& aValue2) {
 template <typename T1, typename T2>
 inline T1 ggClamp(const T2& aValue, const T1& aValueMin, const T1& aValueMax) {
   if (ggIsLess(aValue, aValueMin)) return aValueMin;
-  if (ggIsGreater(aValue, aValueMax)) return aValueMax;
+  if (ggIsLess(aValueMax, aValue)) return aValueMax;
   return static_cast<T1>(aValue);
 }
 
