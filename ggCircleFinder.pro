@@ -49,7 +49,8 @@ SOURCES += \
     QtWidgets/ggColorDialog.cxx \
     QtWidgets/ggColorPreviewWidget.cxx \
     QtWidgets/ggColorWheelWidget.cxx \
-    QtMain/ggGraphicsScene.cxx
+    QtMain/ggGraphicsScene.cxx \
+    LibImage/ggImageFilter.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -107,7 +108,8 @@ HEADERS += \
     QtWidgets/ggColorWheelWidget.h \
     LibImage/ggImageAlgorithm.h \
     QtMain/ggGraphicsScene.h \
-    LibBase/ggFilterT.h
+    LibBase/ggFilterT.h \
+    LibImage/ggImageLabeling.h
 
 FORMS += \
     QtMain/MainWindow.ui \
