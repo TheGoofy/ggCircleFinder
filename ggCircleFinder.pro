@@ -67,7 +67,6 @@ HEADERS += \
     LibBase/ggLineT.h \
     LibBase/ggLineTypes.h \
     LibBase/ggObserver.h \
-    LibBase/ggRunningAverages.h \
     LibBase/ggSpotT.h \
     LibBase/ggSpotTypes.h \
     LibBase/ggString.h \
@@ -114,7 +113,8 @@ HEADERS += \
     LibBase/ggRound.h \
     LibBase/ggNumberTypes.h \
     LibBase/ggNumerics.h \
-    LibBase/ggRoundTest.h
+    LibBase/ggRoundTest.h \
+    LibBase/ggAverages.h
 
 FORMS += \
     QtMain/MainWindow.ui \

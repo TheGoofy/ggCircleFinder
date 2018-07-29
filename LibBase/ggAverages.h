@@ -1,5 +1,5 @@
-#ifndef GGRUNNINGAVERAGEST_H
-#define GGRUNNINGAVERAGEST_H
+#ifndef GGAVERAGEST_H
+#define GGAVERAGEST_H
 
 #include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggRound.h"
@@ -11,12 +11,12 @@
  * compute the Median).
  */
 template <class TValueType>
-class ggRunningAveragesT
+class ggAveragesT
 {
 
 public:
 
-  inline ggRunningAveragesT()
+  inline ggAveragesT()
   : mSum(0),
     mSumOfSquares(0),
     mCount(0),
@@ -159,4 +159,4 @@ private:
 
 };
 
-#endif // GGRUNNINGAVERAGEST_H__
+#endif // GGAVERAGEST_H

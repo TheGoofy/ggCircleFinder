@@ -5,7 +5,7 @@
 
 #include "LibBase/ggSpotT.h"
 #include "LibBase/ggGeometry.h"
-#include "LibBase/ggRunningAverages.h"
+#include "LibBase/ggAverages.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
 
@@ -393,7 +393,7 @@ namespace ggImageAlgorithm {
     if (aImage.IsInside(aIndexX - 1, aIndexY - 1) &&
         aImage.IsInside(aIndexX + 1, aIndexY + 1)) {
 
-      ggVector2T<ggRunningAveragesT<ggDouble>> vVertex;
+      ggVector2T<ggAveragesT<ggDouble>> vVertex;
       ggDouble vVertexValueMax = aImage(aIndexX, aIndexY);
       const ggInt32 vDelta = 1;
 
@@ -447,7 +447,7 @@ namespace ggImageAlgorithm {
         aImage.IsInside(aCircleCenterIndexX + aCircleRadius, aCircleCenterIndexY + aCircleRadius)) {
 
       const ggDouble vCircleRadiusSquare = aCircleRadius * aCircleRadius;
-      ggVector2T<ggRunningAveragesT<ggDouble>> vCenterOfGravity;
+      ggVector2T<ggAveragesT<ggDouble>> vCenterOfGravity;
 
       for (ggSize vOffY = -aCircleRadius; vOffY <= aCircleRadius; vOffY++) {
         for (ggSize vOffX = -aCircleRadius; vOffX <= aCircleRadius; vOffX++) {
