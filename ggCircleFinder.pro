@@ -52,7 +52,8 @@ SOURCES += \
     QtMain/ggGraphicsScene.cxx \
     LibImage/ggImageFilter.cxx \
     LibBase/ggRound.cxx \
-    LibBase/ggRoundTest.cxx
+    LibBase/ggRoundTest.cxx \
+    LibImage/ggHistogramTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -114,7 +115,10 @@ HEADERS += \
     LibBase/ggNumberTypes.h \
     LibBase/ggNumerics.h \
     LibBase/ggRoundTest.h \
-    LibBase/ggAverages.h
+    LibBase/ggAverages.h \
+    LibImage/ggHistogram.h \
+    LibImage/ggHistogramIntegerT.h \
+    LibImage/ggHistogramTest.h
 
 FORMS += \
     QtMain/MainWindow.ui \

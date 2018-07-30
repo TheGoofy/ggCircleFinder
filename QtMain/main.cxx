@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "LibBase/ggRoundTest.h"
+#include "LibImage/ggHistogramTest.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +18,7 @@ int main(int argc, char *argv[])
   qDebug() << __PRETTY_FUNCTION__ << vSettings.fileName();
 
   ggRoundTest::Execute();
+  ggHistogramTest::Execute();
 
   MainWindow w;
   w.show();

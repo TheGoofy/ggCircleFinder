@@ -6,7 +6,7 @@
 #include "LibBase/ggNumberTypes.h"
 
 
-template <class TValueType, ggUInt64 TNumberOfBins = 512>
+template <class TValueType, ggInt64 TCountBinCapacity = 512>
 class ggHistogramAdaptiveT
 {
 
@@ -14,18 +14,18 @@ public:
 
   ggHistogramAdaptiveT()
   : mCountTotal(0),
-    mCountBins(TNumberOfBins, 0),
+    mCountBins(TCountBinCapacity, 0),
     mBinValueDelta(0) {
   }
 
   virtual ~ggHistogramAdaptiveT() {
   }
 
-  inline ggUInt64 GetNumberOfBins() const {
-    return TNumberOfBins;
+  inline ggInt64 GetNumberOfBins() const {
+    return GetBinIndexMax() - GetBinIndexMin() + 1;
   }
 
-  inline ggUInt64 GetCountTotal() const {
+  inline ggInt64 GetCountTotal() const {
     return mCountTotal;
   }
 
@@ -44,11 +44,11 @@ public:
 
   inline ggUInt64 GetCountBin(ggInt64 aBinIndex) const {
     if (aBinIndex < 0) return 0;
-    if (aBinIndex >= static_cast<ggInt64>(TNumberOfBins)) return 0;
+    if (aBinIndex >= static_cast<ggInt64>(TCountBinCapacity)) return 0;
     return mCountBins[aBinIndex];
   }
 
-  inline ggUInt64 GetCountBin(const TValueType& aValue) const {
+  inline ggInt64 GetCountBin(const TValueType& aValue) const {
     return GetCountBin(GetBinIndex(aValue));
   }
 
@@ -68,7 +68,7 @@ public:
     return mValueMax;
   }
 
-  inline void Insert(const TValueType& aValue) {
+  inline void Add(const TValueType& aValue, ggInt64 aCount = 1) {
     if (mCountTotal == 0) {
       // the very first sample is inserted
       mValueMin = aValue;
@@ -82,7 +82,7 @@ public:
       // if its value is different than the previous samples, the vector with the bins can be initialized
       if (aValue < mValueMin) {
         mValueMin = aValue;
-        mBinValueDelta = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TNumberOfBins - 1);
+        mBinValueDelta = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TCountBinCapacity - 1);
         mBinValueMin = mValueMin - mBinValueDelta / 2;
         mBinValueMax = mValueMax + mBinValueDelta / 2;
         mCountBins.front() = 1;
@@ -90,7 +90,7 @@ public:
       }
       if (aValue > mValueMax) {
         mValueMax = aValue;
-        mBinValueDelta = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TNumberOfBins - 1);
+        mBinValueDelta = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TCountBinCapacity - 1);
         mBinValueMin = mValueMin - mBinValueDelta / 2;
         mBinValueMax = mValueMax + mBinValueDelta / 2;
         mCountBins.front() = mCountTotal;
@@ -108,53 +108,53 @@ public:
         } while (vBinIndex < 0);
       }
       // if the bin index is too high, the bins are packed and shifted left (down)
-      else if (vBinIndex >= static_cast<ggInt64>(TNumberOfBins)) {
+      else if (vBinIndex >= static_cast<ggInt64>(TCountBinCapacity)) {
         do {
           PackBinsLeft();
           vBinIndex = GetBinIndex(aValue);
-        } while (vBinIndex >= static_cast<ggInt64>(TNumberOfBins));
+        } while (vBinIndex >= static_cast<ggInt64>(TCountBinCapacity));
       }
       // now count the sample
       if (aValue < mValueMin) mValueMin = aValue;
       if (aValue > mValueMax) mValueMax = aValue;
-      ++mCountBins[vBinIndex];
+      mCountBins[vBinIndex] += aCount;
     }
     // the total count can be increased in any case
-    ++mCountTotal;
+    mCountTotal += aCount;
   }
 
 private:
 
   void PackBinsRight() {
-    ggUInt64 vBinIndexDst = TNumberOfBins;
-    ggUInt64 vBinIndexSrc = TNumberOfBins;
+    ggInt64 vBinIndexDst = TCountBinCapacity;
+    ggInt64 vBinIndexSrc = TCountBinCapacity;
     while (vBinIndexSrc > 0) {
       mCountBins[--vBinIndexDst] = mCountBins[--vBinIndexSrc];
       if (vBinIndexSrc > 0) mCountBins[vBinIndexDst] += mCountBins[--vBinIndexSrc];
     }
     while (vBinIndexDst > 0) mCountBins[--vBinIndexDst] = 0;
     mBinValueDelta *= 2;
-    mBinValueMin = mBinValueMax - TNumberOfBins * mBinValueDelta;
+    mBinValueMin = mBinValueMax - TCountBinCapacity * mBinValueDelta;
   }
 
   void PackBinsLeft() {
-    ggUInt64 vBinIndexDst = 0;
-    ggUInt64 vBinIndexSrc = 0;
-    while (vBinIndexSrc < TNumberOfBins) {
+    ggInt64 vBinIndexDst = 0;
+    ggInt64 vBinIndexSrc = 0;
+    while (vBinIndexSrc < TCountBinCapacity) {
       mCountBins[vBinIndexDst] = mCountBins[vBinIndexSrc++];
-      if (vBinIndexSrc < TNumberOfBins) mCountBins[vBinIndexDst] += mCountBins[vBinIndexSrc++];
+      if (vBinIndexSrc < TCountBinCapacity) mCountBins[vBinIndexDst] += mCountBins[vBinIndexSrc++];
       ++vBinIndexDst;
     }
-    while (vBinIndexDst < TNumberOfBins) mCountBins[vBinIndexDst++] = 0;
+    while (vBinIndexDst < TCountBinCapacity) mCountBins[vBinIndexDst++] = 0;
     mBinValueDelta *= 2;
-    mBinValueMax = mBinValueMin + TNumberOfBins * mBinValueDelta;
+    mBinValueMax = mBinValueMin + TCountBinCapacity * mBinValueDelta;
   }
 
   TValueType mValueMin;
   TValueType mValueMax;
 
-  ggUInt64 mCountTotal;
-  std::vector<ggUInt64> mCountBins;
+  ggInt64 mCountTotal;
+  std::vector<ggInt64> mCountBins;
 
   ggDouble mBinValueMin;
   ggDouble mBinValueMax;
