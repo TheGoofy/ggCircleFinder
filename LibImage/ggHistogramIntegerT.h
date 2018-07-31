@@ -15,7 +15,7 @@ public:
   ggHistogramIntegerT()
   : mValueMin(),
     mValueMax(),
-    mBinDelta(1),
+    mBinWidth(1),
     mCountBins(TCountBinCapacity, 0),
     mCountTotal(0) {
   }
@@ -26,7 +26,7 @@ public:
   void Reset() {
     mValueMin = TValueType();
     mValueMax = TValueType();
-    mBinDelta = 1;
+    mBinWidth = 1;
     mCountBins = std::vector<ggInt64>(TCountBinCapacity, 0);
     mCountTotal = 0;
   }
@@ -45,7 +45,7 @@ public:
         if (2 * vBinIndex + 1 >= mCountBins.size()) mCountBins[vBinIndex] = 0;
         else mCountBins[vBinIndex] = mCountBins[2 * vBinIndex] + mCountBins[2 * vBinIndex + 1];
       }
-      mBinDelta *= 2;
+      mBinWidth *= 2;
     }
     mCountBins[GetBinIndexInternal(aValue)] += aCount;
     mCountTotal += aCount;
@@ -60,11 +60,11 @@ public:
   }
 
   virtual ggInt64 GetCount(ggInt64 aBinIndex) const override {
-    return mCountBins[GetBinIndexInternalMin() + aBinIndex];
+    return mCountTotal > 0 ? mCountBins[GetBinIndexInternalMin() + aBinIndex] : 0;
   }
 
   virtual ggInt64 GetCountF(const ggDouble& aValueF) const override {
-    return mCountBins[GetBinIndexInternal(ggRound<TValueType>(aValueF))];
+    return mCountTotal > 0 ? mCountBins[GetBinIndexInternal(ggRound<TValueType>(aValueF))] : 0;
   }
 
   virtual ggInt64 GetBinIndexF(const ggDouble& aValueF) const override {
@@ -72,11 +72,11 @@ public:
   }
 
   virtual ggDouble GetBinValueF(ggInt64 aBinIndex) const override {
-    return static_cast<ggDouble>((aBinIndex + GetBinIndexInternalMin()) * mBinDelta + GetBinIndexOffset());
+    return static_cast<ggDouble>((aBinIndex + GetBinIndexInternalMin()) * mBinWidth + (mBinWidth - 1.0) / 2.0 + GetBinIndexOffset());
   }
 
-  virtual ggDouble GetBinDeltaF() const override {
-    return static_cast<ggDouble>(mBinDelta);
+  virtual ggDouble GetBinWidthF() const override {
+    return static_cast<ggDouble>(mBinWidth);
   }
 
   virtual ggDouble GetValueMinF() const override {
@@ -89,16 +89,16 @@ public:
 
 private:
 
-  static TValueType GetBinIndexOffset() {
-    return -std::numeric_limits<TValueType>::min();
+  static ggInt64 GetBinIndexOffset() {
+    return std::numeric_limits<TValueType>::min();
   }
 
   TValueType GetBinIndexScale() const {
-    return mBinDelta;
+    return mBinWidth;
   }
 
   inline ggInt64 GetBinIndexInternal(const TValueType& aValue) const {
-    return (aValue - GetBinIndexOffset()) / mBinDelta;
+    return (ggRound<ggInt64>(aValue) - GetBinIndexOffset()) / mBinWidth;
   }
 
   inline ggInt64 GetBinIndexInternalMin() const {
@@ -112,7 +112,7 @@ private:
   TValueType mValueMin;
   TValueType mValueMax;
 
-  TValueType mBinDelta;
+  TValueType mBinWidth;
   std::vector<ggInt64> mCountBins;
   ggInt64 mCountTotal;
 

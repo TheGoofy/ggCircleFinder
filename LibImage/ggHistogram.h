@@ -17,7 +17,7 @@ public:
   virtual ggInt64 GetCountF(const ggDouble& aValueF) const = 0;
   virtual ggInt64 GetBinIndexF(const ggDouble& aValueF) const = 0;
   virtual ggDouble GetBinValueF(ggInt64 aBinIndex) const = 0;
-  virtual ggDouble GetBinDeltaF() const = 0;
+  virtual ggDouble GetBinWidthF() const = 0;
   virtual ggDouble GetValueMinF() const = 0;
   virtual ggDouble GetValueMaxF() const = 0;
 

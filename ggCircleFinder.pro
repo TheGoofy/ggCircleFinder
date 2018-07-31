@@ -118,7 +118,8 @@ HEADERS += \
     LibBase/ggAverages.h \
     LibImage/ggHistogram.h \
     LibImage/ggHistogramIntegerT.h \
-    LibImage/ggHistogramTest.h
+    LibImage/ggHistogramTest.h \
+    LibBase/ggUnitTest.h
 
 FORMS += \
     QtMain/MainWindow.ui \
