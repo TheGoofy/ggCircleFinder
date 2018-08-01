@@ -26,7 +26,9 @@ class ggHistogramAdaptiveT : public ggHistogram
 
 public:
 
-  ggHistogramAdaptiveT(ggInt64 aCountBinsCapacity = 512)
+  ggHistogramAdaptiveT(ggInt64 aCountBinsCapacity = 512,
+                       const TValueType& aValueRangeMin = TValueType(),
+                       const TValueType& aValueRangeMax = TValueType())
   : mValueMin(),
     mValueMax(),
     mBinValueMin(0),
@@ -35,18 +37,18 @@ public:
     mCountBinsCapacity(aCountBinsCapacity),
     mCountBins(static_cast<ggUSize>(aCountBinsCapacity), 0),
     mCountTotal(0) {
+    AdjustBinRange(aValueRangeMin, aValueRangeMax);
   }
 
   virtual ~ggHistogramAdaptiveT() override {
   }
 
-  inline void Reset() {
+  inline void Reset(const TValueType& aValueRangeMin = TValueType(),
+                    const TValueType& aValueRangeMax = TValueType()) {
     mValueMin = TValueType();
     mValueMax = TValueType();
-    mBinValueMin = 0;
-    mBinValueMax = 0;
-    mBinWidth = 0;
-    mCountBins = std::vector<ggInt64>(mCountBinsCapacity, 0);
+    AdjustBinRange(aValueRangeMin, aValueRangeMax);
+    std::fill(mCountBins.begin(), mCountBins.end(), 0);
     mCountTotal = 0;
   }
 
@@ -87,11 +89,11 @@ public:
   }
 
   virtual ggDouble GetValueMinF() const override {
-    return static_cast<ggDouble>(mValueMin);
+    return ggRound<ggDouble>(mValueMin);
   }
 
   virtual ggDouble GetValueMaxF() const override {
-    return static_cast<ggDouble>(mValueMax);
+    return ggRound<ggDouble>(mValueMax);
   }
 
   inline const TValueType& GetValueMin() const {
@@ -116,17 +118,13 @@ private:
       // bin range is not initialized: adjust it to the first two different values
       if (aValue < mValueMin) {
         mValueMin = aValue;
-        mBinWidth = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(mCountBinsCapacity - 1);
-        mBinValueMin = mValueMin;
-        mBinValueMax = mValueMax;
+        AdjustBinRange(mValueMin, mValueMax);
         mCountBins.front() = aCount;
         mCountBins.back() = mCountTotal;
       }
       if (aValue > mValueMax) {
         mValueMax = aValue;
-        mBinWidth = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(mCountBinsCapacity - 1);
-        mBinValueMin = mValueMin;
-        mBinValueMax = mValueMax;
+        AdjustBinRange(mValueMin, mValueMax);
         mCountBins.front() = mCountTotal;
         mCountBins.back() = aCount;
       }
@@ -140,7 +138,7 @@ private:
         vBinIndex = GetBinIndexInternalFromValue(aValue);
       }
       // if the bin index is too high, the bins are packed and shifted left (down)
-      while (vBinIndex >= static_cast<ggInt64>(mCountBinsCapacity)) {
+      while (vBinIndex >= mCountBinsCapacity) {
         PackBinsLeft();
         vBinIndex = GetBinIndexInternalFromValue(aValue);
       }
@@ -164,7 +162,7 @@ private:
 
   inline ggInt64 GetBinIndexInternalFromValue(const TValueType& aValue) const {
     if (mBinWidth == 0) return 0;
-    return ggRound<ggInt64>((aValue - mBinValueMin) / mBinWidth);
+    return ggRound<ggInt64>((ggRound<ggDouble>(aValue) - mBinValueMin) / mBinWidth);
   }
 
   inline ggInt64 GetBinIndexInternalMin() const {
@@ -177,7 +175,7 @@ private:
 
   inline ggInt64 GetCountFromBinIndexInternal(ggInt64 aBinIndexInternal) const {
     if (aBinIndexInternal < 0) return 0;
-    if (aBinIndexInternal >= static_cast<ggInt64>(mCountBinsCapacity)) return 0;
+    if (aBinIndexInternal >= mCountBinsCapacity) return 0;
     return mValueMin == mValueMax ? mCountTotal : mCountBins[aBinIndexInternal];
   }
 
@@ -206,6 +204,14 @@ private:
     mBinWidth *= 2;
     mBinValueMin += mBinWidth / 4;
     mBinValueMax = mBinValueMin + (mCountBinsCapacity - 1) * mBinWidth;
+  }
+
+  inline void AdjustBinRange(const TValueType& aValueRangeMin,
+                             const TValueType& aValueRangeMax) {
+    mBinWidth = ggRound<ggDouble>(aValueRangeMax - aValueRangeMin) / mCountBinsCapacity;
+    mBinValueMin = ggRound<ggDouble>(aValueRangeMin) + mBinWidth / 2;
+    mBinValueMax = ggRound<ggDouble>(aValueRangeMax) - mBinWidth / 2;
+    mBinValueMin -= fabs(mBinValueMin * std::numeric_limits<ggDouble>::epsilon());
   }
 
   TValueType mValueMin;
