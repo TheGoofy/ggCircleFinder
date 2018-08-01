@@ -95,9 +95,9 @@ namespace ggImageFilter {
 
 
   template <typename TValueType, ggUInt64 TNumberOfBins = 512>
-  ggHistogramAdaptiveT<TValueType, TNumberOfBins> GetHistogram2(const ggImageT<TValueType>& aImage)
+  ggHistogramAdaptiveT<TValueType> GetHistogram2(const ggImageT<TValueType>& aImage)
   {
-    ggHistogramAdaptiveT<TValueType, TNumberOfBins> vHistogram;
+    ggHistogramAdaptiveT<TValueType> vHistogram(TNumberOfBins);
     aImage.ProcessValues([&vHistogram] (const TValueType& aValue) {
       vHistogram.Insert(aValue);
     });

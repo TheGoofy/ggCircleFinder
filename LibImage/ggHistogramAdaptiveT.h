@@ -20,19 +20,20 @@
  * the added values - i.e. bin grouping or bin width could be different.
  * However total count, or distribution are independent on the sequence.
  */
-template <class TValueType, ggInt64 TCountBinCapacity = 512>
+template <class TValueType>
 class ggHistogramAdaptiveT : public ggHistogram
 {
 
 public:
 
-  ggHistogramAdaptiveT()
+  ggHistogramAdaptiveT(ggInt64 aCountBinsCapacity = 512)
   : mValueMin(),
     mValueMax(),
     mBinValueMin(0),
     mBinValueMax(0),
     mBinWidth(0),
-    mCountBins(TCountBinCapacity, 0),
+    mCountBinsCapacity(aCountBinsCapacity),
+    mCountBins(static_cast<ggUSize>(aCountBinsCapacity), 0),
     mCountTotal(0) {
   }
 
@@ -45,7 +46,7 @@ public:
     mBinValueMin = 0;
     mBinValueMax = 0;
     mBinWidth = 0;
-    mCountBins = std::vector<ggInt64>(TCountBinCapacity, 0);
+    mCountBins = std::vector<ggInt64>(mCountBinsCapacity, 0);
     mCountTotal = 0;
   }
 
@@ -103,21 +104,19 @@ public:
 
 private:
 
-  inline void AddPrivate(const TValueType& aValue, ggInt64 aCount) {
+  inline void AddPrivate(const TValueType& aValue, ggInt64 aCount)
+  {
+    // initialize value min/max when the very first value is added
     if (mCountTotal == 0) {
-      // the very first sample is inserted, vector can not yet be initialized
       mValueMin = aValue;
       mValueMax = aValue;
-      mBinValueMin = aValue;
-      mBinValueMax = aValue;
-      mBinWidth = 0;
     }
-    else if (mValueMin == mValueMax) {
-      // a second (or later) sample is inserted.
-      // if its value is different than the previous samples, the vector with the bins can be initialized
+    // check if the range for the bins is not yet initialized
+    if (mBinValueMin == mBinValueMax) {
+      // bin range is not initialized: adjust it to the first two different values
       if (aValue < mValueMin) {
         mValueMin = aValue;
-        mBinWidth = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TCountBinCapacity - 1);
+        mBinWidth = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(mCountBinsCapacity - 1);
         mBinValueMin = mValueMin;
         mBinValueMax = mValueMax;
         mCountBins.front() = aCount;
@@ -125,7 +124,7 @@ private:
       }
       if (aValue > mValueMax) {
         mValueMax = aValue;
-        mBinWidth = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(TCountBinCapacity - 1);
+        mBinWidth = static_cast<ggDouble>(mValueMax - mValueMin) / static_cast<ggDouble>(mCountBinsCapacity - 1);
         mBinValueMin = mValueMin;
         mBinValueMax = mValueMax;
         mCountBins.front() = mCountTotal;
@@ -133,7 +132,7 @@ private:
       }
     }
     else {
-      // find the proper bin for the new sample
+      // bin range is initialized: find the proper bin for the new sample
       ggInt64 vBinIndex = GetBinIndexInternalFromValue(aValue);
       // if the bin index is too low, the bins are packed and shifted right (up)
       while (vBinIndex < 0) {
@@ -141,7 +140,7 @@ private:
         vBinIndex = GetBinIndexInternalFromValue(aValue);
       }
       // if the bin index is too high, the bins are packed and shifted left (down)
-      while (vBinIndex >= static_cast<ggInt64>(TCountBinCapacity)) {
+      while (vBinIndex >= static_cast<ggInt64>(mCountBinsCapacity)) {
         PackBinsLeft();
         vBinIndex = GetBinIndexInternalFromValue(aValue);
       }
@@ -150,7 +149,7 @@ private:
       if (aValue > mValueMax) mValueMax = aValue;
       mCountBins[vBinIndex] += aCount;
     }
-    // the total count can be increased in any case
+    // the total count must be increased in any case
     mCountTotal += aCount;
   }
 
@@ -178,13 +177,13 @@ private:
 
   inline ggInt64 GetCountFromBinIndexInternal(ggInt64 aBinIndexInternal) const {
     if (aBinIndexInternal < 0) return 0;
-    if (aBinIndexInternal >= static_cast<ggInt64>(TCountBinCapacity)) return 0;
+    if (aBinIndexInternal >= static_cast<ggInt64>(mCountBinsCapacity)) return 0;
     return mValueMin == mValueMax ? mCountTotal : mCountBins[aBinIndexInternal];
   }
 
   void PackBinsRight() {
-    ggInt64 vBinIndexDst = TCountBinCapacity;
-    ggInt64 vBinIndexSrc = TCountBinCapacity;
+    ggInt64 vBinIndexDst = mCountBinsCapacity;
+    ggInt64 vBinIndexSrc = mCountBinsCapacity;
     while (vBinIndexSrc > 0) {
       mCountBins[--vBinIndexDst] = mCountBins[--vBinIndexSrc];
       if (vBinIndexSrc > 0) mCountBins[vBinIndexDst] += mCountBins[--vBinIndexSrc];
@@ -192,21 +191,21 @@ private:
     while (vBinIndexDst > 0) mCountBins[--vBinIndexDst] = 0;
     mBinWidth *= 2;
     mBinValueMax -= mBinWidth / 4;
-    mBinValueMin = mBinValueMax - (TCountBinCapacity - 1) * mBinWidth;
+    mBinValueMin = mBinValueMax - (mCountBinsCapacity - 1) * mBinWidth;
   }
 
   void PackBinsLeft() {
     ggInt64 vBinIndexDst = 0;
     ggInt64 vBinIndexSrc = 0;
-    while (vBinIndexSrc < TCountBinCapacity) {
+    while (vBinIndexSrc < mCountBinsCapacity) {
       mCountBins[vBinIndexDst] = mCountBins[vBinIndexSrc++];
-      if (vBinIndexSrc < TCountBinCapacity) mCountBins[vBinIndexDst] += mCountBins[vBinIndexSrc++];
+      if (vBinIndexSrc < mCountBinsCapacity) mCountBins[vBinIndexDst] += mCountBins[vBinIndexSrc++];
       ++vBinIndexDst;
     }
-    while (vBinIndexDst < TCountBinCapacity) mCountBins[vBinIndexDst++] = 0;
+    while (vBinIndexDst < mCountBinsCapacity) mCountBins[vBinIndexDst++] = 0;
     mBinWidth *= 2;
     mBinValueMin += mBinWidth / 4;
-    mBinValueMax = mBinValueMin + (TCountBinCapacity - 1) * mBinWidth;
+    mBinValueMax = mBinValueMin + (mCountBinsCapacity - 1) * mBinWidth;
   }
 
   TValueType mValueMin;
@@ -215,6 +214,7 @@ private:
   ggDouble mBinValueMin;
   ggDouble mBinValueMax;
   ggDouble mBinWidth;
+  const ggInt64 mCountBinsCapacity;
   std::vector<ggInt64> mCountBins;
   ggInt64 mCountTotal;
 

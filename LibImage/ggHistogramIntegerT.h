@@ -17,17 +17,18 @@
  * which are 2 units wide. Similarly for signed value-types: -128, -127, -125 fit well into
  * a 8-bit-8-bin histogram, while adding 0 results into bin-width 32.
  */
-template <class TValueType, ggInt64 TCountBinCapacity = 256>
+template <class TValueType>
 class ggHistogramIntegerT : public ggHistogram
 {
 
 public:
 
-  ggHistogramIntegerT()
+  ggHistogramIntegerT(ggInt64 aCountBinsCapacity = 256)
   : mValueMin(),
     mValueMax(),
     mBinWidth(1),
-    mCountBins(TCountBinCapacity, 0),
+    mCountBinsCapacity(aCountBinsCapacity),
+    mCountBins(static_cast<ggUSize>(aCountBinsCapacity), 0),
     mCountTotal(0) {
   }
 
@@ -38,7 +39,7 @@ public:
     mValueMin = TValueType();
     mValueMax = TValueType();
     mBinWidth = 1;
-    mCountBins = std::vector<ggInt64>(TCountBinCapacity, 0);
+    mCountBins = std::vector<ggInt64>(mCountBinsCapacity, 0);
     mCountTotal = 0;
   }
 
@@ -138,7 +139,7 @@ private:
 
   inline ggInt64 GetCountFromBinIndexInternal(ggInt64 aBinIndexInternal) const {
     if (aBinIndexInternal < 0) return 0;
-    if (aBinIndexInternal >= static_cast<ggInt64>(TCountBinCapacity)) return 0;
+    if (aBinIndexInternal >= static_cast<ggInt64>(mCountBinsCapacity)) return 0;
     return mCountTotal > 0 ? mCountBins[aBinIndexInternal] : 0;
   }
 
@@ -146,6 +147,7 @@ private:
   TValueType mValueMax;
 
   ggInt64 mBinWidth;
+  const ggInt64 mCountBinsCapacity;
   std::vector<ggInt64> mCountBins;
   ggInt64 mCountTotal;
 

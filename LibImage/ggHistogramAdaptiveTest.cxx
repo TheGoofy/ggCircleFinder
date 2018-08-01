@@ -5,13 +5,13 @@
 #include "LibImage/ggHistogramAdaptiveT.h"
 
 
-template <class TValueType, ggInt64 TCountBinCapacity>
-static void ggHistogramAdaptiveTestT(bool aPrint, bool aPrintBinIndex)
+template <class TValueType>
+static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, bool aPrintBinIndex)
 {
   if (aPrint) std::cout << "========== " <<  __PRETTY_FUNCTION__ << " ==========" << std::endl;
   bool vSucceeded = true;
 
-  ggHistogramAdaptiveT<TValueType, TCountBinCapacity> vHistogram;
+  ggHistogramAdaptiveT<TValueType> vHistogram(aCountBinCapacity);
 
   vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
@@ -59,14 +59,14 @@ static void ggHistogramAdaptiveTest()
   bool vPrint = false;
   bool vPrintBinIndex = false;
 
-  ggHistogramAdaptiveTestT<ggInt32, 6>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggInt32, 32>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggUInt32, 6>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggUInt32, 32>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggFloat, 6>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggFloat, 32>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggDouble, 6>(vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggDouble, 32>(vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggInt32>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggInt32>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggUInt32>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggUInt32>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggFloat>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggFloat>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggDouble>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveTestT<ggDouble>(32, vPrint, vPrintBinIndex);
 }
 
 
