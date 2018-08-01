@@ -121,3 +121,6 @@ void ggHistogramTest::Execute()
   TestHistogramIntegerT<ggUInt16, 8>(vPrint, vPrintBinIndex);
   TestHistogramIntegerT<ggInt16, 16>(vPrint, vPrintBinIndex);
 }
+
+
+static bool ggRegistered = ggUnitTest::Register(ggHistogramTest::Execute);

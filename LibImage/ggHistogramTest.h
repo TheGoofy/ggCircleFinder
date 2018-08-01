@@ -1,10 +1,9 @@
 #ifndef GGHISTOGRAMTEST_H
 #define GGHISTOGRAMTEST_H
 
-namespace ggHistogramTest {
-
+namespace ggHistogramTest
+{
   void Execute();
-
 }
 
 #endif // GGHISTOGRAMTEST_H

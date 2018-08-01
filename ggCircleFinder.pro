@@ -53,7 +53,8 @@ SOURCES += \
     LibImage/ggImageFilter.cxx \
     LibBase/ggRound.cxx \
     LibBase/ggRoundTest.cxx \
-    LibImage/ggHistogramTest.cxx
+    LibImage/ggHistogramTest.cxx \
+    LibBase/ggUnitTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \

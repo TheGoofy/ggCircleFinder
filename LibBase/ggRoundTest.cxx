@@ -43,3 +43,6 @@ void ggRoundTest::Execute()
   GG_TEST_EQUAL(ggRound<ggFloat>(-0.62), static_cast<ggFloat>(-0.62));
   GG_TEST_EQUAL(ggRound<ggDouble>(3.14f), static_cast<ggDouble>(3.14f));
 }
+
+
+static bool ggRegistered = ggUnitTest::Register(ggRoundTest::Execute);

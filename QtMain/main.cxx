@@ -3,11 +3,12 @@
 #include <QSettings>
 #include <QDebug>
 
-#include "LibBase/ggRoundTest.h"
-#include "LibImage/ggHistogramTest.h"
+#include "LibBase/ggUnitTest.h"
 
 int main(int argc, char *argv[])
 {
+  ggUnitTest::ExecuteAll();
+
   QApplication a(argc, argv);
 
   QCoreApplication::setOrganizationName("Goofy Soft");
@@ -16,9 +17,6 @@ int main(int argc, char *argv[])
   qDebug() << __PRETTY_FUNCTION__ << a.organizationName();
   QSettings vSettings;
   qDebug() << __PRETTY_FUNCTION__ << vSettings.fileName();
-
-  ggRoundTest::Execute();
-  ggHistogramTest::Execute();
 
   MainWindow w;
   w.show();
