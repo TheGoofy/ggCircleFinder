@@ -18,7 +18,7 @@ inline T1 ggClamp(const T2& aValue, const T1& aValueMin, const T1& aValueMax) {
 
 template <typename T1, typename T2>
 inline T1 ggClampNumericLimits(const T2 aValue) {
-  return ggClamp(aValue, std::numeric_limits<T1>::min(), std::numeric_limits<T1>::max());
+  return ggClamp(aValue, std::numeric_limits<T1>::lowest(), std::numeric_limits<T1>::max());
 }
 
 template <typename T>

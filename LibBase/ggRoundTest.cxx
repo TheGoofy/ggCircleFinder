@@ -38,6 +38,7 @@ static void ggRoundTest()
   GG_TEST_EQUAL(ggRound<ggUInt16>(-10.1f), 0);
   GG_TEST_EQUAL(ggRound<ggFloat>(-0.62), static_cast<ggFloat>(-0.62));
   GG_TEST_EQUAL(ggRound<ggDouble>(3.14f), static_cast<ggDouble>(3.14f));
+  GG_TEST_EQUAL(ggRound<ggDouble>(-1), static_cast<ggDouble>(-1));
 }
 
 
