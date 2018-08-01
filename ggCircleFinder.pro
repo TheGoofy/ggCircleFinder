@@ -54,7 +54,9 @@ SOURCES += \
     LibBase/ggRound.cxx \
     LibBase/ggRoundTest.cxx \
     LibImage/ggHistogramTest.cxx \
-    LibBase/ggUnitTest.cxx
+    LibBase/ggUnitTest.cxx \
+    LibImage/ggHistogramIntegerTest.cxx \
+    LibImage/ggHistogramAdaptiveTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -118,7 +120,8 @@ HEADERS += \
     LibBase/ggAverages.h \
     LibImage/ggHistogram.h \
     LibImage/ggHistogramIntegerT.h \
-    LibBase/ggUnitTest.h
+    LibBase/ggUnitTest.h \
+    LibImage/ggHistogramTest.h
 
 FORMS += \
     QtMain/MainWindow.ui \

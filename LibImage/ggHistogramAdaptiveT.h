@@ -4,10 +4,11 @@
 #include <vector>
 
 #include "LibBase/ggNumberTypes.h"
+#include "LibImage/ggHistogram.h"
 
 
 template <class TValueType, ggInt64 TCountBinCapacity = 512>
-class ggHistogramAdaptiveT
+class ggHistogramAdaptiveT : public ggHistogram
 {
 
 public:
