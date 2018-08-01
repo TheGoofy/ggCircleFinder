@@ -3,6 +3,10 @@
 
 #include "LibBase/ggNumberTypes.h"
 
+/**
+ * Interface for a histogram. Individual bins contain the number of values (count).
+ * Bins have a vertain width - i.e. all values within that width are collected in a bin.
+ */
 class ggHistogram
 {
 
@@ -17,7 +21,7 @@ public:
   virtual ggInt64 GetCountF(const ggDouble& aValueF) const = 0;
   virtual ggInt64 GetBinIndexF(const ggDouble& aValueF) const = 0;
   virtual ggDouble GetBinValueF(ggInt64 aBinIndex) const = 0;
-  virtual ggDouble GetBinWidthF() const = 0;
+  virtual ggDouble GetBinWidthF(ggInt64 aBinIndex) const = 0;
   virtual ggDouble GetValueMinF() const = 0;
   virtual ggDouble GetValueMaxF() const = 0;
 

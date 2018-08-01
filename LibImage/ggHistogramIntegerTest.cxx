@@ -8,29 +8,30 @@
 template <class TValueType, ggInt64 TCountBinCapacity>
 static void ggHistogramIntegerTestT(bool aPrint, bool aPrintBinIndex)
 {
-  if (aPrint) std::cout << __PRETTY_FUNCTION__ << " ====================" << std::endl;
+  if (aPrint) std::cout << "========== " <<  __PRETTY_FUNCTION__ << " ==========" << std::endl;
+  bool vSucceeded = true;
 
   ggHistogramIntegerT<TValueType, TCountBinCapacity> vHistogram;
 
-  if (aPrint) ggHistogramTest::Print(vHistogram);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.1);
-  ggHistogramTest::TestConsistency(vHistogram);
 
   vHistogram.Add(3);
-  vHistogram.Add(4);
 
-  if (aPrint) ggHistogramTest::Print(vHistogram);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.2);
-  ggHistogramTest::TestConsistency(vHistogram);
 
+  vHistogram.Add(4);
   vHistogram.Add(5, 4);
   vHistogram.Add(6);
   vHistogram.Add(7, 5);
   vHistogram.Add(8);
 
-  if (aPrint) ggHistogramTest::Print(vHistogram);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.2);
-  ggHistogramTest::TestConsistency(vHistogram);
 
   vHistogram.Add(5, 1);
   vHistogram.Add(9, 3);
@@ -39,15 +40,15 @@ static void ggHistogramIntegerTestT(bool aPrint, bool aPrintBinIndex)
   vHistogram.Add(12, 1);
   vHistogram.Add(13, 10);
 
-  if (aPrint) ggHistogramTest::Print(vHistogram);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.5);
-  ggHistogramTest::TestConsistency(vHistogram);
 
   vHistogram.Reset();
 
-  if (aPrint) ggHistogramTest::Print(vHistogram);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.1);
-  ggHistogramTest::TestConsistency(vHistogram);
 }
 
 

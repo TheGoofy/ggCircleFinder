@@ -9,7 +9,7 @@ namespace ggHistogramTest
 {
   void Print(const ggHistogram& aHistogram);
   void PrintBinIndex(const ggHistogram& aHistogram, ggDouble aValueStepF);
-  void TestConsistency(const ggHistogram& aHistogram);
+  bool TestConsistency(const ggHistogram& aHistogram, const char* aReference = nullptr);
 }
 
 #endif // GGHISTOGRAMTEST_H
