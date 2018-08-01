@@ -115,11 +115,9 @@ HEADERS += \
     LibBase/ggRound.h \
     LibBase/ggNumberTypes.h \
     LibBase/ggNumerics.h \
-    LibBase/ggRoundTest.h \
     LibBase/ggAverages.h \
     LibImage/ggHistogram.h \
     LibImage/ggHistogramIntegerT.h \
-    LibImage/ggHistogramTest.h \
     LibBase/ggUnitTest.h
 
 FORMS += \

@@ -1,12 +1,8 @@
-#include "LibBase/ggRoundTest.h"
-
-#include <iostream>
-
 #include "LibBase/ggUnitTest.h"
 #include "LibBase/ggRound.h"
 
 
-void ggRoundTest::Execute()
+static void ggRoundTest()
 {
   GG_TEST_EQUAL(ggRound<ggInt8>(-200), -128);
   GG_TEST_EQUAL(ggRound<ggInt8>(-63), -63);
@@ -45,4 +41,4 @@ void ggRoundTest::Execute()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggRoundTest::Execute);
+static bool ggRegistered = ggUnitTest::Register(ggRoundTest);

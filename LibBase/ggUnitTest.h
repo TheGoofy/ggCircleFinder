@@ -1,6 +1,7 @@
 #ifndef GGUNITTEST_H
 #define GGUNITTEST_H
 
+#include <iostream>
 #include <functional>
 
 #define GG_TEST(aCondition) \

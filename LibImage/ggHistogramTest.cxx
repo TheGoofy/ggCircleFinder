@@ -1,12 +1,10 @@
-#include "LibImage/ggHistogramTest.h"
-
 #include <iostream>
 
 #include "LibBase/ggUnitTest.h"
 #include "LibImage/ggHistogramIntegerT.h"
 
 
-static void Print(const ggHistogram& aHistogram)
+static void ggPrint(const ggHistogram& aHistogram)
 {
   /*
   - virtual ggInt64 GetNumberOfBins() const = 0;
@@ -38,7 +36,7 @@ static void Print(const ggHistogram& aHistogram)
 }
 
 
-static void PrintBinIndex(const ggHistogram& aHistogram, ggDouble aValueStepF)
+static void ggPrintBinIndex(const ggHistogram& aHistogram, ggDouble aValueStepF)
 {
   for (ggDouble vValueF = aHistogram.GetValueMinF(); vValueF <= aHistogram.GetValueMaxF(); vValueF += aValueStepF) {
     std::cout << "value=" << vValueF << " index=" << aHistogram.GetBinIndexF(vValueF) << std::endl;
@@ -46,7 +44,7 @@ static void PrintBinIndex(const ggHistogram& aHistogram, ggDouble aValueStepF)
 }
 
 
-static void TestConsistency(const ggHistogram& aHistogram)
+static void ggTestConsistency(const ggHistogram& aHistogram)
 {
   ggInt64 vCountTotal = 0;
   GG_TEST_EQUAL(aHistogram.GetBinIndexF(aHistogram.GetValueMinF()), 0);
@@ -61,31 +59,31 @@ static void TestConsistency(const ggHistogram& aHistogram)
 
 
 template <class TValueType, ggInt64 TCountBinCapacity>
-void TestHistogramIntegerT(bool aPrint, bool aPrintBinIndex)
+static void ggTestHistogramIntegerT(bool aPrint, bool aPrintBinIndex)
 {
   if (aPrint) std::cout << __PRETTY_FUNCTION__ << " ====================" << std::endl;
 
   ggHistogramIntegerT<TValueType, TCountBinCapacity> vHistogram;
 
-  if (aPrint) Print(vHistogram);
-  if (aPrintBinIndex) PrintBinIndex(vHistogram, 0.1);
-  TestConsistency(vHistogram);
+  if (aPrint) ggPrint(vHistogram);
+  if (aPrintBinIndex) ggPrintBinIndex(vHistogram, 0.1);
+  ggTestConsistency(vHistogram);
 
   vHistogram.Add(3);
   vHistogram.Add(4);
 
-  if (aPrint) Print(vHistogram);
-  if (aPrintBinIndex) PrintBinIndex(vHistogram, 0.2);
-  TestConsistency(vHistogram);
+  if (aPrint) ggPrint(vHistogram);
+  if (aPrintBinIndex) ggPrintBinIndex(vHistogram, 0.2);
+  ggTestConsistency(vHistogram);
 
   vHistogram.Add(5, 4);
   vHistogram.Add(6);
   vHistogram.Add(7, 5);
   vHistogram.Add(8);
 
-  if (aPrint) Print(vHistogram);
-  if (aPrintBinIndex) PrintBinIndex(vHistogram, 0.2);
-  TestConsistency(vHistogram);
+  if (aPrint) ggPrint(vHistogram);
+  if (aPrintBinIndex) ggPrintBinIndex(vHistogram, 0.2);
+  ggTestConsistency(vHistogram);
 
   vHistogram.Add(5, 1);
   vHistogram.Add(9, 3);
@@ -94,33 +92,33 @@ void TestHistogramIntegerT(bool aPrint, bool aPrintBinIndex)
   vHistogram.Add(12, 1);
   vHistogram.Add(13, 10);
 
-  if (aPrint) Print(vHistogram);
-  if (aPrintBinIndex) PrintBinIndex(vHistogram, 0.5);
-  TestConsistency(vHistogram);
+  if (aPrint) ggPrint(vHistogram);
+  if (aPrintBinIndex) ggPrintBinIndex(vHistogram, 0.5);
+  ggTestConsistency(vHistogram);
 
   vHistogram.Reset();
 
-  if (aPrint) Print(vHistogram);
-  if (aPrintBinIndex) PrintBinIndex(vHistogram, 0.1);
-  TestConsistency(vHistogram);
+  if (aPrint) ggPrint(vHistogram);
+  if (aPrintBinIndex) ggPrintBinIndex(vHistogram, 0.1);
+  ggTestConsistency(vHistogram);
 }
 
 
-void ggHistogramTest::Execute()
+static void ggHistogramTest()
 {
   bool vPrint = false;
   bool vPrintBinIndex = false;
-  TestHistogramIntegerT<ggUInt8, 6>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggUInt8, 8>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggUInt8, 12>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggUInt8, 16>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggUInt8, 256>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggInt8, 16>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggInt8, 64>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggInt8, 256>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggUInt16, 8>(vPrint, vPrintBinIndex);
-  TestHistogramIntegerT<ggInt16, 16>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggUInt8, 6>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggUInt8, 8>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggUInt8, 12>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggUInt8, 16>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggUInt8, 256>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggInt8, 16>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggInt8, 64>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggInt8, 256>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggUInt16, 8>(vPrint, vPrintBinIndex);
+  ggTestHistogramIntegerT<ggInt16, 16>(vPrint, vPrintBinIndex);
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggHistogramTest::Execute);
+static bool ggRegistered = ggUnitTest::Register(ggHistogramTest);
