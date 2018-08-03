@@ -57,7 +57,8 @@ SOURCES += \
     LibBase/ggUnitTest.cxx \
     LibImage/ggHistogramFixedTest.cxx \
     LibImage/ggHistogramAdaptiveFloatTest.cxx \
-    LibImage/ggHistogramAdaptiveIntTest.cxx
+    LibImage/ggHistogramAdaptiveIntTest.cxx \
+    LibBase/ggWalkerTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \

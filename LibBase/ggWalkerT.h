@@ -2,6 +2,8 @@
 #define GGWALKER_H
 
 // 1) include system
+#include <algorithm>
+
 // 2) include own project-related (sort by component dependency)
 // 3) forward declarations
 
@@ -131,6 +133,14 @@ public:
    */
   inline bool IsLast() const {
     return mIteratorNext == mEnd;
+  }
+
+  /**
+   * executes processor-function on each element
+   */
+  template <typename TProcessor>
+  inline void ForEach(TProcessor aProcessor) {
+    std::for_each(mBegin, mEnd, aProcessor);
   }
 
 private:
