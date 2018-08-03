@@ -10,7 +10,7 @@
 #include "LibBase/ggSpotTypes.h"
 #include "LibBase/ggUtility.h"
 #include "LibImage/ggImageT.h"
-#include "LibImage/ggHistogramAdaptiveT.h"
+#include "LibImage/ggHistogramFixedT.h"
 
 
 namespace ggImageFilter {
@@ -83,23 +83,14 @@ namespace ggImageFilter {
 
 
   template <typename TValueType>
-  std::vector<ggSize> GetHistogram(const ggImageT<TValueType>& aImage)
+  ggHistogramFixedT<TValueType> GetHistogram(const ggImageT<TValueType>& aImage,
+                                             ggInt64 aNumberOfBins = 256)
   {
-    std::vector<ggSize> vHistogram;
+    TValueType vMin, vMax;
+    aImage.GetMinMax(vMin, vMax);
+    ggHistogramFixedT<TValueType> vHistogram(aNumberOfBins, vMin, vMax);
     aImage.ProcessValues([&vHistogram] (const TValueType& aValue) {
-      if (aValue >= vHistogram.size()) vHistogram.resize(aValue + 1, 0);
-      ++vHistogram[aValue];
-    });
-    return vHistogram;
-  }
-
-
-  template <typename TValueType, ggUInt64 TNumberOfBins = 512>
-  ggHistogramAdaptiveT<TValueType> GetHistogram2(const ggImageT<TValueType>& aImage)
-  {
-    ggHistogramAdaptiveT<TValueType> vHistogram(TNumberOfBins);
-    aImage.ProcessValues([&vHistogram] (const TValueType& aValue) {
-      vHistogram.Insert(aValue);
+      vHistogram.Add(aValue);
     });
     return vHistogram;
   }
