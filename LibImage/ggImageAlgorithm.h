@@ -5,7 +5,7 @@
 
 #include "LibBase/ggSpotT.h"
 #include "LibBase/ggGeometry.h"
-#include "LibBase/ggAverages.h"
+#include "LibBase/ggAveragesT.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
 

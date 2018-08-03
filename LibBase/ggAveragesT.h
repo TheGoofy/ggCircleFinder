@@ -35,7 +35,7 @@ public:
 
   // adds a sample
   inline void AddSample(TValueType aValue, ggDouble aCount = 1.0) {
-    ggDouble vValue = static_cast<ggDouble>(aValue);
+    ggDouble vValue = ggRound<ggDouble>(aValue);
     mSum += aCount * vValue;
     mSumOfSquares += aCount * vValue * vValue;
     if (mCount == 0) {
@@ -43,19 +43,15 @@ public:
       mMax = aValue;
     }
     else {
-      if (mMin > aValue) {
-        mMin = aValue;
-      }
-      if (mMax < aValue) {
-        mMax = aValue;
-      }
+      if (aValue < mMin) mMin = aValue;
+      if (aValue > mMax) mMax = aValue;
     }
     mCount += aCount;
   }
 
   // removes a sample (min and max are not updated)
   inline void RemoveSample(TValueType aValue, ggDouble aCount = 1.0) {
-    ggDouble vValue = static_cast<ggDouble>(aValue);
+    ggDouble vValue = ggRound<ggDouble>(aValue);
     mSum -= aCount * vValue;
     mSumOfSquares -= aCount * vValue * vValue;
     mCount -= aCount;
@@ -72,7 +68,7 @@ public:
 
   // returns the sum of all samples
   inline TValueType GetSum() const {
-    return static_cast<TValueType>(mSum);
+    return ggRound<TValueType>(mSum);
   }
 
   // returns the minimum
