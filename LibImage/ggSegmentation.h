@@ -9,9 +9,20 @@ namespace ggSegmentation {
 
   /**
    * Calculates threshold based on k-means (k=2).
-   * Identical with Otsu-method.
+   * Bimodal distribution. Identical with Otsu-method.
+   * Requires a histogram with at least 2 bins.
    */
-  ggDouble CalculateThresholdTwoMeans(const ggHistogram& aHistogram);
+  void CalculateThresholdTwoMeans(const ggHistogram& aHistogram,
+                                  ggDouble& aThreshold);
+
+  /**
+   * Calculates two thresholds based on k-means (k=3).
+   * Trimodal distributed values.
+   * Requires a histogram with at least 2 bins.
+   */
+  void CalculateThresholdThreeMeans(const ggHistogram& aHistogram,
+                                    ggDouble& aThresholdA,
+                                    ggDouble& aThresholdB);
 
 }
 
