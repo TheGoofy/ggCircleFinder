@@ -442,6 +442,61 @@ public:
                                                       ggImageT<TValueTypeConverted>::GetMaxLimit());
   }
 
+  template <typename TValueProcessor>
+  inline void ProcessValues(const ggImageT<TValueType>& aOther, TValueProcessor aValueProcessor) {
+    GG_ASSERT(GetSize() == aOther.GetSize());
+    TValueType* vValuesIterator = mValues;
+    TValueType* vValuesEnd = mValues + GetSizeTotal();
+    const TValueType* vOtherValuesIterator = aOther.mValues;
+    while (vValuesIterator != vValuesEnd) {
+      aValueProcessor(*vValuesIterator++, *vOtherValuesIterator++);
+    }
+  }
+
+  inline ggImageT<TValueType>& operator += (const TValueType& aValue) {
+    ProcessValues([aValue] (TValueType& aImageValue) {
+      aImageValue += aValue;
+    });
+    return *this;
+  }
+
+  inline ggImageT<TValueType>& operator -= (const TValueType& aValue) {
+    ProcessValues([aValue] (TValueType& aImageValue) {
+      aImageValue -= aValue;
+    });
+    return *this;
+  }
+
+  template <typename TScalarValueType>
+  inline ggImageT<TValueType>& operator *= (const TScalarValueType& aScalarValue) {
+    ProcessValues([aScalarValue] (TValueType& aImageValue) {
+      aImageValue *= aScalarValue;
+    });
+    return *this;
+  }
+
+  template <typename TScalarValueType>
+  inline ggImageT<TValueType>& operator /= (const TScalarValueType& aScalarValue) {
+    ProcessValues([aScalarValue] (TValueType& aImageValue) {
+      aImageValue /= aScalarValue;
+    });
+    return *this;
+  }
+
+  inline ggImageT<TValueType>& operator += (const ggImageT<TValueType>& aOther) {
+    ProcessValues(aOther, [] (TValueType& aImageValue, const TValueType& aOtherImageValue) {
+      aImageValue += aOtherImageValue;
+    });
+    return *this;
+  }
+
+  inline ggImageT<TValueType>& operator -= (const ggImageT<TValueType>& aOther) {
+    ProcessValues(aOther, [] (TValueType& aImageValue, const TValueType& aOtherImageValue) {
+      aImageValue -= aOtherImageValue;
+    });
+    return *this;
+  }
+
 private:
 
   ggVector2Size mSize;

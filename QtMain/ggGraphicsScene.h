@@ -57,23 +57,19 @@ public:
                           ggFloat aCameraNoise,
                           ggUInt8 aCameraNumberOfBits)
   {
+    ggImageT<ggFloat> vImageFloat(aImageFloat);
+
+    /*
+    ggImageAlgorithm::Invert(vImageFloat);
+    ggImageFilter::SubtractBackground(vImageFloat, 100.0);
+    ggImageFilter::Median(vImageFloat, 4);
+    */
+
     ggFloat vMin = 0.0f;
     ggFloat vMax = 0.0f;
-
-    ggImageT<ggFloat> vImageFloat(aImageFloat);
     vImageFloat.GetMinMax(vMin, vMax);
     ggImageFilter::AddNoise(vImageFloat, aCameraNoise * (vMin < vMax ?  vMax - vMin : 1.0f));
     vImageFloat.GetMinMax(vMin, vMax);
-
-    /*
-    ggFilterMedianFloat vFilter(10);
-    vImageFloat.ProcessValues([&vFilter] (ggFloat& aValue) {
-      aValue = vFilter.Filter(aValue);
-    });
-    */
-    /*
-    ggImageFilter::Median(vImageFloat, 4);
-    */
 
     ggUInt16 vCameraValueMax = (static_cast<ggUInt16>(1 << aCameraNumberOfBits) - 1);
     ggFloat vScaleCameraToDisplay = 255.0f / static_cast<ggFloat>(vCameraValueMax);
@@ -117,6 +113,7 @@ public:
 
     {
       /*
+      ggImageFilter::SubtractBackground(vImageCameraROI, aCircleModelDiameter);
       auto vHistogram = ggImageFilter::GetHistogram(vImageCameraROI);
       ggFloat vThreshold = ggSegmentation::CalculateThresholdTwoMeans(vHistogram);
 

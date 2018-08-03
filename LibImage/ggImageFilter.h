@@ -83,6 +83,16 @@ namespace ggImageFilter {
 
 
   template <typename TValueType>
+  void SubtractBackground(ggImageT<TValueType>& aImage,
+                          ggDouble aSizeOfForegroundDetails)
+  {
+    ggImageT<TValueType> vBackgroundImage(aImage);
+    Gauss(vBackgroundImage, aSizeOfForegroundDetails);
+    aImage -= vBackgroundImage;
+  }
+
+
+  template <typename TValueType>
   ggHistogramFixedT<TValueType> GetHistogram(const ggImageT<TValueType>& aImage,
                                              ggInt64 aNumberOfBins = 256)
   {
