@@ -11,6 +11,7 @@
 #include "LibImage/ggImageT.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImageAlgorithm.h"
+#include "LibImage/ggSegmentation.h"
 #include "QtBase/ggUtilityQt.h"
 #include "QtGraphics/ggGraphicsManipulatorRectItemT.h"
 
@@ -116,9 +117,8 @@ public:
 
     {
       /*
-      ggFloat vMin, vMax;
-      vImageCameraROI.GetMinMax(vMin, vMax);
-      ggFloat vThreshold = (vMin + vMax) / 2.0f;
+      auto vHistogram = ggImageFilter::GetHistogram(vImageCameraROI);
+      ggFloat vThreshold = ggSegmentation::CalculateThresholdTwoMeans(vHistogram);
 
       auto vThresholdCheck = [vThreshold] (const ggFloat& aValue) {
         return aValue > vThreshold;
