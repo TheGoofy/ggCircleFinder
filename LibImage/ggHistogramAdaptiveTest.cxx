@@ -13,19 +13,19 @@ static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, boo
 
   ggHistogramAdaptiveT<TValueType> vHistogram(aCountBinCapacity);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.02);
 
   vHistogram.Add(ggRound<TValueType>(-0.3));
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.02);
 
   vHistogram.Add(ggRound<TValueType>(-0.5), 2);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.1);
 
@@ -33,7 +33,7 @@ static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, boo
   vHistogram.Add(ggRound<TValueType>(-0.6), 1);
   vHistogram.Add(ggRound<TValueType>(0.6), 1);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.1);
 
@@ -42,13 +42,13 @@ static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, boo
   vHistogram.Add(ggRound<TValueType>(10.0), 3);
   vHistogram.Add(ggRound<TValueType>(12.0), 1);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.5);
 
   vHistogram.Reset();
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.02);
 
@@ -57,7 +57,7 @@ static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, boo
   TValueType vMax = ggRound<TValueType>(10 + aCountBinCapacity);
   vHistogram.Reset(vMin, vMax);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
 
   // add values within the fitted range
@@ -65,14 +65,16 @@ static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, boo
     vHistogram.Add(static_cast<TValueType>(vValue + 0.5));
   }
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
 
   // with the fitted range, each bin should now contain exactly one sample
   vSucceeded = true;
+  bool vEachBinHasOneCount = true;
   for (ggInt64 vBinIndex = 0; vBinIndex < vHistogram.GetNumberOfBins(); vBinIndex++) {
-    GG_TEST_EQUAL2(vHistogram.GetCount(vBinIndex), 1, vSucceeded);
+    if (vHistogram.GetCount(vBinIndex) != 1) vEachBinHasOneCount = false;
   }
+  GG_TEST2(vEachBinHasOneCount, vSucceeded);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
 }
 

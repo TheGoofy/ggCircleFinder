@@ -13,13 +13,13 @@ static void ggHistogramIntegerTestT(ggInt64 aCountBinCapacity, bool aPrint, bool
 
   ggHistogramIntegerT<TValueType> vHistogram(aCountBinCapacity);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.1);
 
   vHistogram.Add(3);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.2);
 
@@ -29,7 +29,7 @@ static void ggHistogramIntegerTestT(ggInt64 aCountBinCapacity, bool aPrint, bool
   vHistogram.Add(7, 5);
   vHistogram.Add(8);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.2);
 
@@ -40,13 +40,13 @@ static void ggHistogramIntegerTestT(ggInt64 aCountBinCapacity, bool aPrint, bool
   vHistogram.Add(12, 1);
   vHistogram.Add(13, 10);
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.5);
 
   vHistogram.Reset();
 
-  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, GG_FILE_LINE);
+  vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
   if (aPrintBinIndex) ggHistogramTest::PrintBinIndex(vHistogram, 0.1);
 }

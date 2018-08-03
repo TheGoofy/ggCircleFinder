@@ -56,7 +56,8 @@ SOURCES += \
     LibImage/ggHistogramTest.cxx \
     LibBase/ggUnitTest.cxx \
     LibImage/ggHistogramIntegerTest.cxx \
-    LibImage/ggHistogramAdaptiveTest.cxx
+    LibImage/ggHistogramAdaptiveTest.cxx \
+    LibImage/ggHistogramFixedTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -121,7 +122,8 @@ HEADERS += \
     LibImage/ggHistogram.h \
     LibImage/ggHistogramIntegerT.h \
     LibBase/ggUnitTest.h \
-    LibImage/ggHistogramTest.h
+    LibImage/ggHistogramTest.h \
+    LibImage/ggHistogramFixedT.h
 
 FORMS += \
     QtMain/MainWindow.ui \

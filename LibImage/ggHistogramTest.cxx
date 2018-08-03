@@ -49,19 +49,29 @@ void ggHistogramTest::PrintBinIndex(const ggHistogram& aHistogram, ggDouble aVal
 }
 
 
-bool ggHistogramTest::TestConsistency(const ggHistogram& aHistogram, const char* aReference)
+bool ggHistogramTest::TestConsistency(const ggHistogram& aHistogram,
+                                      bool aBinIndexAdaptiv,
+                                      const char* aReference)
 {
   bool vSucceeded = true;
   ggInt64 vCountTotal = 0;
 
-  GG_TEST_EQUAL2(aHistogram.GetBinIndexF(aHistogram.GetValueMinF()), 0, vSucceeded);
-  GG_TEST_EQUAL2(aHistogram.GetBinIndexF(aHistogram.GetValueMaxF()), aHistogram.GetNumberOfBins()-1, vSucceeded);
+  if (aBinIndexAdaptiv) {
+    GG_TEST_EQUAL2(aHistogram.GetBinIndexF(aHistogram.GetValueMinF()), 0, vSucceeded);
+    GG_TEST_EQUAL2(aHistogram.GetBinIndexF(aHistogram.GetValueMaxF()), aHistogram.GetNumberOfBins()-1, vSucceeded);
+  }
 
+  bool vBinIndexFromValueIsCorrect = true;
+  bool vBinCountFromValueIsCorrect = true;
   for (ggInt64 vBinIndex = 0; vBinIndex < aHistogram.GetNumberOfBins(); vBinIndex++) {
     vCountTotal += aHistogram.GetCount(vBinIndex);
-    GG_TEST_EQUAL2(vBinIndex, aHistogram.GetBinIndexF(aHistogram.GetBinValueF(vBinIndex)), vSucceeded);
-    GG_TEST_EQUAL2(aHistogram.GetCount(vBinIndex), aHistogram.GetCountF(aHistogram.GetBinValueF(vBinIndex)), vSucceeded);
+    ggDouble vBinValueF = aHistogram.GetBinValueF(vBinIndex);
+    if (vBinIndex != aHistogram.GetBinIndexF(vBinValueF)) vBinIndexFromValueIsCorrect = false;
+    if (aHistogram.GetCount(vBinIndex) != aHistogram.GetCountF(vBinValueF)) vBinCountFromValueIsCorrect = false;
   }
+
+  GG_TEST2(vBinIndexFromValueIsCorrect, vSucceeded);
+  GG_TEST2(vBinCountFromValueIsCorrect, vSucceeded);
 
   GG_TEST_EQUAL2(aHistogram.GetCountTotal(), vCountTotal, vSucceeded);
 
