@@ -2,7 +2,7 @@
 
 #include "LibBase/ggUnitTest.h"
 #include "LibImage/ggHistogramTest.h"
-#include "LibImage/ggHistogramIntegerT.h"
+#include "LibImage/ggHistogramAdaptiveIntT.h"
 
 
 template <class TValueType>

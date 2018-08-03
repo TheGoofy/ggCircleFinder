@@ -55,9 +55,9 @@ SOURCES += \
     LibBase/ggRoundTest.cxx \
     LibImage/ggHistogramTest.cxx \
     LibBase/ggUnitTest.cxx \
-    LibImage/ggHistogramIntegerTest.cxx \
-    LibImage/ggHistogramAdaptiveTest.cxx \
-    LibImage/ggHistogramFixedTest.cxx
+    LibImage/ggHistogramFixedTest.cxx \
+    LibImage/ggHistogramAdaptiveFloatTest.cxx \
+    LibImage/ggHistogramAdaptiveIntTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -85,7 +85,6 @@ HEADERS += \
     LibBase/ggVectorT.h \
     LibBase/ggVectorTypes.h \
     LibBase/ggWalkerT.h \
-    LibImage/ggHistogramAdaptiveT.h \
     LibImage/ggImageFilter.h \
     LibImage/ggImagePainterT.h \
     LibImage/ggImageT.h \
@@ -120,9 +119,10 @@ HEADERS += \
     LibBase/ggNumerics.h \
     LibBase/ggAverages.h \
     LibImage/ggHistogram.h \
-    LibImage/ggHistogramIntegerT.h \
     LibBase/ggUnitTest.h \
     LibImage/ggHistogramTest.h \
+    LibImage/ggHistogramAdaptiveFloatT.h \
+    LibImage/ggHistogramAdaptiveIntT.h \
     LibImage/ggHistogramFixedT.h
 
 FORMS += \
