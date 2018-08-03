@@ -123,7 +123,8 @@ HEADERS += \
     LibImage/ggHistogramTest.h \
     LibImage/ggHistogramAdaptiveFloatT.h \
     LibImage/ggHistogramAdaptiveIntT.h \
-    LibImage/ggHistogramFixedT.h
+    LibImage/ggHistogramFixedT.h \
+    LibBase/ggDebug.h
 
 FORMS += \
     QtMain/MainWindow.ui \
