@@ -77,6 +77,22 @@ static void ggHistogramFixedTestT(ggInt64 aNumberOfBins, bool aPrint, bool aPrin
 }
 
 
+void ggHistogramFixedTestIndex()
+{
+  bool vSucceeded = true;
+  ggHistogramFixedT<ggFloat> vHistogram(10);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(-0.1), 0, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(0.0), 0, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(0.09), 0, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(0.1), 1, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(0.11), 1, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(0.99), 9, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(1.0), 9, vSucceeded);
+  GG_TEST_EQUAL2(vHistogram.GetBinIndexF(1.1), 9, vSucceeded);
+  if (!vSucceeded) ggHistogramTest::PrintBinIndex(vHistogram, -0.1, 1.1, 0.05);
+}
+
+
 static void ggHistogramFixedTest()
 {
   bool vPrint = false;
@@ -91,6 +107,8 @@ static void ggHistogramFixedTest()
   ggHistogramFixedTestT<ggDouble>(6, vPrint, vPrintBinIndex);
   ggHistogramFixedTestT<ggDouble>(8, vPrint, vPrintBinIndex);
   ggHistogramFixedTestT<ggDouble>(32, vPrint, vPrintBinIndex);
+
+  ggHistogramFixedTestIndex();
 }
 
 

@@ -41,11 +41,25 @@ void ggHistogramTest::Print(const ggHistogram& aHistogram)
 }
 
 
-void ggHistogramTest::PrintBinIndex(const ggHistogram& aHistogram, ggDouble aValueStepF)
+void ggHistogramTest::PrintBinIndex(const ggHistogram& aHistogram,
+                                    const ggDouble& aValueStepF)
 {
-  for (ggDouble vValueF = aHistogram.GetValueMinF(); vValueF <= aHistogram.GetValueMaxF(); vValueF += aValueStepF) {
+  const ggDouble vValueMinF = aHistogram.GetBinValueF(0);
+  const ggDouble vValueMaxF = aHistogram.GetBinValueF(aHistogram.GetNumberOfBins() - 1);
+  PrintBinIndex(aHistogram, vValueMinF, vValueMaxF, aValueStepF);
+}
+
+
+void ggHistogramTest::PrintBinIndex(const ggHistogram& aHistogram,
+                                    const ggDouble& aValueMinF,
+                                    const ggDouble& aValueMaxF,
+                                    const ggDouble& aValueStepF)
+{
+  std::cout << "value=" << aValueMinF << " index=" << aHistogram.GetBinIndexF(aValueMinF) << std::endl;
+  for (ggDouble vValueF = aValueMinF + aValueStepF; vValueF < aValueMaxF; vValueF += aValueStepF) {
     std::cout << "value=" << vValueF << " index=" << aHistogram.GetBinIndexF(vValueF) << std::endl;
   }
+  std::cout << "value=" << aValueMaxF << " index=" << aHistogram.GetBinIndexF(aValueMaxF) << std::endl;
 }
 
 

@@ -86,7 +86,7 @@ public:
   }
 
   virtual ggInt64 GetBinIndexF(const ggDouble& aValueF) const override {
-    return GetBinIndexFromValueF(aValueF);
+    return ggClamp<ggInt64>(GetBinIndexFromValueF(aValueF), 0, GetBinIndexMax());
   }
 
   virtual ggDouble GetBinValueF(ggInt64 aBinIndex) const override {
