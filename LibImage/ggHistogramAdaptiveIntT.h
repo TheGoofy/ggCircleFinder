@@ -18,12 +18,12 @@
  * a 8-bit-8-bin histogram, while adding 0 results into bin-width 32.
  */
 template <class TValueType>
-class ggHistogramIntegerT : public ggHistogram
+class ggHistogramAdaptiveIntT : public ggHistogram
 {
 
 public:
 
-  ggHistogramIntegerT(ggInt64 aCountBinsCapacity = 256)
+  ggHistogramAdaptiveIntT(ggInt64 aCountBinsCapacity = 256)
   : mValueMin(),
     mValueMax(),
     mBinWidth(1),
@@ -32,7 +32,7 @@ public:
     mCountTotal(0) {
   }
 
-  virtual ~ggHistogramIntegerT() override {
+  virtual ~ggHistogramAdaptiveIntT() override {
   }
 
   inline void Reset() {

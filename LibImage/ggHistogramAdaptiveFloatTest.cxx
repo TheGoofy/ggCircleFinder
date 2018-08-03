@@ -6,12 +6,12 @@
 
 
 template <class TValueType>
-static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, bool aPrintBinIndex)
+static void ggHistogramAdaptiveFloatTestT(ggInt64 aCountBinCapacity, bool aPrint, bool aPrintBinIndex)
 {
   if (aPrint) std::cout << "========== " <<  __PRETTY_FUNCTION__ << " ==========" << std::endl;
   bool vSucceeded = true;
 
-  ggHistogramAdaptiveT<TValueType> vHistogram(aCountBinCapacity);
+  ggHistogramAdaptiveFloatT<TValueType> vHistogram(aCountBinCapacity);
 
   vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
@@ -79,20 +79,20 @@ static void ggHistogramAdaptiveTestT(ggInt64 aCountBinCapacity, bool aPrint, boo
 }
 
 
-static void ggHistogramAdaptiveTest()
+static void ggHistogramAdaptiveFloatTest()
 {
   bool vPrint = false;
   bool vPrintBinIndex = false;
 
-  ggHistogramAdaptiveTestT<ggInt32>(6, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggInt32>(32, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggUInt32>(6, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggUInt32>(32, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggFloat>(6, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggFloat>(32, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggDouble>(6, vPrint, vPrintBinIndex);
-  ggHistogramAdaptiveTestT<ggDouble>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggInt32>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggInt32>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggUInt32>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggUInt32>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggFloat>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggFloat>(32, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggDouble>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveFloatTestT<ggDouble>(32, vPrint, vPrintBinIndex);
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggHistogramAdaptiveTest);
+static bool ggRegistered = ggUnitTest::Register(ggHistogramAdaptiveFloatTest);

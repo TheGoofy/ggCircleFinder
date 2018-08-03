@@ -6,12 +6,12 @@
 
 
 template <class TValueType>
-static void ggHistogramIntegerTestT(ggInt64 aCountBinCapacity, bool aPrint, bool aPrintBinIndex)
+static void ggHistogramAdaptiveIntTestT(ggInt64 aCountBinCapacity, bool aPrint, bool aPrintBinIndex)
 {
   if (aPrint) std::cout << "========== " <<  __PRETTY_FUNCTION__ << " ==========" << std::endl;
   bool vSucceeded = true;
 
-  ggHistogramIntegerT<TValueType> vHistogram(aCountBinCapacity);
+  ggHistogramAdaptiveIntT<TValueType> vHistogram(aCountBinCapacity);
 
   vSucceeded = ggHistogramTest::TestConsistency(vHistogram, true, GG_FILE_LINE);
   if (aPrint || !vSucceeded) ggHistogramTest::Print(vHistogram);
@@ -52,22 +52,22 @@ static void ggHistogramIntegerTestT(ggInt64 aCountBinCapacity, bool aPrint, bool
 }
 
 
-static void ggHistogramIntegerTest()
+static void ggHistogramAdaptiveIntTest()
 {
   bool vPrint = false;
   bool vPrintBinIndex = false;
 
-  ggHistogramIntegerTestT<ggUInt8>(6, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggUInt8>(8, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggUInt8>(12, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggUInt8>(16, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggUInt8>(256, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggInt8>(16, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggInt8>(64, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggInt8>(256, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggUInt16>(8, vPrint, vPrintBinIndex);
-  ggHistogramIntegerTestT<ggInt16>(16, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggUInt8>(6, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggUInt8>(8, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggUInt8>(12, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggUInt8>(16, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggUInt8>(256, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggInt8>(16, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggInt8>(64, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggInt8>(256, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggUInt16>(8, vPrint, vPrintBinIndex);
+  ggHistogramAdaptiveIntTestT<ggInt16>(16, vPrint, vPrintBinIndex);
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggHistogramIntegerTest);
+static bool ggRegistered = ggUnitTest::Register(ggHistogramAdaptiveIntTest);

@@ -21,14 +21,14 @@
  * However total count, or distribution are independent on the sequence.
  */
 template <class TValueType>
-class ggHistogramAdaptiveT : public ggHistogram
+class ggHistogramAdaptiveFloatT : public ggHistogram
 {
 
 public:
 
-  ggHistogramAdaptiveT(ggInt64 aCountBinsCapacity = 512,
-                       const TValueType& aValueRangeMin = TValueType(),
-                       const TValueType& aValueRangeMax = TValueType())
+  ggHistogramAdaptiveFloatT(ggInt64 aCountBinsCapacity = 512,
+                            const TValueType& aValueRangeMin = TValueType(),
+                            const TValueType& aValueRangeMax = TValueType())
   : mValueMin(),
     mValueMax(),
     mBinValueMin(0),
@@ -40,7 +40,7 @@ public:
     AdjustBinRange(aValueRangeMin, aValueRangeMax);
   }
 
-  virtual ~ggHistogramAdaptiveT() override {
+  virtual ~ggHistogramAdaptiveFloatT() override {
   }
 
   inline void Reset(const TValueType& aValueRangeMin = TValueType(),
@@ -225,12 +225,5 @@ private:
   ggInt64 mCountTotal;
 
 };
-
-typedef ggHistogramAdaptiveT<ggInt32> ggHistogramInt32;
-typedef ggHistogramAdaptiveT<ggInt64> ggHistogramInt64;
-typedef ggHistogramAdaptiveT<ggUInt32> ggHistogramUInt32;
-typedef ggHistogramAdaptiveT<ggUInt64> ggHistogramUInt64;
-typedef ggHistogramAdaptiveT<ggFloat> ggHistogramFloat;
-typedef ggHistogramAdaptiveT<ggDouble> ggHistogramDouble;
 
 #endif // GGHISTOGRAMADAPTIVET_H
