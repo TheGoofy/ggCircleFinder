@@ -113,10 +113,17 @@ public:
 
     {
       /*
-      ggImageFilter::SubtractBackground(vImageCameraROI, aCircleModelDiameter);
+      // ggImageFilter::SubtractBackground(vImageCameraROI, aCircleModelDiameter);
       auto vHistogram = ggImageFilter::GetHistogram(vImageCameraROI);
-      ggFloat vThreshold = ggSegmentation::CalculateThresholdTwoMeans(vHistogram);
 
+      ggDouble vThresholdA = 0.0;
+      ggDouble vThresholdB = 0.0;
+      ggSegmentation::CalculateThresholdThreeMeans(vHistogram, vThresholdA, vThresholdB);
+
+      // ggDouble vThresholdA = 0.0;
+      // ggSegmentation::CalculateThresholdTwoMeans(vHistogram, vThresholdA);
+
+      ggFloat vThreshold = ggRound<ggFloat>(vThresholdA);
       auto vThresholdCheck = [vThreshold] (const ggFloat& aValue) {
         return aValue > vThreshold;
       };
