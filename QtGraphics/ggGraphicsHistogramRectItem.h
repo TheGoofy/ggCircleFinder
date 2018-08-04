@@ -5,6 +5,7 @@
 #include <QGraphicsRectItem>
 
 // 2) include own project-related (sort by component dependency)
+#include "LibBase/ggNumberTypes.h"
 
 // 3) forward declarations
 class ggHistogram;
@@ -22,14 +23,27 @@ public:
 
   virtual ~ggGraphicsHistogramRectItem() override;
 
-  void SetHistogram(const ggHistogram* aHistogram);
+  void SetHistogram(const ggHistogram* aHistogram, bool aAdjustRect);
+  void SetHistogramColor(const QColor& aColor);
+  void SetLogarithmic(bool aLogarithmic);
+
+protected:
+
+  virtual void mousePressEvent(QGraphicsSceneMouseEvent* aEvent) override;
 
 private:
 
-  void UpdateHistogram();
+  void Construct();
 
+  void DeleteLineItems();
+  void UpdateHistogram(bool aAdjustRect);
+  qreal LogCount(ggInt64 aCount) const;
+
+  bool mLogarithmic;
+  QColor mHistogramColor;
   const ggHistogram* mHistogram;
-  std::vector<QGraphicsItem*> mItems;
+  std::vector<QGraphicsLineItem*> mGridLineItems;
+  std::vector<QGraphicsLineItem*> mBinLineItems;
 
 };
 
