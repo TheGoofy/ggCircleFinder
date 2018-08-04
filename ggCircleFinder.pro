@@ -62,7 +62,8 @@ SOURCES += \
     LibImage/ggSegmentationTest.cxx \
     LibImage/ggSegmentation.cxx \
     QtGraphics/ggGraphicsHistogramRectItem.cxx \
-    LibImage/ggHistogram.cxx
+    LibImage/ggHistogram.cxx \
+    LibImage/ggImageLabeling.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
