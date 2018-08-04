@@ -237,7 +237,7 @@ public:
   template <typename TIndexProcessor>
   inline void ProcessIndexReverse(TIndexProcessor aIndexProcessor) const {
     for (ggSize vIndexY = GetSizeY() - 1; vIndexY >= 0; vIndexY--) {
-      for (ggSize vIndexX = GetSizeX(); vIndexX >= 0; vIndexX--) {
+      for (ggSize vIndexX = GetSizeX() - 1; vIndexX >= 0; vIndexX--) {
         aIndexProcessor(vIndexX, vIndexY);
       }
     }
@@ -451,12 +451,12 @@ public:
                                                       ggImageT<TValueTypeConverted>::GetMaxLimit());
   }
 
-  template <typename TValueProcessor>
-  inline void ProcessValues(const ggImageT<TValueType>& aOther, TValueProcessor aValueProcessor) {
+  template <typename TOtherValueType, typename TValueProcessor>
+  inline void ProcessValues(const ggImageT<TOtherValueType>& aOther, TValueProcessor aValueProcessor) {
     GG_ASSERT(GetSize() == aOther.GetSize());
     TValueType* vValuesIterator = mValues;
     TValueType* vValuesEnd = mValues + GetSizeTotal();
-    const TValueType* vOtherValuesIterator = aOther.mValues;
+    const TOtherValueType* vOtherValuesIterator = aOther.GetValues();
     while (vValuesIterator != vValuesEnd) {
       aValueProcessor(*vValuesIterator++, *vOtherValuesIterator++);
     }

@@ -137,13 +137,12 @@ public:
 
       ggFloat vThreshold = ggRound<ggFloat>(vThresholdA);
       auto vThresholdCheck = [vThreshold] (const ggFloat& aValue) {
-        return aValue > vThreshold;
+        return aValue < vThreshold;
       };
 
       ggImageT<ggInt32> vImageLabeled(ggImageLabeling::CalculateConnectedComponents(vImageCameraROI,
                                                                                     vThresholdCheck,
                                                                                     ggImageLabeling::cConnectivity::eCorner));
-
       // convert label image for rendering with QT
       ggImageT<ggUChar> vImageUChar = vImageLabeled.GetProcessed<ggUChar>([] (const ggInt32& aValue) {
         return aValue > 0 ? static_cast<ggUChar>( aValue % 128) + 0 :
@@ -154,6 +153,27 @@ public:
       std::vector<ggColorUInt8> vColorTable;
       vColorTable.insert(vColorTable.end(), vColorTableFG.begin(), vColorTableFG.begin() + 128);
       vColorTable.insert(vColorTable.end(), vColorTableBG.begin(), vColorTableBG.begin() + 128);
+      */
+      /*
+      ggImageT<ggInt32> vDistanceImage(ggImageLabeling::CalculateDistanceTransformCDA3x3(vImageCameraROI,
+                                                                                         vThresholdCheck,
+                                                                                         ggImageLabeling::cConnectivity::eCorner));
+      */
+      /*
+      ggImageT<ggFloat> vDistanceImage(ggImageLabeling::CalculateDistanceTransform8SED(vImageCameraROI,
+                                                                                       vThresholdCheck));
+
+      ggImageT<ggUChar> vImageUChar = vDistanceImage.GetProcessed<ggUChar>([] (const ggFloat& aValue) {
+        return static_cast<ggUChar>(aValue);
+      });
+
+      std::vector<ggColorUInt8> vColorTable = ggUtility::ColorTableHot();
+      */
+      /*
+      // stop the timer
+      ggDouble vCalculationTimeMicroSeconds = 0.001 * vTimer.nsecsElapsed();
+      QString vResults = "Calculation Time = " + QString::number(vCalculationTimeMicroSeconds) + " us\n";
+
       QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTable);
       mImageHoughPixmapItem->setPos(GetROIPosition());
       mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
@@ -180,9 +200,7 @@ public:
       }
       */
       /*
-      return "Calculate Connected Components:\n" +
-             QString::number(vImageLabeled.GetMax()) + " Foreground Components\n" +
-             QString::number(-vImageLabeled.GetMin()) + " Background Components\n";
+      return "Testing:\n" + vResults;
       */
     }
 

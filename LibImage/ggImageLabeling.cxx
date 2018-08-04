@@ -114,3 +114,10 @@ void ggImageLabeling::CompactLabelMap(std::vector<ggUSize>& aLabelMap)
     aLabelMap[vLabelA] = vRemapB[aLabelMap[vLabelA]];
   }
 }
+
+
+const ggVector2Int32 ggImageLabeling::mDistanceInfiniteBG(std::numeric_limits<ggInt32>::lowest(),
+                                                          std::numeric_limits<ggInt32>::lowest());
+
+const ggVector2Int32 ggImageLabeling::mDistanceInfiniteFG(std::numeric_limits<ggInt32>::max(),
+                                                          std::numeric_limits<ggInt32>::max());

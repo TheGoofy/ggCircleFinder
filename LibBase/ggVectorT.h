@@ -192,20 +192,24 @@ public:
     return vResult;
   }
 
+  inline bool IsShorter(const ggVectorT& aOther) const {
+    return Dot(*this) < aOther.Dot(aOther);
+  }
+
   inline const TValueType& Max() const {
-    const TValueType& vMaxValue = mValues[0];
+    const TValueType* vMaxValue = &(mValues[0]);
     for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
-      if (vMaxValue < mValues[vDimension]) vMaxValue = mValues[vDimension];
+      if (*vMaxValue < mValues[vDimension]) vMaxValue = &(mValues[vDimension]);
     }
-    return vMaxValue;
+    return *vMaxValue;
   }
 
   inline const TValueType& Min() const {
-    const TValueType& vMinValue = mValues[0];
+    const TValueType* vMinValue = &(mValues[0]);
     for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
-      if (vMinValue > mValues[vDimension]) vMinValue = mValues[vDimension];
+      if (*vMinValue > mValues[vDimension]) vMinValue = &(mValues[vDimension]);
     }
-    return vMinValue;
+    return *vMinValue;
   }
 
   inline ggUSize MaxDimension() const {
