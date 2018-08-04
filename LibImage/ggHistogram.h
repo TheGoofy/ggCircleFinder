@@ -15,6 +15,7 @@ public:
   ggHistogram();
   virtual ~ggHistogram();
 
+  virtual ggHistogram* Clone() const = 0;
   virtual ggInt64 GetNumberOfBins() const = 0;
   virtual ggInt64 GetCountTotal() const = 0;
   virtual ggInt64 GetCount(ggInt64 aBinIndex) const = 0;

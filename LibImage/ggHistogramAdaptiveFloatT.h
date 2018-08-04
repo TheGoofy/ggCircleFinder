@@ -56,6 +56,10 @@ public:
     AddPrivate(aValue, aCount);
   }
 
+  virtual ggHistogram* Clone() const override {
+    return new ggHistogramAdaptiveFloatT(*this);
+  }
+
   virtual ggInt64 GetNumberOfBins() const override {
     return GetBinIndexInternalMax() - GetBinIndexInternalMin() + 1;
   }

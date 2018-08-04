@@ -64,6 +64,10 @@ public:
     AddPrivate(aValue, aCount);
   }
 
+  virtual ggHistogram* Clone() const override {
+    return new ggHistogramFixedT(*this);
+  }
+
   virtual ggInt64 GetNumberOfBins() const override {
     return mCountBins.size();
   }
