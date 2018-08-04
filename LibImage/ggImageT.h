@@ -235,6 +235,15 @@ public:
   }
 
   template <typename TIndexProcessor>
+  inline void ProcessIndexReverse(TIndexProcessor aIndexProcessor) const {
+    for (ggSize vIndexY = GetSizeY() - 1; vIndexY >= 0; vIndexY--) {
+      for (ggSize vIndexX = GetSizeX(); vIndexX >= 0; vIndexX--) {
+        aIndexProcessor(vIndexX, vIndexY);
+      }
+    }
+  }
+
+  template <typename TIndexProcessor>
   inline void ProcessIndexRangeInside(ggSize aIndexBeginX, ggSize aIndexBeginY,
                                       ggSize aIndexEndX, ggSize aIndexEndY,
                                       TIndexProcessor aIndexProcessor) const {
