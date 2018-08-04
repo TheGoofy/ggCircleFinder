@@ -60,7 +60,9 @@ SOURCES += \
     LibImage/ggHistogramAdaptiveIntTest.cxx \
     LibBase/ggWalkerTest.cxx \
     LibImage/ggSegmentationTest.cxx \
-    LibImage/ggSegmentation.cxx
+    LibImage/ggSegmentation.cxx \
+    QtGraphics/ggGraphicsHistogramRectItem.cxx \
+    LibImage/ggHistogram.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -128,7 +130,8 @@ HEADERS += \
     LibImage/ggHistogramFixedT.h \
     LibBase/ggDebug.h \
     LibImage/ggSegmentation.h \
-    LibBase/ggAveragesT.h
+    LibBase/ggAveragesT.h \
+    QtGraphics/ggGraphicsHistogramRectItem.h
 
 FORMS += \
     QtMain/MainWindow.ui \

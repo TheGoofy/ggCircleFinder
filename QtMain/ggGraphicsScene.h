@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QElapsedTimer>
+#include <QGraphicsLineItem>
+#include <QLineF>
 
 #include "LibBase/ggGeometry.h"
 #include "LibBase/ggFilterT.h"
@@ -13,6 +15,7 @@
 #include "LibImage/ggImageAlgorithm.h"
 #include "LibImage/ggSegmentation.h"
 #include "QtBase/ggUtilityQt.h"
+#include "QtGraphics/ggGraphicsHistogramRectItem.h"
 #include "QtGraphics/ggGraphicsManipulatorRectItemT.h"
 
 
@@ -92,6 +95,18 @@ public:
                   QImage::Format_Grayscale8);
 
     mImageCameraPixmapItem->setPixmap(QPixmap::fromImage(vImage));
+
+    auto vItems = mImageCameraPixmapItem->childItems();
+    std::for_each(vItems.begin(), vItems.end(), [] (QGraphicsItem* aItem) { delete aItem; });
+    ggGraphicsHistogramRectItem* vHistogramItem = new ggGraphicsHistogramRectItem(mImageCameraPixmapItem);
+    ggHistogram* vHistogram = new ggHistogramFixedT<ggUInt16>(ggImageFilter::GetHistogram(mImageCamera));
+    ggDouble vSize = vHistogram->GetNumberOfBins();
+    QRectF vRect(0.0, -vSize / 2.0, vSize, vSize / 2.0);
+    vHistogramItem->setRect(vRect);
+    vHistogramItem->setPen(QPen(QColor(100, 100, 100, 0), 0.0));
+    vHistogramItem->setBrush(QColor(0, 0, 0, 20));
+    vHistogramItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    vHistogramItem->SetHistogram(vHistogram);
   }
 
   QString FindCircles(const bool aCircleModelGaussianFilter,
@@ -207,6 +222,19 @@ public:
     QImage vImageQt = ggUtilityQt::GetImage(vImageUChar, vColorTableUInt8);
     mImageHoughPixmapItem->setPos(GetROIPosition());
     mImageHoughPixmapItem->setPixmap(QPixmap::fromImage(vImageQt));
+
+
+    auto vItems = mImageHoughPixmapItem->childItems();
+    std::for_each(vItems.begin(), vItems.end(), [] (QGraphicsItem* aItem) { delete aItem; });
+    ggGraphicsHistogramRectItem* vHistogramItem = new ggGraphicsHistogramRectItem(mImageHoughPixmapItem);
+    ggHistogram* vHistogram = new ggHistogramFixedT<ggFloat>(ggImageFilter::GetHistogram(vImageHough));
+    ggDouble vSize = vHistogram->GetNumberOfBins();
+    QRectF vRect(0.0, -vSize / 2.0, vSize, vSize / 2.0);
+    vHistogramItem->setRect(vRect);
+    vHistogramItem->setPen(QPen(QColor(255, 0, 100, 0), 0.0));
+    vHistogramItem->setBrush(QColor(0, 0, 0, 20));
+    vHistogramItem->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    vHistogramItem->SetHistogram(vHistogram);
 
     // draw the detected circles
     std::for_each(mCircleItems.begin(), mCircleItems.end(), [] (QGraphicsItem* aItem) { delete aItem; });

@@ -12,8 +12,8 @@ class ggHistogram
 
 public:
 
-  ggHistogram() {}
-  virtual ~ggHistogram() {}
+  ggHistogram();
+  virtual ~ggHistogram();
 
   virtual ggInt64 GetNumberOfBins() const = 0;
   virtual ggInt64 GetCountTotal() const = 0;
@@ -24,6 +24,17 @@ public:
   virtual ggDouble GetBinWidthF(ggInt64 aBinIndex) const = 0;
   virtual ggDouble GetValueMinF() const = 0;
   virtual ggDouble GetValueMaxF() const = 0;
+
+  ggInt64 GetCountMax() const;
+  ggInt64 GetBinIndexCountMax() const;
+  ggInt64 GetBinIndexMin() const;
+  ggInt64 GetBinIndexMax() const;
+  ggDouble GetBinValueMinF() const;
+  ggDouble GetBinValueMaxF() const;
+  ggDouble GetBinValueMinLowerF() const;
+  ggDouble GetBinValueMaxUpperF() const;
+  ggDouble GetBinValueRangeF() const;
+  ggDouble GetBinValueRangeOuterF() const;
 
 };
 
