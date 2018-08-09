@@ -92,22 +92,22 @@ public:
   }
 
 
-  enum class cRidgeType {
+  enum class cTopologyType {
     eUnknown,
     ePlateau,
     eFlank,
     eLocalMin,
-    eRidge2,
-    eRidge3,
-    eRidge4,
+    eValley,
+    eSaddle,
+    eRidge,
     eLocalMax
   };
 
 
   template <typename TValueType>
-  static ggImageT<cRidgeType> CalculateRidges(const ggImageT<TValueType>& aImage)
+  static ggImageT<cTopologyType> CalculateTopology(const ggImageT<TValueType>& aImage)
   {
-    ggImageT<cRidgeType> vRidgeImage(aImage.GetSize(), cRidgeType::eUnknown);
+    ggImageT<cTopologyType> vTopologyImage(aImage.GetSize(), cTopologyType::eUnknown);
 
     static const std::vector<ggVector2Size> vOff = {{-1,-1},
                                                     { 0,-1},
@@ -118,73 +118,82 @@ public:
                                                     {-1, 1},
                                                     {-1, 0}};
 
-    aImage.ProcessIndexBorderInside(1, [&aImage, &vRidgeImage] (ggSize aIndexX, ggSize aIndexY) {
+    aImage.ProcessIndexBorderInside(1, [&aImage, &vTopologyImage] (ggSize aIndexX, ggSize aIndexY) {
 
       const ggVector2Size vIndex(aIndexX, aIndexY);
       const TValueType& vValue = aImage(vIndex);
 
+      bool vNeighborDirectionKnown = false;
+      bool vNeighborIsIncreasing = false;
+
       bool vIsLocalMin = true;
       bool vIsLocalMax = true;
-      ggInt32 vNumNighborExtremas = 0;
-      bool vDirectionKnown = false;
-      bool vGoingUp = false;
+      ggInt32 vNumNeighborExtremas = 0;
+      TValueType vValueNeighborLocalMinHighest = std::numeric_limits<TValueType>::lowest();
+      TValueType vValueNeighborLocalMaxLowest = std::numeric_limits<TValueType>::max();
 
       ggUSize vIndexOffEnd = vOff.size();
       for (ggUSize vIndexOff = 0; vIndexOff < vIndexOffEnd; vIndexOff++) {
 
-        const ggVector2Size vIndexA(vIndex + vOff[(vIndexOff + 0) % vOff.size()]);
-        const ggVector2Size vIndexB(vIndex + vOff[(vIndexOff + 1) % vOff.size()]);
-        const TValueType& vValueA = aImage(vIndexA);
-        const TValueType& vValueB = aImage(vIndexB);
+        const ggVector2Size vIndexNeighborA(vIndex + vOff[(vIndexOff + 0) % vOff.size()]);
+        const ggVector2Size vIndexNeighborB(vIndex + vOff[(vIndexOff + 1) % vOff.size()]);
+        const TValueType& vValueNeighborA = aImage(vIndexNeighborA);
+        const TValueType& vValueNeighborB = aImage(vIndexNeighborB);
 
         // check local max or min
-        vIsLocalMin &= vValue < vValueA;
-        vIsLocalMax &= vValue > vValueA;
+        vIsLocalMin &= vValue < vValueNeighborA;
+        vIsLocalMax &= vValue > vValueNeighborA;
 
         // check neighborhood
-        if (vValueA != vValueB) {
-          if (vDirectionKnown) {
-            bool vGoingUpNew = vValueA < vValueB;
-            if (vGoingUpNew != vGoingUp) {
-              vGoingUp = vGoingUpNew;
-              vNumNighborExtremas++;
+        if (vValueNeighborA != vValueNeighborB) {
+          if (vNeighborDirectionKnown) {
+            bool vNeighborValueIncreasingNew = vValueNeighborA < vValueNeighborB;
+            if (vNeighborValueIncreasingNew != vNeighborIsIncreasing) {
+              vNeighborIsIncreasing = vNeighborValueIncreasingNew;
+              vNumNeighborExtremas++;
+              if (vNeighborIsIncreasing) { // when B is going up now, A was a local minimum
+                if (vValueNeighborA > vValueNeighborLocalMinHighest) vValueNeighborLocalMinHighest = vValueNeighborA;
+              }
+              else { // when B is going down now, A was a local maximum
+                if (vValueNeighborA < vValueNeighborLocalMaxLowest) vValueNeighborLocalMaxLowest = vValueNeighborA;
+              }
             }
           }
           else {
-            vDirectionKnown = true;
-            vGoingUp = vValueA < vValueB;
+            vNeighborDirectionKnown = true;
+            vNeighborIsIncreasing = vValueNeighborA < vValueNeighborB;
             vIndexOffEnd = vIndexOff + vOff.size() + 1;
           }
         }
       }
 
       if (vIsLocalMin) {
-        vRidgeImage(vIndex) = cRidgeType::eLocalMin;
+        vTopologyImage(vIndex) = cTopologyType::eLocalMin;
       }
       else if (vIsLocalMax) {
-        vRidgeImage(vIndex) = cRidgeType::eLocalMax;
+        vTopologyImage(vIndex) = cTopologyType::eLocalMax;
       }
-      else if (vNumNighborExtremas == 0) {
-        vRidgeImage(vIndex) = cRidgeType::ePlateau;
+      else if (vNumNeighborExtremas == 0) {
+        vTopologyImage(vIndex) = cTopologyType::ePlateau;
       }
-      else if (vNumNighborExtremas == 2) {
-        vRidgeImage(vIndex) = cRidgeType::eFlank;
+      else if (vNumNeighborExtremas == 2) {
+        vTopologyImage(vIndex) = cTopologyType::eFlank;
       }
-      else if (vNumNighborExtremas == 4) {
-        vRidgeImage(vIndex) = cRidgeType::eRidge2;
+      else if (vValue >= vValueNeighborLocalMaxLowest && vValue > vValueNeighborLocalMinHighest) {
+        vTopologyImage(vIndex) = cTopologyType::eRidge;
       }
-      else if (vNumNighborExtremas == 6) {
-        vRidgeImage(vIndex) = cRidgeType::eRidge3;
+      else if (vValue <= vValueNeighborLocalMinHighest && vValue < vValueNeighborLocalMaxLowest) {
+        vTopologyImage(vIndex) = cTopologyType::eValley;
       }
-      else if (vNumNighborExtremas == 8) {
-        vRidgeImage(vIndex) = cRidgeType::eRidge4;
+      else if (vNumNeighborExtremas % 2 == 0) {
+        vTopologyImage(vIndex) = cTopologyType::eSaddle;
       }
       else {
         GG_ASSERT(false); // odd number of extremas not possible
       }
     });
 
-    return vRidgeImage;
+    return vTopologyImage;
   }
 
 
