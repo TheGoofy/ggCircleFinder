@@ -123,6 +123,7 @@ public:
     mImageCamera.Copy(vImageCameraROI, GetROIPosition().x(), GetROIPosition().y());
     if (aCircleModelGaussianFilter) ggImageFilter::Gauss(vImageCameraROI, aCircleModelGaussianFilterWidth);
 
+
     {
       /*
       // ggImageFilter::SubtractBackground(vImageCameraROI, aCircleModelDiameter);
@@ -135,16 +136,18 @@ public:
       // ggDouble vThresholdA = 0.0;
       // ggSegmentation::CalculateThresholdTwoMeans(vHistogram, vThresholdA);
 
-      ggFloat vThreshold = ggRound<ggFloat>(vThresholdA);
-      auto vThresholdCheck = [vThreshold] (const ggFloat& aValue) {
+      ggFloat vThreshold = ggRound<ggFloat>(vThresholdB);
+      std::function<bool (const ggFloat& aValue)> vThresholdCheck = [vThreshold] (const ggFloat& aValue) -> bool {
         return aValue < vThreshold;
       };
+      */
+      /*
+      ggImageT<ggInt32> vLabelImage(ggImageLabeling::CalculateConnectedComponents(vImageCameraROI,
+                                                                                  vThresholdCheck,
+                                                                                  ggImageLabeling::cConnectivity::eCorner));
 
-      ggImageT<ggInt32> vImageLabeled(ggImageLabeling::CalculateConnectedComponents(vImageCameraROI,
-                                                                                    vThresholdCheck,
-                                                                                    ggImageLabeling::cConnectivity::eCorner));
       // convert label image for rendering with QT
-      ggImageT<ggUChar> vImageUChar = vImageLabeled.GetProcessed<ggUChar>([] (const ggInt32& aValue) {
+      ggImageT<ggUChar> vImageUChar = vLabelImage.GetProcessed<ggUChar>([] (const ggInt32& aValue) {
         return aValue > 0 ? static_cast<ggUChar>( aValue % 128) + 0 :
                             static_cast<ggUChar>(-aValue % 128) + 128;
       });
@@ -154,10 +157,17 @@ public:
       vColorTable.insert(vColorTable.end(), vColorTableFG.begin(), vColorTableFG.begin() + 128);
       vColorTable.insert(vColorTable.end(), vColorTableBG.begin(), vColorTableBG.begin() + 128);
       */
+
+      // std::vector<ggColorUInt8> vColorTable = ggUtility::ColorTableHot();
+
       /*
-      ggImageT<ggInt32> vDistanceImage(ggImageLabeling::CalculateDistanceTransformCDA3x3(vImageCameraROI,
-                                                                                         vThresholdCheck,
-                                                                                         ggImageLabeling::cConnectivity::eCorner));
+      ggImageT<ggInt32> vDistanceImage(ggImageLabeling::CalculateDistanceTransformCDA3(vImageCameraROI,
+                                                                                       vThresholdCheck,
+                                                                                       ggImageLabeling::cConnectivity::eCorner));
+
+      ggImageT<ggUChar> vImageUChar = vDistanceImage.GetProcessed<ggUChar>([] (const ggInt32& aValue) {
+        return static_cast<ggUChar>(aValue / 3);
+      });
       */
       /*
       ggImageT<ggFloat> vDistanceImage(ggImageLabeling::CalculateDistanceTransform8SED(vImageCameraROI,
@@ -166,8 +176,22 @@ public:
       ggImageT<ggUChar> vImageUChar = vDistanceImage.GetProcessed<ggUChar>([] (const ggFloat& aValue) {
         return static_cast<ggUChar>(aValue);
       });
+      */
+      /*
+      ggImageT<ggImageLabeling::cTopologyType> vTopologyImage = ggImageLabeling::CalculateTopology(vImageCameraROI);
 
-      std::vector<ggColorUInt8> vColorTable = ggUtility::ColorTableHot();
+      vImageUChar = vTopologyImage.GetProcessed<ggUChar>([] (const ggImageLabeling::cTopologyType& aTopologyType) {
+        return static_cast<ggUChar>(aTopologyType);
+      });
+
+      vColorTable[0].Set(255,   0,   0, 255); // unknown
+      vColorTable[1].Set(100, 200, 100, 127); // plateau
+      vColorTable[2].Set(127, 127, 127, 127); // flank
+      vColorTable[3].Set(  0, 100, 255, 255); // local min
+      vColorTable[4].Set(  0, 200, 255, 255); // valley
+      vColorTable[5].Set(  0, 255,   0, 255); // saddle
+      vColorTable[6].Set(255, 155,   0, 255); // ridge
+      vColorTable[7].Set(255, 255,   0, 255); // local max
       */
       /*
       // stop the timer
