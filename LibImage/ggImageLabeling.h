@@ -107,7 +107,7 @@ public:
   }
 
 
-  static void AdjustDistanceFG(ggInt32& aDistance, const ggInt32 aDistanceNeighbor, const ggInt32 aDelta)
+  static void AdjustDistance(ggInt32& aDistance, const ggInt32 aDistanceNeighbor, const ggInt32 aDelta)
   {
     // check neighbor pixel
     if (aDistanceNeighbor > 0) {
@@ -152,15 +152,15 @@ public:
       ggInt32& vDistance = vDistanceImage(aIndexX, aIndexY);
       if (vDistance > 0) {
         if (aIndexX > 0) {
-          AdjustDistanceFG(vDistance, vDistanceImage(aIndexX - 1, aIndexY), vDeltaX);
+          AdjustDistance(vDistance, vDistanceImage(aIndexX - 1, aIndexY), vDeltaX);
           if ((aIndexY > 0) && (aConnectivity == cConnectivity::eCorner)) {
-            AdjustDistanceFG(vDistance, vDistanceImage(aIndexX - 1, aIndexY - 1), vDeltaXY);
+            AdjustDistance(vDistance, vDistanceImage(aIndexX - 1, aIndexY - 1), vDeltaXY);
           }
         }
         if (aIndexY > 0) {
-          AdjustDistanceFG(vDistance, vDistanceImage(aIndexX, aIndexY - 1), vDeltaY);
+          AdjustDistance(vDistance, vDistanceImage(aIndexX, aIndexY - 1), vDeltaY);
           if ((aIndexX + 1 < vDistanceImage.GetSizeX()) && (aConnectivity == cConnectivity::eCorner)) {
-            AdjustDistanceFG(vDistance, vDistanceImage(aIndexX + 1, aIndexY - 1), vDeltaXY);
+            AdjustDistance(vDistance, vDistanceImage(aIndexX + 1, aIndexY - 1), vDeltaXY);
           }
         }
       }
@@ -174,15 +174,15 @@ public:
       ggInt32& vDistance = vDistanceImage(aIndexX, aIndexY);
       if (vDistance > 0) {
         if (aIndexX + 1 < vDistanceImage.GetSizeX()) {
-          AdjustDistanceFG(vDistance, vDistanceImage(aIndexX + 1, aIndexY), vDeltaX);
+          AdjustDistance(vDistance, vDistanceImage(aIndexX + 1, aIndexY), vDeltaX);
           if ((aIndexY + 1 < vDistanceImage.GetSizeY()) && (aConnectivity == cConnectivity::eCorner)) {
-            AdjustDistanceFG(vDistance, vDistanceImage(aIndexX + 1, aIndexY + 1), vDeltaXY);
+            AdjustDistance(vDistance, vDistanceImage(aIndexX + 1, aIndexY + 1), vDeltaXY);
           }
         }
         if (aIndexY + 1 < vDistanceImage.GetSizeY()) {
-          AdjustDistanceFG(vDistance, vDistanceImage(aIndexX, aIndexY + 1), vDeltaY);
+          AdjustDistance(vDistance, vDistanceImage(aIndexX, aIndexY + 1), vDeltaY);
           if ((aIndexX > 0) && (aConnectivity == cConnectivity::eCorner)) {
-            AdjustDistanceFG(vDistance, vDistanceImage(aIndexX - 1, aIndexY + 1), vDeltaXY);
+            AdjustDistance(vDistance, vDistanceImage(aIndexX - 1, aIndexY + 1), vDeltaXY);
           }
         }
       }
@@ -218,15 +218,25 @@ public:
     return aDistanceA.IsShorter(aDistanceB);
   }
 
+  template <typename TValueType>
+  static bool IsShorterBG(const ggVector2T<TValueType>& aDistanceA,
+                          const ggVector2T<TValueType>& aDistanceB) {
+    if (aDistanceA.X() == std::numeric_limits<TValueType>::lowest()) return false;
+    if (aDistanceA.Y() == std::numeric_limits<TValueType>::lowest()) return false;
+    if (aDistanceB.X() == std::numeric_limits<TValueType>::lowest()) return true;
+    if (aDistanceB.Y() == std::numeric_limits<TValueType>::lowest()) return true;
+    return aDistanceA.IsShorter(aDistanceB);
+  }
 
-  static void AdjustDistanceFG(ggVector2Int32& aDistance,
-                               const ggVector2Int32& aDistanceNeighbor,
-                               const ggVector2Int32& aDistanceDelta)
+  static void AdjustDistance(ggVector2Int32& aDistance,
+                             const ggVector2Int32& aDistanceNeighbor,
+                             const ggVector2Int32& aDistanceDelta)
   {
-    // check if foreground
+    // check foreground or background
     if (IsForeground(aDistance)) {
+      // it's foreground. check neighbor ...
       if (IsForeground(aDistanceNeighbor)) {
-        // neighbor is foreground: check if the path there is known and shorter
+        // neighbor is foreground too: if that distance is known, check if the accumulated distance shorter
         if (aDistanceNeighbor != mDistanceInfiniteFG) {
           ggVector2Int32 vDistanceNew(aDistanceNeighbor + aDistanceDelta);
           if (IsShorterFG(vDistanceNew, aDistance)) aDistance = vDistanceNew;
@@ -234,8 +244,26 @@ public:
       }
       else {
         // neighbor is background: use delta if shorter than current
-        if (IsShorterFG(aDistanceDelta, aDistance)) {
-          aDistance = aDistanceDelta;
+        ggVector2Int32 vDistanceDeltaHalf(aDistanceDelta / 2);
+        if (IsShorterFG(vDistanceDeltaHalf, aDistance)) {
+          aDistance = vDistanceDeltaHalf;
+        }
+      }
+    }
+    else {
+      // it's background. check neighbor ...
+      if (IsBackground(aDistanceNeighbor)) {
+        // neighbor is background too: if that distance is known, check if the accumulated distance shorter
+        if (aDistanceNeighbor != mDistanceInfiniteBG) {
+          ggVector2Int32 vDistanceNew(aDistanceNeighbor - aDistanceDelta);
+          if (IsShorterBG(vDistanceNew, aDistance)) aDistance = vDistanceNew;
+        }
+      }
+      else {
+        // neighbor is foreground: use delta if shorter than current
+        ggVector2Int32 vDistanceDeltaHalf(aDistanceDelta / -2);
+        if (IsShorterBG(vDistanceDeltaHalf, aDistance)) {
+          aDistance = vDistanceDeltaHalf;
         }
       }
     }
@@ -257,42 +285,139 @@ public:
       aDistance = aValueIsForeground(aValue) ? mDistanceInfiniteFG : mDistanceInfiniteBG;
     });
 
-    const ggVector2Int32 vDistanceDeltaX(1,0);
-    const ggVector2Int32 vDistanceDeltaY(0,1);
-    const ggVector2Int32 vDistanceDeltaXY(1,1);
+    const ggVector2Int32 vDistanceDeltaX(2,0);
+    const ggVector2Int32 vDistanceDeltaY(0,2);
+    const ggVector2Int32 vDistanceDeltaXY(2,2);
 
-    for (ggSize vIndexY = 1; vIndexY+1 < vDistanceImage.GetSizeY(); vIndexY++) {
+    for (ggSize vIndexY = 1; vIndexY < vDistanceImage.GetSizeY(); vIndexY++) {
       for (ggSize vIndexX = 0; vIndexX < vDistanceImage.GetSizeX(); vIndexX++) {
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX, vIndexY-1), vDistanceDeltaY);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX, vIndexY-1), vDistanceDeltaY);
       }
       for (ggSize vIndexX = 1; vIndexX < vDistanceImage.GetSizeX(); vIndexX++) {
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX);
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY-1), vDistanceDeltaXY);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY-1), vDistanceDeltaXY);
       }
       for (ggSize vIndexX = vDistanceImage.GetSizeX()-2; vIndexX >= 0; vIndexX--) {
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX);
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY-1), vDistanceDeltaXY);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY-1), vDistanceDeltaXY);
       }
     }
 
     for (ggSize vIndexY = vDistanceImage.GetSizeY()-2; vIndexY >= 0; vIndexY--) {
       for (ggSize vIndexX = 0; vIndexX < vDistanceImage.GetSizeX(); vIndexX++) {
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX, vIndexY+1), vDistanceDeltaY);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX, vIndexY+1), vDistanceDeltaY);
       }
       for (ggSize vIndexX = 1; vIndexX < vDistanceImage.GetSizeX(); vIndexX++) {
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX);
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY+1), vDistanceDeltaXY);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX-1, vIndexY+1), vDistanceDeltaXY);
       }
       for (ggSize vIndexX = vDistanceImage.GetSizeX()-2; vIndexX >= 0; vIndexX--) {
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX);
-        AdjustDistanceFG(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY+1), vDistanceDeltaXY);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX);
+        AdjustDistance(vDistanceImage(vIndexX, vIndexY), vDistanceImage(vIndexX+1, vIndexY+1), vDistanceDeltaXY);
       }
     }
 
     // return image with euclidean distances
     return vDistanceImage.GetProcessed<ggFloat>([] (const ggVector2Int32& aDistance) {
-      return sqrtf(aDistance.X()*aDistance.X() + aDistance.Y()*aDistance.Y());
+      ggFloat vSign = IsForeground(aDistance) ? 1.0f : -1.0f; // label background distances negative
+      return vSign * sqrtf((aDistance.X()*aDistance.X() + aDistance.Y()*aDistance.Y()) / 4);
     });
+  }
+
+
+  enum class cRidgeType {
+    eUnknown,
+    ePlateau,
+    eFlank,
+    eLocalMin,
+    eRidge2,
+    eRidge3,
+    eRidge4,
+    eLocalMax
+  };
+
+
+  template <typename TValueType>
+  static ggImageT<cRidgeType> CalculateRidges(const ggImageT<TValueType>& aImage)
+  {
+    ggImageT<cRidgeType> vRidgeImage(aImage.GetSize(), cRidgeType::eUnknown);
+
+    static const std::vector<ggVector2Size> vOff = {{-1,-1},
+                                                    { 0,-1},
+                                                    { 1,-1},
+                                                    { 1, 0},
+                                                    { 1, 1},
+                                                    { 0, 1},
+                                                    {-1, 1},
+                                                    {-1, 0}};
+
+    aImage.ProcessIndexBorderInside(1, [&aImage, &vRidgeImage] (ggSize aIndexX, ggSize aIndexY) {
+
+      const ggVector2Size vIndex(aIndexX, aIndexY);
+      const TValueType& vValue = aImage(vIndex);
+
+      bool vIsLocalMin = true;
+      bool vIsLocalMax = true;
+      ggInt32 vNumNighborExtremas = 0;
+      bool vDirectionKnown = false;
+      bool vGoingUp = false;
+
+      ggUSize vIndexOffEnd = vOff.size();
+      for (ggUSize vIndexOff = 0; vIndexOff < vIndexOffEnd; vIndexOff++) {
+
+        const ggVector2Size vIndexA(vIndex + vOff[(vIndexOff + 0) % vOff.size()]);
+        const ggVector2Size vIndexB(vIndex + vOff[(vIndexOff + 1) % vOff.size()]);
+        const TValueType& vValueA = aImage(vIndexA);
+        const TValueType& vValueB = aImage(vIndexB);
+
+        // check local max or min
+        vIsLocalMin &= vValue < vValueA;
+        vIsLocalMax &= vValue > vValueA;
+
+        // check neighborhood
+        if (vValueA != vValueB) {
+          if (vDirectionKnown) {
+            bool vGoingUpNew = vValueA < vValueB;
+            if (vGoingUpNew != vGoingUp) {
+              vGoingUp = vGoingUpNew;
+              vNumNighborExtremas++;
+            }
+          }
+          else {
+            vDirectionKnown = true;
+            vGoingUp = vValueA < vValueB;
+            vIndexOffEnd = vIndexOff + vOff.size() + 1;
+          }
+        }
+      }
+
+      if (vIsLocalMin) {
+        vRidgeImage(vIndex) = cRidgeType::eLocalMin;
+      }
+      else if (vIsLocalMax) {
+        vRidgeImage(vIndex) = cRidgeType::eLocalMax;
+      }
+      else if (vNumNighborExtremas == 0) {
+        vRidgeImage(vIndex) = cRidgeType::ePlateau;
+      }
+      else if (vNumNighborExtremas == 2) {
+        vRidgeImage(vIndex) = cRidgeType::eFlank;
+      }
+      else if (vNumNighborExtremas == 4) {
+        vRidgeImage(vIndex) = cRidgeType::eRidge2;
+      }
+      else if (vNumNighborExtremas == 6) {
+        vRidgeImage(vIndex) = cRidgeType::eRidge3;
+      }
+      else if (vNumNighborExtremas == 8) {
+        vRidgeImage(vIndex) = cRidgeType::eRidge4;
+      }
+      else {
+        GG_ASSERT(false); // odd number of extremas not possible
+      }
+    });
+
+    return vRidgeImage;
   }
 
 
