@@ -40,6 +40,200 @@ public:
   }
 
 
+  static void AddLabelConnection(ggInt32 aLabelA,
+                                 ggInt32 aLabelB,
+                                 std::vector<ggUSize>& aLabelMap)
+  {
+    AddLabelConnection(static_cast<ggUSize>(aLabelA < 0 ? -aLabelA : aLabelA),
+                       static_cast<ggUSize>(aLabelB < 0 ? -aLabelB : aLabelB),
+                       aLabelMap);
+  }
+
+
+  static ggInt32 GetLabel(const std::vector<ggUSize>& aLabelMap, ggInt32 aLabel)
+  {
+    return static_cast<ggInt32>(aLabelMap[static_cast<ggUSize>(aLabel)]);
+  }
+
+
+  static ggInt32 GetNewLabelCandidateMin(const std::vector<ggUSize>& aLabelMap)
+  {
+    return -static_cast<ggInt32>(aLabelMap.size());
+  }
+
+
+  static ggInt32 GetNewLabelCandidateMax(const std::vector<ggUSize>& aLabelMap)
+  {
+    return static_cast<ggInt32>(aLabelMap.size());
+  }
+
+
+  template <typename TValueType>
+  static ggImageT<ggInt32> CalculateLocalMinMax(const ggImageT<TValueType>& aImage)
+  {
+    const ggInt32 vLabelUnassigned = std::numeric_limits<ggInt32>::max();
+    const ggInt32 vLabelNoMinMax = 0;
+    ggInt32 vLabelLocalMin = -1;
+    ggInt32 vLabelLocalMax = 1;
+
+    std::vector<ggInt32> vLabelMap(3);
+    const ggInt32 vLabelIndexNoMinMax = 0;
+    const ggInt32 vLabelIndexLocalMin = 1;
+    const ggInt32 vLabelIndexLocalMax = 2;
+    vLabelMap[vLabelIndexNoMinMax] = vLabelNoMinMax;
+    vLabelMap[vLabelIndexLocalMin] = vLabelLocalMin--;
+    vLabelMap[vLabelIndexLocalMax] = vLabelLocalMax++;
+
+    ggImageT<ggInt32> vMinMaxImage(aImage.GetSize(), vLabelUnassigned);
+
+    // adds index to stack, if label not yet assigned. then increments index-x
+    auto vAddIndexToStack = [&aImage, &vMinMaxImage] (ggVector2Size& aIndex,
+                                                      const TValueType& aValue,
+                                                      std::vector<ggVector2Size>& aIndexStack,
+                                                      bool& aScanLineStartDetected) {
+      if ((vMinMaxImage(aIndex) == vLabelUnassigned) && (aImage(aIndex) == aValue)) {
+        if (!aScanLineStartDetected) {
+          aScanLineStartDetected = true;
+          aIndexStack.push_back(aIndex);
+        }
+      }
+      else {
+        aScanLineStartDetected = false;
+      }
+      ++aIndex.X();
+    };
+
+    //
+    auto vGetNeighborMinMax = [&aImage] (ggSize aIndexX, ggSize aIndexY, TValueType& aValueNeighborMin, TValueType& aValueNeighborMax) {
+      ggSize vIndexMinX = std::max<ggSize>(aIndexX - 1, 0);
+      ggSize vIndexMaxX = std::min<ggSize>(aIndexX + 1, aImage.GetSizeX() - 1);
+      ggSize vIndexMinY = std::max<ggSize>(aIndexY - 1, 0);
+      ggSize vIndexMaxY = std::min<ggSize>(aIndexY + 1, aImage.GetSizeY() - 1);
+      for (ggSize vIndexY = vIndexMinY; vIndexY <= vIndexMaxY; vIndexY++) {
+        for (ggSize vIndexX = vIndexMinX; vIndexX <= vIndexMaxX; vIndexX++) {
+          if ((vIndexX != aIndexX) || (vIndexY != aIndexY)) {
+            const TValueType& vValueNeighbor = aImage(vIndexX, vIndexY);
+            if (vValueNeighbor > aValueNeighborMax) aValueNeighborMax = vValueNeighbor;
+            if (vValueNeighbor < aValueNeighborMin) aValueNeighborMin = vValueNeighbor;
+          }
+        }
+      }
+    };
+
+    // fills all connected pixels (aIndexX, aIndexY) with the same label
+    auto vFloodFill = [&aImage, &vMinMaxImage, &vGetNeighborMinMax, &vAddIndexToStack] (ggSize aIndexX, ggSize aIndexY, TValueType& aValueNeighborMin, TValueType& aValueNeighborMax) {
+
+      // add the starting-index to the stack
+      ggVector2Size vIndexStart(aIndexX, aIndexY);
+      const TValueType& vValue = aImage(vIndexStart);
+      const ggInt32& vLabel = vMinMaxImage(vIndexStart);
+      std::vector<ggVector2Size> vIndexStack(1, vIndexStart);
+
+      // the stack contains starting indices
+      while (!vIndexStack.empty()) {
+
+        // pop an index from the stack
+        ggVector2Size vIndex = vIndexStack.back();
+        vIndexStack.pop_back();
+
+        // find the leftmost pixel (begin of scan-line)
+        while ((vIndex.X() > 0) && (aImage(vIndex.X() - 1, vIndex.Y()) == vValue)) --vIndex.X();
+
+        // 8-neighborhood: check above-left and above (above-right will be checked during the x-scan)
+        bool vScanAbove = false;
+        bool vScanLineStartDetectedA = false;
+        ggVector2Size vIndexA(vIndex);
+        if (vIndexA.Y() + 1 < aImage.GetSizeY()) {
+          vScanAbove = true;
+          ++vIndexA.Y();
+          if (vIndexA.X() > 0) {
+            --vIndexA.X();
+            vAddIndexToStack(vIndexA, vValue, vIndexStack, vScanLineStartDetectedA);
+          }
+          vAddIndexToStack(vIndexA, vValue, vIndexStack, vScanLineStartDetectedA);
+        }
+
+        // 8-neighborhood: check below-left and below (below-right will be checked during the x-scan)
+        bool vScanBelow = false;
+        bool vScanLineStartDetectedB = false;
+        ggVector2Size vIndexB(vIndex);
+        if (vIndexB.Y() > 0) {
+          vScanBelow = true;
+          --vIndexB.Y();
+          if (vIndexB.X() > 0) {
+            --vIndexB.X();
+            vAddIndexToStack(vIndexB, vValue, vIndexStack, vScanLineStartDetectedB);
+          }
+          vAddIndexToStack(vIndexB, vValue, vIndexStack, vScanLineStartDetectedB);
+        }
+
+        // fill scan-line, check neighbors above and below
+        while ((vIndex.X() < aImage.GetSizeX()) && (aImage(vIndex) == vValue)) {
+          vMinMaxImage(vIndex) = vLabel;
+          vGetNeighborMinMax(vIndex.X(), vIndex.Y(), aValueNeighborMin, aValueNeighborMax);
+          if (vIndex.X() + 1 < aImage.GetSizeX()) {
+            if (vScanAbove) vAddIndexToStack(vIndexA, vValue, vIndexStack, vScanLineStartDetectedA);
+            if (vScanBelow) vAddIndexToStack(vIndexB, vValue, vIndexStack, vScanLineStartDetectedB);
+          }
+          ++vIndex.X();
+        }
+      }
+    };
+
+    auto vCalculateMinMax = [&aImage, &vMinMaxImage, &vLabelMap, &vLabelNoMinMax, &vLabelLocalMin, &vLabelLocalMax, &vGetNeighborMinMax, &vFloodFill] (ggSize aIndexX, ggSize aIndexY) {
+
+      ggInt32& vLabel = vMinMaxImage(aIndexX, aIndexY);
+
+      if (vLabel == vLabelUnassigned) {
+
+        const TValueType& vValue = aImage(aIndexX, aIndexY);
+
+        TValueType vValueNeighborMin = std::numeric_limits<TValueType>::max();
+        TValueType vValueNeighborMax = std::numeric_limits<TValueType>::lowest();
+        vGetNeighborMinMax(aIndexX, aIndexY, vValueNeighborMin, vValueNeighborMax);
+
+        GG_ASSERT(vValueNeighborMin <= vValueNeighborMax);
+
+        if (vValue < vValueNeighborMin) {
+          vLabel = vLabelIndexLocalMin;
+        }
+        else if (vValue > vValueNeighborMax) {
+          vLabel = vLabelIndexLocalMax;
+        }
+        else if ((vValueNeighborMin < vValue) && (vValue < vValueNeighborMax)) {
+          vLabel = vLabelIndexNoMinMax;
+        }
+        else {
+          vLabel = static_cast<ggInt32>(vLabelMap.size());
+          vFloodFill(aIndexX, aIndexY, vValueNeighborMin, vValueNeighborMax);
+          if (vValue <= vValueNeighborMin) {
+            vLabelMap.push_back(vLabelLocalMin--);
+          }
+          else if (vValue >= vValueNeighborMax) {
+            vLabelMap.push_back(vLabelLocalMax++);
+          }
+          else {
+            vLabelMap.push_back(vLabelNoMinMax);
+          }
+        }
+      }
+
+    };
+
+    aImage.ProcessIndex(vCalculateMinMax);
+
+    // lamda function which translates labels
+    auto vApplyLabelMap = [&vLabelMap] (ggInt32& aLabel) {
+      aLabel = vLabelMap[static_cast<ggUSize>(aLabel)];
+    };
+
+    // calculate final labels
+    vMinMaxImage.ProcessValues(vApplyLabelMap);
+
+    return vMinMaxImage;
+  }
+
+
   /**
    * Chamfer distance algorithm.
    * Not as accurate as 8SED, but roughly 3 times faster.
@@ -210,6 +404,10 @@ private:
   static void AddLabelConnection(ggUSize aLabelA,
                                  ggUSize aLabelB,
                                  std::vector<ggUSize>& aLabelMap);
+
+  static void AdjustLabelToNeighbor(ggInt32& aLabel,
+                                    const ggInt32& aNeighborLabel,
+                                    std::vector<ggUSize>& aLabelMapFG);
 
   static void AdjustLabelToNeighborFG(ggInt32& aLabel,
                                       const ggInt32& aNeighborLabel,

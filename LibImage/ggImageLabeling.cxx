@@ -83,6 +83,25 @@ void ggImageLabeling::AddLabelConnection(ggUSize aLabelA,
 }
 
 
+void ggImageLabeling::AdjustLabelToNeighbor(ggInt32& aLabel,
+                                            const ggInt32& aNeighborLabel,
+                                            std::vector<ggUSize>& aLabelMapFG)
+{
+  // only needs to be adjusted, if neighbor is assigned and different
+  if (!IsLabelUnassigned(aNeighborLabel) && (aLabel != aNeighborLabel)) {
+    // check if current label is not yet assigned
+    if (IsLabelUnassigned(aLabel)) {
+      // an unassigned pixel get's the label from its neighbor
+      aLabel = aNeighborLabel;
+    }
+    else {
+      // differently labelled neighbor ==> connect them
+      AddLabelConnection(static_cast<ggUSize>(aLabel), static_cast<ggUSize>(aNeighborLabel), aLabelMapFG);
+    }
+  }
+}
+
+
 void ggImageLabeling::AdjustLabelToNeighborFG(ggInt32& aLabel,
                                               const ggInt32& aNeighborLabel,
                                               std::vector<ggUSize>& aLabelMapFG)
@@ -95,7 +114,7 @@ void ggImageLabeling::AdjustLabelToNeighborFG(ggInt32& aLabel,
       aLabel = aNeighborLabel;
     }
     else {
-      // differently labelled neighbors ==> connect them
+      // differently labelled neighbor ==> connect them
       AddLabelConnection(static_cast<ggUSize>(aLabel), static_cast<ggUSize>(aNeighborLabel), aLabelMapFG);
     }
   }
@@ -114,7 +133,7 @@ void ggImageLabeling::AdjustLabelToNeighborBG(ggInt32& aLabel,
       aLabel = aNeighborLabel;
     }
     else {
-      // differently labelled neighbors ==> connect them
+      // differently labelled neighbor ==> connect them
       AddLabelConnection(static_cast<ggUSize>(-aLabel), static_cast<ggUSize>(-aNeighborLabel), aLabelMapBG);
     }
   }
