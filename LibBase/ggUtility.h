@@ -60,6 +60,27 @@ namespace ggUtility {
     return vStrStream.str();
   }
 
+  template <>
+  inline std::string ToString(const ggNumberType& aValue) {
+    switch (aValue) {
+      case ggNumberType::eUnknown: return "eUnknown";
+      case ggNumberType::eChar: return "eChar";
+      case ggNumberType::eInt8: return "eInt8";
+      case ggNumberType::eInt16: return "eInt16";
+      case ggNumberType::eInt32: return "eInt32";
+      case ggNumberType::eInt64: return "eInt64";
+      case ggNumberType::eSize: return "eSize";
+      case ggNumberType::eUChar: return "eUChar";
+      case ggNumberType::eUInt8: return "eUInt8";
+      case ggNumberType::eUInt16: return "eUInt16";
+      case ggNumberType::eUInt32: return "eUInt32";
+      case ggNumberType::eUInt64: return "eUInt64";
+      case ggNumberType::eUSize: return "eUSize";
+      case ggNumberType::eFloat: return "eFloat";
+      case ggNumberType::eDouble: return "eDouble";
+    }
+  }
+
   template <typename TValueType, ggUSize TDimensions>
   inline std::string VectorToString(const ggVectorT<TValueType, TDimensions>& aVector) {
     std::string vString("(");
@@ -173,6 +194,7 @@ namespace ggUtility {
 
   std::vector<ggColorUInt8> ColorTableHot();
   std::vector<ggColorUInt8> ColorTableRainbow(bool aIndexZeroTransparent = false);
+  std::vector<ggColorUInt8> ColorTableRandom(bool aIndexZeroTransparent = false);
   std::vector<ggColorUInt8> ColorTableRandomRainbow(bool aIndexZeroTransparent = false);
   std::vector<ggColorUInt8> ColorTableRandomHot(bool aIndexZeroTransparent = false);
   std::vector<ggColorUInt8> ColorTableRandomCold(bool aIndexZeroTransparent = false);

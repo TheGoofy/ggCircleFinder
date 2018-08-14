@@ -45,6 +45,20 @@ std::vector<ggColorUInt8> ggUtility::ColorTableRainbow(bool aIndexZeroTransparen
 }
 
 
+std::vector<ggColorUInt8> ggUtility::ColorTableRandom(bool aIndexZeroTransparent)
+{
+  std::vector<ggColorUInt8> vColorTable(256);
+  for (ggUSize vIndex = 0; vIndex < 256; vIndex++) {
+    vColorTable[vIndex].Set(155 + rand() % 100,
+                            155 + rand() % 100,
+                            155 + rand() % 100,
+                            255);
+  }
+  if (aIndexZeroTransparent) vColorTable[0].SetA(0);
+  return vColorTable;
+}
+
+
 std::vector<ggColorUInt8> ggUtility::ColorTableRandomRainbow(bool aIndexZeroTransparent)
 {
   // use rainbow table, pick random color and swap it with the last color
