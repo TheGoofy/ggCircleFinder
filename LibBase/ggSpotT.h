@@ -51,6 +51,14 @@ public:
     mValue = aValue;
   }
 
+  inline bool operator < (const ggSpotT& aOther) const {
+    return mValue < aOther.mValue;
+  }
+
+  inline bool operator > (const ggSpotT& aOther) const {
+    return mValue > aOther.mValue;
+  }
+
 private:
 
   TSpotValueType mValue;
