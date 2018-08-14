@@ -37,8 +37,8 @@ template <> inline ggNumberType ggGetNumberType<ggInt16>() { return ggNumberType
 template <> inline ggNumberType ggGetNumberType<ggInt32>() { return ggNumberType::eInt32; }
 template <> inline ggNumberType ggGetNumberType<ggInt64>() { return ggNumberType::eInt64; }
 template <> inline ggNumberType ggGetNumberType<ggSize>() { return ggNumberType::eSize; }
-template <> inline ggNumberType ggGetNumberType<ggUChar>() { return ggNumberType::eUChar; }
-// duplicate of ggChar ... template <> inline cNumberType NumberType<ggUInt8>() { return cNumberType::eUInt8; }
+// redefinition of ggUInt8 ... template <> inline ggNumberType ggGetNumberType<ggUChar>() { return ggNumberType::eUChar; }
+template <> inline ggNumberType ggGetNumberType<ggUInt8>() { return ggNumberType::eUInt8; }
 template <> inline ggNumberType ggGetNumberType<ggUInt16>() { return ggNumberType::eUInt16; }
 template <> inline ggNumberType ggGetNumberType<ggUInt32>() { return ggNumberType::eUInt32; }
 template <> inline ggNumberType ggGetNumberType<ggUInt64>() { return ggNumberType::eUInt64; }
