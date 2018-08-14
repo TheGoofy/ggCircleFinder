@@ -132,7 +132,8 @@ HEADERS += \
     LibBase/ggDebug.h \
     LibImage/ggSegmentation.h \
     LibBase/ggAveragesT.h \
-    QtGraphics/ggGraphicsHistogramRectItem.h
+    QtGraphics/ggGraphicsHistogramRectItem.h \
+    LibImage/ggImageTest.h
 
 FORMS += \
     QtMain/MainWindow.ui \

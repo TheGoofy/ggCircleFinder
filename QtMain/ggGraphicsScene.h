@@ -15,6 +15,7 @@
 #include "LibImage/ggImageAlgorithm.h"
 #include "LibImage/ggSegmentation.h"
 #include "LibImage/ggImageLabeling.h"
+#include "LibImage/ggImageTest.h"
 #include "QtBase/ggUtilityQt.h"
 #include "QtGraphics/ggGraphicsHistogramRectItem.h"
 #include "QtGraphics/ggGraphicsManipulatorRectItemT.h"
@@ -192,6 +193,25 @@ public:
       vColorTable[5].Set(  0, 255,   0, 255); // saddle
       vColorTable[6].Set(255, 155,   0, 255); // ridge
       vColorTable[7].Set(255, 255,   0, 255); // local max
+      */
+      /*
+      ggImageT<ggInt32> vMinMaxImage(ggImageLabeling::CalculateLocalMinMax(vImageCameraROI));
+
+      // ggImageTest::Print(vMinMaxImage.GetConverted<ggInt8>());
+
+      ggImageT<ggUChar> vImageUChar = vMinMaxImage.GetProcessed<ggUChar>([] (const ggInt32& aLabel) {
+        return static_cast<ggUChar>(aLabel % 128);
+      });
+
+      std::vector<ggColorUInt8> vColorTableFG = ggUtility::ColorTableRandomHot();
+      std::vector<ggColorUInt8> vColorTableBG = ggUtility::ColorTableRandomCold();
+      std::vector<ggColorUInt8> vColorTable;
+      vColorTable.insert(vColorTable.end(), vColorTableFG.begin(), vColorTableFG.begin() + 128);
+      vColorTable.insert(vColorTable.end(), vColorTableBG.begin(), vColorTableBG.begin() + 128);
+
+      vColorTable[0].Set(127, 127, 127, 127); // no min/max
+      vColorTable[1].Set(255, 255, 0, 255); // single pixel max
+      vColorTable[255].Set(0, 0, 255, 255); // single pixel min
       */
       /*
       // stop the timer
