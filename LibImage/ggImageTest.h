@@ -1,0 +1,4 @@
+#ifndef GGIMAGETEST_H
+#define GGIMAGETEST_H
+
+#endif // GGIMAGETEST_H
