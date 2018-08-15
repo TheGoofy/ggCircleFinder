@@ -224,7 +224,9 @@ public:
   template <typename TValueType>
   static ggImageT<ggInt32> CalculateDistanceTransformCDA3(const ggImageT<TValueType>& aImage,
                                                           std::function<bool (const TValueType& aValue)> aValueIsForeground,
-                                                          cConnectivity aConnectivity)
+                                                          cConnectivity aConnectivity = cConnectivity::eCorner,
+                                                          bool aProcessForeground = true,
+                                                          bool aProcessBackground = false)
   {
     // initialize with "infinite" distances
     ggImageT<ggInt32> vDistanceImage(aImage.GetSize());
@@ -233,7 +235,7 @@ public:
     });
 
     // do the distance transformation
-    CalculateDistanceTransformCDA3Private(vDistanceImage, aConnectivity);
+    CalculateDistanceTransformCDA3Private(vDistanceImage, aConnectivity, aProcessForeground, aProcessBackground);
 
     // return "raw" integer distances
     return vDistanceImage;
@@ -247,7 +249,9 @@ public:
    */
   template <typename TValueType>
   static ggImageT<ggFloat> CalculateDistanceTransform8SED(const ggImageT<TValueType>& aImage,
-                                                          std::function<bool (const TValueType& aValue)> aValueIsForeground)
+                                                          std::function<bool (const TValueType& aValue)> aValueIsForeground,
+                                                          bool aProcessForeground = true,
+                                                          bool aProcessBackground = false)
   {
     // initialize distance vectorfield with "infinite" distances
     ggImageT<ggVector2Int32> vDistanceImage(aImage.GetSize());
@@ -256,7 +260,7 @@ public:
     });
 
     // do the actual distance calculation
-    CalculateDistanceTransform8SEDPrivate(vDistanceImage);
+    CalculateDistanceTransform8SEDPrivate(vDistanceImage, aProcessForeground, aProcessBackground);
 
     // return image with euclidean distances (length of distance vectors)
     return vDistanceImage.GetProcessed<ggFloat>([] (const ggVector2Int32& aDistance) {
@@ -410,10 +414,14 @@ private:
 
   static void AdjustDistance(ggInt32& aDistance,
                              const ggInt32 aDistanceNeighbor,
-                             const ggInt32 aDistanceDelta);
+                             const ggInt32 aDistanceDelta,
+                             bool aProcessForeground,
+                             bool aProcessBackground);
 
   static void CalculateDistanceTransformCDA3Private(ggImageT<ggInt32>& aDistanceImage,
-                                                    cConnectivity aConnectivity);
+                                                    cConnectivity aConnectivity,
+                                                    bool aProcessForeground,
+                                                    bool aProcessBackground);
 
   static const ggVector2Int32 mDistance2InfiniteBG;
   static const ggVector2Int32 mDistance2InfiniteFG;
@@ -427,9 +435,13 @@ private:
 
   static void AdjustDistance(ggVector2Int32& aDistance,
                              const ggVector2Int32& aDistanceNeighbor,
-                             const ggVector2Int32& aDistanceDelta);
+                             const ggVector2Int32& aDistanceDelta,
+                             bool aProcessForeground,
+                             bool aProcessBackground);
 
-  static void CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2Int32>& aDistanceImage);
+  static void CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2Int32>& aDistanceImage,
+                                                    bool aProcessForeground,
+                                                    bool aProcessBackground);
 
   static void AddIndexToStack(std::function<bool (const ggVector2Size& aIndex)> aNeedsLabel,
                               std::function<bool (const ggVector2Size& aIndex)> aHasLabel,

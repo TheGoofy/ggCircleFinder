@@ -263,9 +263,11 @@ bool ggImageLabeling::IsDistanceBG(const ggInt32& aDistance)
 
 void ggImageLabeling::AdjustDistance(ggInt32& aDistance,
                                      const ggInt32 aDistanceNeighbor,
-                                     const ggInt32 aDistanceDelta)
+                                     const ggInt32 aDistanceDelta,
+                                     bool aProcessForeground,
+                                     bool aProcessBackground)
 {
-  if (IsDistanceFG(aDistance)) {
+  if (aProcessForeground && IsDistanceFG(aDistance)) {
     // check neighbor pixel
     if (IsDistanceFG(aDistanceNeighbor)) {
       // neighbor is foreground: check if the path there is shorter
@@ -279,7 +281,8 @@ void ggImageLabeling::AdjustDistance(ggInt32& aDistance,
       if (aDistanceDelta < aDistance) aDistance = aDistanceDelta;
     }
   }
-  else {
+
+  if (aProcessBackground && IsDistanceBG(aDistance)) {
     // check neighbor pixel
     if (IsDistanceBG(aDistanceNeighbor)) {
       // neighbor is background: check if the path there is shorter
@@ -297,42 +300,44 @@ void ggImageLabeling::AdjustDistance(ggInt32& aDistance,
 
 
 void ggImageLabeling::CalculateDistanceTransformCDA3Private(ggImageT<ggInt32>& aDistanceImage,
-                                                            cConnectivity aConnectivity)
+                                                            cConnectivity aConnectivity,
+                                                            bool aProcessForeground,
+                                                            bool aProcessBackground)
 {
   const ggInt32 vDeltaX = 3;
   const ggInt32 vDeltaY = 3;
   const ggInt32 vDeltaXY = 4;
 
   // distance calculation for forward loop
-  auto vDistanceCheckForward = [&aConnectivity, &aDistanceImage] (ggSize aIndexX, ggSize aIndexY) {
+  auto vDistanceCheckForward = [&aConnectivity, &aDistanceImage, &aProcessForeground, &aProcessBackground] (ggSize aIndexX, ggSize aIndexY) {
     ggInt32& vDistance = aDistanceImage(aIndexX, aIndexY);
     if (aIndexX > 0) {
-      AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY), vDeltaX);
+      AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY), vDeltaX, aProcessForeground, aProcessBackground);
       if ((aIndexY > 0) && (aConnectivity == cConnectivity::eCorner)) {
-        AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY - 1), vDeltaXY);
+        AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY - 1), vDeltaXY, aProcessForeground, aProcessBackground);
       }
     }
     if (aIndexY > 0) {
-      AdjustDistance(vDistance, aDistanceImage(aIndexX, aIndexY - 1), vDeltaY);
+      AdjustDistance(vDistance, aDistanceImage(aIndexX, aIndexY - 1), vDeltaY, aProcessForeground, aProcessBackground);
       if ((aIndexX + 1 < aDistanceImage.GetSizeX()) && (aConnectivity == cConnectivity::eCorner)) {
-        AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY - 1), vDeltaXY);
+        AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY - 1), vDeltaXY, aProcessForeground, aProcessBackground);
       }
     }
   };
 
   // distance calculation for forward loop
-  auto vDistanceCheckReverse = [&aConnectivity, &aDistanceImage] (ggSize aIndexX, ggSize aIndexY) {
+  auto vDistanceCheckReverse = [&aConnectivity, &aDistanceImage, &aProcessForeground, &aProcessBackground] (ggSize aIndexX, ggSize aIndexY) {
     ggInt32& vDistance = aDistanceImage(aIndexX, aIndexY);
     if (aIndexX + 1 < aDistanceImage.GetSizeX()) {
-      AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY), vDeltaX);
+      AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY), vDeltaX, aProcessForeground, aProcessBackground);
       if ((aIndexY + 1 < aDistanceImage.GetSizeY()) && (aConnectivity == cConnectivity::eCorner)) {
-        AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY + 1), vDeltaXY);
+        AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY + 1), vDeltaXY, aProcessForeground, aProcessBackground);
       }
     }
     if (aIndexY + 1 < aDistanceImage.GetSizeY()) {
-      AdjustDistance(vDistance, aDistanceImage(aIndexX, aIndexY + 1), vDeltaY);
+      AdjustDistance(vDistance, aDistanceImage(aIndexX, aIndexY + 1), vDeltaY, aProcessForeground, aProcessBackground);
       if ((aIndexX > 0) && (aConnectivity == cConnectivity::eCorner)) {
-        AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY + 1), vDeltaXY);
+        AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY + 1), vDeltaXY, aProcessForeground, aProcessBackground);
       }
     }
   };
@@ -388,10 +393,12 @@ bool ggImageLabeling::IsShorterBG(const ggVector2Int32& aDistanceA,
 
 void ggImageLabeling::AdjustDistance(ggVector2Int32& aDistance,
                                      const ggVector2Int32& aDistanceNeighbor,
-                                     const ggVector2Int32& aDistanceDelta)
+                                     const ggVector2Int32& aDistanceDelta,
+                                     bool aProcessForeground,
+                                     bool aProcessBackground)
 {
-  // check foreground or background
-  if (IsDistanceFG(aDistance)) {
+  // check foreground
+  if (aProcessForeground && IsDistanceFG(aDistance)) {
     // it's foreground. check neighbor ...
     if (IsDistanceFG(aDistanceNeighbor)) {
       // neighbor is foreground too: if that distance is known, check if the accumulated distance shorter
@@ -408,7 +415,9 @@ void ggImageLabeling::AdjustDistance(ggVector2Int32& aDistance,
       }
     }
   }
-  else {
+
+  // check background
+  if (aProcessBackground && IsDistanceBG(aDistance)) {
     // it's background. check neighbor ...
     if (IsDistanceBG(aDistanceNeighbor)) {
       // neighbor is background too: if that distance is known, check if the accumulated distance shorter
@@ -428,7 +437,9 @@ void ggImageLabeling::AdjustDistance(ggVector2Int32& aDistance,
 }
 
 
-void ggImageLabeling::CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2Int32>& aDistanceImage)
+void ggImageLabeling::CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2Int32>& aDistanceImage,
+                                                            bool aProcessForeground,
+                                                            bool aProcessBackground)
 {
   const ggVector2Int32 vDistanceDeltaX(2,0);
   const ggVector2Int32 vDistanceDeltaY(0,2);
@@ -436,29 +447,29 @@ void ggImageLabeling::CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2In
 
   for (ggSize vIndexY = 1; vIndexY < aDistanceImage.GetSizeY(); vIndexY++) {
     for (ggSize vIndexX = 0; vIndexX < aDistanceImage.GetSizeX(); vIndexX++) {
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX, vIndexY-1), vDistanceDeltaY);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX, vIndexY-1), vDistanceDeltaY, aProcessForeground, aProcessBackground);
     }
     for (ggSize vIndexX = 1; vIndexX < aDistanceImage.GetSizeX(); vIndexX++) {
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX);
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY-1), vDistanceDeltaXY);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX, aProcessForeground, aProcessBackground);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY-1), vDistanceDeltaXY, aProcessForeground, aProcessBackground);
     }
     for (ggSize vIndexX = aDistanceImage.GetSizeX()-2; vIndexX >= 0; vIndexX--) {
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX);
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY-1), vDistanceDeltaXY);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX, aProcessForeground, aProcessBackground);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY-1), vDistanceDeltaXY, aProcessForeground, aProcessBackground);
     }
   }
 
   for (ggSize vIndexY = aDistanceImage.GetSizeY()-2; vIndexY >= 0; vIndexY--) {
     for (ggSize vIndexX = 0; vIndexX < aDistanceImage.GetSizeX(); vIndexX++) {
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX, vIndexY+1), vDistanceDeltaY);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX, vIndexY+1), vDistanceDeltaY, aProcessForeground, aProcessBackground);
     }
     for (ggSize vIndexX = 1; vIndexX < aDistanceImage.GetSizeX(); vIndexX++) {
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX);
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY+1), vDistanceDeltaXY);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY), vDistanceDeltaX, aProcessForeground, aProcessBackground);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX-1, vIndexY+1), vDistanceDeltaXY, aProcessForeground, aProcessBackground);
     }
     for (ggSize vIndexX = aDistanceImage.GetSizeX()-2; vIndexX >= 0; vIndexX--) {
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX);
-      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY+1), vDistanceDeltaXY);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY), vDistanceDeltaX, aProcessForeground, aProcessBackground);
+      AdjustDistance(aDistanceImage(vIndexX, vIndexY), aDistanceImage(vIndexX+1, vIndexY+1), vDistanceDeltaXY, aProcessForeground, aProcessBackground);
     }
   }
 }
