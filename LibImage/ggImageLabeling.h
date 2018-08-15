@@ -39,39 +39,81 @@ public:
     return vLabelImage;
   }
 
+  /**
+   * @brief FloodFill sets labels connected to a start-position and within a region, if a connected position needs a label
+   * @param aRegionIndexBegin
+   * @param aRegionIndexEnd
+   * @param aStartIndex
+   * @param aNeedsLabel: function should return "true", if the specified position is a candidate to be labeled
+   * @param aHasLabel: function should return "true", if the specified position already has a label (no need to call "aSetLabel")
+   * @param aSetLabel: function should set a label for the specified position (subsequent call of "aHasLabel" needs to return "true")
+   */
+  static void FloodFill(const ggVector2Size& aRegionIndexBegin,
+                        const ggVector2Size& aRegionIndexEnd,
+                        const ggVector2Size& aStartIndex,
+                        std::function<bool (const ggVector2Size& aIndex)> aNeedsLabel,
+                        std::function<bool (const ggVector2Size& aIndex)> aHasLabel,
+                        std::function<void (const ggVector2Size& aIndex)> aSetLabel);
 
-  static void AddLabelConnection(ggInt32 aLabelA,
-                                 ggInt32 aLabelB,
-                                 std::vector<ggUSize>& aLabelMap)
+  /**
+   * Fills all pixels connected to a start-index with a specified value, if the callback-
+   * function "aReplaceValue" returns "true".
+   */
+  template <typename TValueType>
+  static void FloodFill(ggImageT<TValueType>& aImage,
+                        const ggVector2Size& aStartIndex,
+                        const TValueType& aValueNew,
+                        std::function<bool (const TValueType& aValue)> aReplaceValue)
   {
-    AddLabelConnection(static_cast<ggUSize>(aLabelA < 0 ? -aLabelA : aLabelA),
-                       static_cast<ggUSize>(aLabelB < 0 ? -aLabelB : aLabelB),
-                       aLabelMap);
+    auto vNeedsLabel = [&aImage, &aReplaceValue] (const ggVector2Size& aIndex) -> bool {
+      return aReplaceValue(aImage(aIndex));
+    };
+
+    auto vHasLabel = [&aImage, &aValueNew] (const ggVector2Size& aIndex) -> bool {
+      return aImage(aIndex) == aValueNew;
+    };
+
+    auto vSetLabel = [&aImage, &aValueNew] (const ggVector2Size& aIndex) {
+      aImage(aIndex) = aValueNew;
+    };
+
+    FloodFill(ggVector2Size(0, 0),
+              aImage.GetSize(),
+              aStartIndex,
+              vNeedsLabel,
+              vHasLabel,
+              vSetLabel);
   }
 
-
-  static ggInt32 GetLabel(const std::vector<ggUSize>& aLabelMap, ggInt32 aLabel)
+  /**
+   * Fills all pixels connected to a start-index with the same value.
+   */
+  template <typename TValueType>
+  static void FloodFill(ggImageT<TValueType>& aImage,
+                        const ggVector2Size& aStartIndex,
+                        const TValueType& aValueToFill)
   {
-    return static_cast<ggInt32>(aLabelMap[static_cast<ggUSize>(aLabel)]);
+    const TValueType& vValueReference = aImage(aStartIndex);
+
+    auto vValueNeedsFilled = [] (const TValueType& aValue) -> bool {
+      return aValue == vValueReference;
+    };
+
+    FloodFill(aImage, aStartIndex, aValueToFill, vValueNeedsFilled);
   }
 
-
-  static ggInt32 GetNewLabelCandidateMin(const std::vector<ggUSize>& aLabelMap)
-  {
-    return -static_cast<ggInt32>(aLabelMap.size());
-  }
-
-
-  static ggInt32 GetNewLabelCandidateMax(const std::vector<ggUSize>& aLabelMap)
-  {
-    return static_cast<ggInt32>(aLabelMap.size());
-  }
-
-
+  /**
+   * Labels all local minima and maxima. All local minima, which consist of a single pixel (8
+   * neighbor pixels have a higher value), will be labeled with -1. Single pixel maxima are labeled
+   * with +1. If a local minimum is extended over multiple neighboring pixels (they all have the
+   * same value, and their beighbors have higher values), the whole region is labeled with a negative
+   * label. Maxima regions reveive a positive label. Each extended local extremum has a unique label.
+   * Regions with neighbors of lower and higher values are labeled with 0 (no extremum).
+   */
   template <typename TValueType>
   static ggImageT<ggInt32> CalculateLocalMinMax(const ggImageT<TValueType>& aImage)
   {
-    const ggInt32 vLabelUnassigned = std::numeric_limits<ggInt32>::max();
+    const ggInt32 vLabelUnassigned = std::numeric_limits<ggInt32>::lowest();
     const ggInt32 vLabelNoMinMax = 0;
     ggInt32 vLabelLocalMin = -1;
     ggInt32 vLabelLocalMax = 1;
@@ -86,101 +128,36 @@ public:
 
     ggImageT<ggInt32> vMinMaxImage(aImage.GetSize(), vLabelUnassigned);
 
-    // adds index to stack, if label not yet assigned. then increments index-x
-    auto vAddIndexToStack = [&aImage, &vMinMaxImage] (ggVector2Size& aIndex,
-                                                      const TValueType& aValue,
-                                                      std::vector<ggVector2Size>& aIndexStack,
-                                                      bool& aScanLineStartDetected) {
-      if ((vMinMaxImage(aIndex) == vLabelUnassigned) && (aImage(aIndex) == aValue)) {
-        if (!aScanLineStartDetected) {
-          aScanLineStartDetected = true;
-          aIndexStack.push_back(aIndex);
-        }
-      }
-      else {
-        aScanLineStartDetected = false;
-      }
-      ++aIndex.X();
+    TValueType vValueForNeedingLabel;
+    auto vNeedsLabel = [&aImage, &vValueForNeedingLabel] (const ggVector2Size& aIndex) -> bool {
+      return aImage(aIndex) == vValueForNeedingLabel;
     };
 
-    //
-    auto vGetNeighborMinMax = [&aImage] (ggSize aIndexX, ggSize aIndexY, TValueType& aValueNeighborMin, TValueType& aValueNeighborMax) {
-      ggSize vIndexMinX = std::max<ggSize>(aIndexX - 1, 0);
-      ggSize vIndexMaxX = std::min<ggSize>(aIndexX + 1, aImage.GetSizeX() - 1);
-      ggSize vIndexMinY = std::max<ggSize>(aIndexY - 1, 0);
-      ggSize vIndexMaxY = std::min<ggSize>(aIndexY + 1, aImage.GetSizeY() - 1);
-      for (ggSize vIndexY = vIndexMinY; vIndexY <= vIndexMaxY; vIndexY++) {
-        for (ggSize vIndexX = vIndexMinX; vIndexX <= vIndexMaxX; vIndexX++) {
-          if ((vIndexX != aIndexX) || (vIndexY != aIndexY)) {
-            const TValueType& vValueNeighbor = aImage(vIndexX, vIndexY);
-            if (vValueNeighbor > aValueNeighborMax) aValueNeighborMax = vValueNeighbor;
-            if (vValueNeighbor < aValueNeighborMin) aValueNeighborMin = vValueNeighbor;
-          }
-        }
-      }
+    auto vHasLabel = [&vMinMaxImage] (const ggVector2Size& aIndex) -> bool {
+      return vMinMaxImage(aIndex) != vLabelUnassigned;
     };
 
-    // fills all connected pixels (aIndexX, aIndexY) with the same label
-    auto vFloodFill = [&aImage, &vMinMaxImage, &vGetNeighborMinMax, &vAddIndexToStack] (ggSize aIndexX, ggSize aIndexY, TValueType& aValueNeighborMin, TValueType& aValueNeighborMax) {
-
-      // add the starting-index to the stack
-      ggVector2Size vIndexStart(aIndexX, aIndexY);
-      const TValueType& vValue = aImage(vIndexStart);
-      const ggInt32& vLabel = vMinMaxImage(vIndexStart);
-      std::vector<ggVector2Size> vIndexStack(1, vIndexStart);
-
-      // the stack contains starting indices
-      while (!vIndexStack.empty()) {
-
-        // pop an index from the stack
-        ggVector2Size vIndex = vIndexStack.back();
-        vIndexStack.pop_back();
-
-        // find the leftmost pixel (begin of scan-line)
-        while ((vIndex.X() > 0) && (aImage(vIndex.X() - 1, vIndex.Y()) == vValue)) --vIndex.X();
-
-        // 8-neighborhood: check above-left and above (above-right will be checked during the x-scan)
-        bool vScanAbove = false;
-        bool vScanLineStartDetectedA = false;
-        ggVector2Size vIndexA(vIndex);
-        if (vIndexA.Y() + 1 < aImage.GetSizeY()) {
-          vScanAbove = true;
-          ++vIndexA.Y();
-          if (vIndexA.X() > 0) {
-            --vIndexA.X();
-            vAddIndexToStack(vIndexA, vValue, vIndexStack, vScanLineStartDetectedA);
-          }
-          vAddIndexToStack(vIndexA, vValue, vIndexStack, vScanLineStartDetectedA);
-        }
-
-        // 8-neighborhood: check below-left and below (below-right will be checked during the x-scan)
-        bool vScanBelow = false;
-        bool vScanLineStartDetectedB = false;
-        ggVector2Size vIndexB(vIndex);
-        if (vIndexB.Y() > 0) {
-          vScanBelow = true;
-          --vIndexB.Y();
-          if (vIndexB.X() > 0) {
-            --vIndexB.X();
-            vAddIndexToStack(vIndexB, vValue, vIndexStack, vScanLineStartDetectedB);
-          }
-          vAddIndexToStack(vIndexB, vValue, vIndexStack, vScanLineStartDetectedB);
-        }
-
-        // fill scan-line, check neighbors above and below
-        while ((vIndex.X() < aImage.GetSizeX()) && (aImage(vIndex) == vValue)) {
-          vMinMaxImage(vIndex) = vLabel;
-          vGetNeighborMinMax(vIndex.X(), vIndex.Y(), aValueNeighborMin, aValueNeighborMax);
-          if (vIndex.X() + 1 < aImage.GetSizeX()) {
-            if (vScanAbove) vAddIndexToStack(vIndexA, vValue, vIndexStack, vScanLineStartDetectedA);
-            if (vScanBelow) vAddIndexToStack(vIndexB, vValue, vIndexStack, vScanLineStartDetectedB);
-          }
-          ++vIndex.X();
-        }
-      }
+    ggInt32 vLabelToSet = vLabelIndexNoMinMax;
+    TValueType vValueNeighborMin = std::numeric_limits<TValueType>::max();
+    TValueType vValueNeighborMax = std::numeric_limits<TValueType>::lowest();
+    auto vSetLabel = [&vMinMaxImage, &vLabelToSet, &aImage, &vValueNeighborMin, &vValueNeighborMax] (const ggVector2Size& aIndex) {
+      vMinMaxImage(aIndex) = vLabelToSet;
+      GetNeighborMinMax(aImage, aIndex, vValueNeighborMin, vValueNeighborMax);
     };
 
-    auto vCalculateMinMax = [&aImage, &vMinMaxImage, &vLabelMap, &vLabelNoMinMax, &vLabelLocalMin, &vLabelLocalMax, &vGetNeighborMinMax, &vFloodFill] (ggSize aIndexX, ggSize aIndexY) {
+    auto vCalculateMinMax = [&aImage,
+                             &vMinMaxImage,
+                             &vLabelMap,
+                             &vLabelNoMinMax,
+                             &vLabelLocalMin,
+                             &vLabelLocalMax,
+                             &vValueForNeedingLabel,
+                             &vNeedsLabel,
+                             &vLabelToSet,
+                             &vHasLabel,
+                             &vSetLabel,
+                             &vValueNeighborMin,
+                             &vValueNeighborMax] (ggSize aIndexX, ggSize aIndexY) {
 
       ggInt32& vLabel = vMinMaxImage(aIndexX, aIndexY);
 
@@ -188,9 +165,9 @@ public:
 
         const TValueType& vValue = aImage(aIndexX, aIndexY);
 
-        TValueType vValueNeighborMin = std::numeric_limits<TValueType>::max();
-        TValueType vValueNeighborMax = std::numeric_limits<TValueType>::lowest();
-        vGetNeighborMinMax(aIndexX, aIndexY, vValueNeighborMin, vValueNeighborMax);
+        vValueNeighborMin = std::numeric_limits<TValueType>::max();
+        vValueNeighborMax = std::numeric_limits<TValueType>::lowest();
+        GetNeighborMinMax(aImage, ggVector2Size(aIndexX, aIndexY), vValueNeighborMin, vValueNeighborMax);
 
         GG_ASSERT(vValueNeighborMin <= vValueNeighborMax);
 
@@ -204,8 +181,11 @@ public:
           vLabel = vLabelIndexNoMinMax;
         }
         else {
-          vLabel = static_cast<ggInt32>(vLabelMap.size());
-          vFloodFill(aIndexX, aIndexY, vValueNeighborMin, vValueNeighborMax);
+          vValueForNeedingLabel = vValue;
+          vLabelToSet = static_cast<ggInt32>(vLabelMap.size());
+          FloodFill(ggVector2Size(0, 0), aImage.GetSize(),
+                    ggVector2Size(aIndexX, aIndexY),
+                    vNeedsLabel, vHasLabel, vSetLabel);
           if ((vValue <= vValueNeighborMin) && (vValue != vValueNeighborMax)) {
             vLabelMap.push_back(vLabelLocalMin--);
           }
@@ -450,6 +430,32 @@ private:
                              const ggVector2Int32& aDistanceDelta);
 
   static void CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2Int32>& aDistanceImage);
+
+  static void AddIndexToStack(std::function<bool (const ggVector2Size& aIndex)> aNeedsLabel,
+                              std::function<bool (const ggVector2Size& aIndex)> aHasLabel,
+                              const ggVector2Size& aIndex,
+                              std::vector<ggVector2Size>& aIndexStack,
+                              bool& aScanLineStartDetected);
+
+  template <typename TValueType>
+  static void GetNeighborMinMax(const ggImageT<TValueType>& aImage,
+                                const ggVector2Size& aIndex,
+                                TValueType& aValueNeighborMin,
+                                TValueType& aValueNeighborMax) {
+    ggSize vIndexMinX = std::max<ggSize>(aIndex.X() - 1, 0);
+    ggSize vIndexMaxX = std::min<ggSize>(aIndex.X() + 1, aImage.GetSizeX() - 1);
+    ggSize vIndexMinY = std::max<ggSize>(aIndex.Y() - 1, 0);
+    ggSize vIndexMaxY = std::min<ggSize>(aIndex.Y() + 1, aImage.GetSizeY() - 1);
+    for (ggSize vIndexY = vIndexMinY; vIndexY <= vIndexMaxY; vIndexY++) {
+      for (ggSize vIndexX = vIndexMinX; vIndexX <= vIndexMaxX; vIndexX++) {
+        if ((vIndexX != aIndex.X()) || (vIndexY != aIndex.Y())) {
+          const TValueType& vValueNeighbor = aImage(vIndexX, vIndexY);
+          if (vValueNeighbor > aValueNeighborMax) aValueNeighborMax = vValueNeighbor;
+          if (vValueNeighbor < aValueNeighborMin) aValueNeighborMin = vValueNeighbor;
+        }
+      }
+    }
+  }
 
 };
 

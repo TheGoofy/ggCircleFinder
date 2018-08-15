@@ -462,3 +462,106 @@ void ggImageLabeling::CalculateDistanceTransform8SEDPrivate(ggImageT<ggVector2In
     }
   }
 }
+
+
+// adds index to stack, if label not yet assigned
+void ggImageLabeling::AddIndexToStack(std::function<bool (const ggVector2Size& aIndex)> aNeedsLabel,
+                                      std::function<bool (const ggVector2Size& aIndex)> aHasLabel,
+                                      const ggVector2Size& aIndex,
+                                      std::vector<ggVector2Size>& aIndexStack,
+                                      bool& aScanLineStartDetected)
+{
+  if (!aHasLabel(aIndex) && aNeedsLabel(aIndex)) {
+    if (!aScanLineStartDetected) {
+      aScanLineStartDetected = true;
+      aIndexStack.push_back(aIndex);
+    }
+  }
+  else {
+    aScanLineStartDetected = false;
+  }
+}
+
+
+void ggImageLabeling::FloodFill(const ggVector2Size& aRegionIndexBegin,
+                                const ggVector2Size& aRegionIndexEnd,
+                                const ggVector2Size& aStartIndex,
+                                std::function<bool (const ggVector2Size& aIndex)> aNeedsLabel,
+                                std::function<bool (const ggVector2Size& aIndex)> aHasLabel,
+                                std::function<void (const ggVector2Size& aIndex)> aSetLabel)
+{
+  // check if start is within region
+  if ((aRegionIndexBegin.X() <= aStartIndex.X()) && (aStartIndex.X() < aRegionIndexEnd.X()) &&
+      (aRegionIndexBegin.Y() <= aStartIndex.Y()) && (aStartIndex.Y() < aRegionIndexEnd.Y())) {
+
+    // add the starting-index to the stack
+    std::vector<ggVector2Size> vIndexStack(1, aStartIndex);
+
+    // the stack contains starting indices
+    while (!vIndexStack.empty()) {
+
+      // pop an index from the stack
+      ggVector2Size vIndex = vIndexStack.back();
+      vIndexStack.pop_back();
+
+      // find the leftmost pixel (begin of scan-line)
+      --vIndex.X();
+      while ((vIndex.X() >= aRegionIndexBegin.X()) && aNeedsLabel(vIndex)) --vIndex.X();
+      ++vIndex.X();
+
+      // 8-neighborhood: check above-left and above (above-right will be checked during the x-scan)
+      bool vScanAbove = false;
+      bool vScanLineStartDetectedA = false;
+      ggVector2Size vIndexA(vIndex);
+      if (vIndexA.Y() + 1 < aRegionIndexEnd.Y()) {
+        vScanAbove = true;
+        ++vIndexA.Y();
+        if (vIndexA.X() > aRegionIndexBegin.X()) {
+          --vIndexA.X();
+          AddIndexToStack(aNeedsLabel, aHasLabel, vIndexA, vIndexStack, vScanLineStartDetectedA);
+          ++vIndexA.X();
+        }
+        AddIndexToStack(aNeedsLabel, aHasLabel, vIndexA, vIndexStack, vScanLineStartDetectedA);
+        ++vIndexA.X();
+      }
+
+      // 8-neighborhood: check below-left and below (below-right will be checked during the x-scan)
+      bool vScanBelow = false;
+      bool vScanLineStartDetectedB = false;
+      ggVector2Size vIndexB(vIndex);
+      if (vIndexB.Y() > aRegionIndexBegin.Y()) {
+        vScanBelow = true;
+        --vIndexB.Y();
+        if (vIndexB.X() > aRegionIndexBegin.X()) {
+          --vIndexB.X();
+          AddIndexToStack(aNeedsLabel, aHasLabel, vIndexB, vIndexStack, vScanLineStartDetectedB);
+          ++vIndexB.X();
+        }
+        AddIndexToStack(aNeedsLabel, aHasLabel, vIndexB, vIndexStack, vScanLineStartDetectedB);
+        ++vIndexB.X();
+      }
+
+      // process a scan-line (horizontally)
+      while ((vIndex.X() < aRegionIndexEnd.X()) && aNeedsLabel(vIndex)) {
+
+        // set the label
+        aSetLabel(vIndex);
+
+        // check neighbors above and below
+        if (vIndex.X() + 1 < aRegionIndexEnd.X()) {
+          if (vScanAbove) {
+            AddIndexToStack(aNeedsLabel, aHasLabel, vIndexA, vIndexStack, vScanLineStartDetectedA);
+            ++vIndexA.X();
+          }
+          if (vScanBelow) {
+            AddIndexToStack(aNeedsLabel, aHasLabel, vIndexB, vIndexStack, vScanLineStartDetectedB);
+            ++vIndexB.X();
+          }
+        }
+
+        // advance index to right
+        ++vIndex.X();
+      }
+    }
+  }
+}
