@@ -206,10 +206,10 @@ public:
         else {
           vLabel = static_cast<ggInt32>(vLabelMap.size());
           vFloodFill(aIndexX, aIndexY, vValueNeighborMin, vValueNeighborMax);
-          if (vValue <= vValueNeighborMin) {
+          if ((vValue <= vValueNeighborMin) && (vValue != vValueNeighborMax)) {
             vLabelMap.push_back(vLabelLocalMin--);
           }
-          else if (vValue >= vValueNeighborMax) {
+          else if ((vValue >= vValueNeighborMax) && (vValue != vValueNeighborMin)) {
             vLabelMap.push_back(vLabelLocalMax++);
           }
           else {
