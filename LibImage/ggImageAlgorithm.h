@@ -8,6 +8,7 @@
 #include "LibBase/ggAveragesT.h"
 #include "LibImage/ggImageFilter.h"
 #include "LibImage/ggImagePainterT.h"
+#include "LibImage/ggImageLabeling.h"
 
 
 namespace ggImageAlgorithm {
@@ -304,6 +305,77 @@ namespace ggImageAlgorithm {
     return vLocalMaxima;
   }
 
+
+  template <typename TValueType,
+            typename TSpotType = ggSpotT<TValueType, ggVector2Double> >
+  std::vector<TSpotType> FindLocalMaxima2(const ggImageT<TValueType>& aImage,
+                                          bool aInterpolatePosition = true)
+  {
+    // calculate (regions) of local extrema
+    ggImageT<ggInt32> vMinMaxImage(ggImageLabeling::CalculateLocalMinMax(aImage));
+
+    // do distance transformation for local maxima regions (consisting of multiple pixel with equal value)
+    std::function<bool (const ggInt32& aValue)> vIsLocalMaxRegion = [] (const ggInt32& aMinMaxLabel) -> bool { return aMinMaxLabel > 1; };
+    ggImageT<ggFloat> vDistanceImage(ggImageLabeling::CalculateDistanceTransform8SED(vMinMaxImage, vIsLocalMaxRegion, true, false));
+
+    // helper struct for finding the center pixel of maxima regions
+    struct cRegionMaximum {
+      cRegionMaximum() : mIndex(0, 0), mDistance(0.0f) {}
+      ggVector2Size mIndex;
+      ggFloat mDistance;
+    };
+
+    // containers for results
+    std::vector<TSpotType> vLocalMaxima;
+    std::vector<cRegionMaximum> vLocalMaximaRegions;
+    typedef typename TSpotType::tVectorType tSpotVector;
+
+    // lamda function for picking local maxima from labeled min/max image
+    auto vPickLocalMaximaAndRegionCenters = [&aImage, &vMinMaxImage, &vDistanceImage, &vLocalMaxima, &vLocalMaximaRegions] (ggSize aIndexX, ggSize aIndexY) {
+      const ggInt32& vMinMaxLabel = vMinMaxImage(aIndexX, aIndexY);
+      if (vMinMaxLabel == 1) {
+        // this is a single pixel local maximum
+        vLocalMaxima.push_back(TSpotType(tSpotVector(aIndexX, aIndexY), aImage(aIndexX, aIndexY)));
+      }
+      if (vMinMaxLabel > 1) {
+        // this is a local maximum region
+        const ggFloat& vDistance = vDistanceImage(aIndexX, aIndexY);
+        if (vMinMaxLabel >= vLocalMaximaRegions.size()) vLocalMaximaRegions.resize(vMinMaxLabel + 1);
+        cRegionMaximum& vRegionMaximum = vLocalMaximaRegions[vMinMaxLabel];
+        if (vRegionMaximum.mDistance < vDistance) {
+          vRegionMaximum.mDistance = vDistance;
+          vRegionMaximum.mIndex.Set(aIndexX, aIndexY);
+        }
+      }
+    };
+
+    // iterate the above lamda function over all image
+    vMinMaxImage.ProcessIndex(vPickLocalMaximaAndRegionCenters);
+
+    // append the center pixel of the local maxima regions to the local maxima spots
+    for (ggUSize vMinMaxLabel = 2; vMinMaxLabel < vLocalMaximaRegions.size(); vMinMaxLabel++) {
+      const cRegionMaximum& vRegionMaximum = vLocalMaximaRegions[vMinMaxLabel];
+      const ggVector2Size& vIndex = vRegionMaximum.mIndex;
+      tSpotVector vSpotVector(vIndex.X(), vIndex.Y());
+      vLocalMaxima.push_back(TSpotType(vSpotVector, aImage(vIndex)));
+    }
+
+    // interpolate
+    if (aInterpolatePosition) {
+      for (ggUSize vLocalMaxIndex = 0; vLocalMaxIndex < vLocalMaxima.size(); vLocalMaxIndex++) {
+        TSpotType& vSpot = vLocalMaxima[vLocalMaxIndex];
+        ggVector2Size vIndex(vSpot.template GetConverted<ggSize>());
+        CalculateParabolaVertex(aImage, vIndex.X(), vIndex.Y(), vSpot[0], vSpot[1], *vSpot);
+      }
+    }
+
+    // sort the spots from highest to lowest
+    std::sort(vLocalMaxima.begin(), vLocalMaxima.end(), [] (const TSpotType& aSpotA, const TSpotType& aSpotB) {
+      return aSpotA.GetValue() > aSpotB.GetValue();
+    });
+
+    return vLocalMaxima;
+  }
 
 }
 

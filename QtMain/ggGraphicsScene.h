@@ -259,7 +259,7 @@ public:
     // detect center spots by finding all local maxima
     typedef ggSpotT<ggFloat, ggVector2Double> tSpot;
     typedef std::vector<tSpot> tSpots;
-    tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima(vImageHough, true);
+    tSpots vCenterSpots = ggImageAlgorithm::FindLocalMaxima2(vImageHough, true);
 
     // interpolate the brightest spot centers by calculating the center of gravity
     ggUSize vNumberOfInterestingSpots = std::min<ggSize>(vCenterSpots.size(), aCircleModelNumberOfCircles);
