@@ -214,7 +214,7 @@ public:
 
   inline ggUSize MaxDimension() const {
     ggUSize vMaxDimension = 0;
-    const TValueType& vMaxValue = mValues[0];
+    TValueType vMaxValue = mValues[0];
     for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
       if (vMaxValue < mValues[vDimension]) {
         vMaxDimension = vDimension;
@@ -226,7 +226,7 @@ public:
 
   inline ggUSize MinDimension() const {
     ggUSize vMinDimension = 0;
-    const TValueType& vMinValue = mValues[0];
+    TValueType vMinValue = mValues[0];
     for (ggUSize vDimension = 1; vDimension < GetDimensions(); vDimension++) {
       if (vMinValue > mValues[vDimension]) {
         vMinDimension = vDimension;
