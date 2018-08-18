@@ -122,12 +122,12 @@ template void ggImageFilter::Gauss<ggInt8, ggFloat>(ggImageT<ggInt8>& aImage, co
 template void ggImageFilter::Gauss<ggInt16, ggFloat>(ggImageT<ggInt16>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggInt32, ggFloat>(ggImageT<ggInt32>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggInt64, ggFloat>(ggImageT<ggInt64>& aImage, const ggFloat& aSigma);
-template void ggImageFilter::Gauss<ggSize, ggFloat>(ggImageT<ggSize>& aImage, const ggFloat& aSigma);
+// template void ggImageFilter::Gauss<ggSize, ggFloat>(ggImageT<ggSize>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggUInt8, ggFloat>(ggImageT<ggUInt8>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggUInt16, ggFloat>(ggImageT<ggUInt16>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggUInt32, ggFloat>(ggImageT<ggUInt32>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggUInt64, ggFloat>(ggImageT<ggUInt64>& aImage, const ggFloat& aSigma);
-template void ggImageFilter::Gauss<ggUSize, ggFloat>(ggImageT<ggUSize>& aImage, const ggFloat& aSigma);
+// template void ggImageFilter::Gauss<ggUSize, ggFloat>(ggImageT<ggUSize>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggFloat, ggFloat>(ggImageT<ggFloat>& aImage, const ggFloat& aSigma);
 template void ggImageFilter::Gauss<ggFloat, ggDouble>(ggImageT<ggFloat>& aImage, const ggDouble& aSigma);
 template void ggImageFilter::Gauss<ggDouble, ggDouble>(ggImageT<ggDouble>& aImage, const ggDouble& aSigma);

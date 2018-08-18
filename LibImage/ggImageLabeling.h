@@ -95,7 +95,7 @@ public:
   {
     const TValueType& vValueReference = aImage(aStartIndex);
 
-    auto vValueNeedsFilled = [] (const TValueType& aValue) -> bool {
+    auto vValueNeedsFilled = [&vValueReference] (const TValueType& aValue) -> bool {
       return aValue == vValueReference;
     };
 
