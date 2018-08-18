@@ -374,7 +374,7 @@ private:
     AddCrossHair(aCenter, 10.0, 4.0, 0.0, QPen(aPen.color(), 0.0));
 
     QString vTextString("(" + QString::number(aCenter.x(),'f',1) + "/" + QString::number(aCenter.y(),'f',1) + ")\n"
-                        "Hough: " + QString::number(aValue,'f',1));
+                        "Score: " + QString::number(aValue,'f',1));
 
     QGraphicsTextItem* vTextItem = new QGraphicsTextItem(vTextString);
     QFont vFont = vTextItem->font();
