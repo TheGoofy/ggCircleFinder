@@ -112,4 +112,4 @@ static void ggHistogramFixedTest()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggHistogramFixedTest);
+GG_TEST_REGISTER(ggHistogramFixedTest);

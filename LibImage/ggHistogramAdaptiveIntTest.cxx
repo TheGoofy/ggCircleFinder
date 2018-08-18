@@ -70,4 +70,4 @@ static void ggHistogramAdaptiveIntTest()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggHistogramAdaptiveIntTest);
+GG_TEST_REGISTER(ggHistogramAdaptiveIntTest);

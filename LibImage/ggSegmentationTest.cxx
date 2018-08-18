@@ -38,4 +38,4 @@ static void ggSegmentationTest()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggSegmentationTest);
+GG_TEST_REGISTER(ggSegmentationTest);

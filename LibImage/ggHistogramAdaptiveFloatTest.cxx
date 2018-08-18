@@ -95,4 +95,4 @@ static void ggHistogramAdaptiveFloatTest()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggHistogramAdaptiveFloatTest);
+GG_TEST_REGISTER(ggHistogramAdaptiveFloatTest);

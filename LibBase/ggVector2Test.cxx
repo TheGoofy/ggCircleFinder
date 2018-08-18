@@ -11,4 +11,4 @@ static void ggVector2Test()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggVector2Test);
+GG_TEST_REGISTER(ggVector2Test);

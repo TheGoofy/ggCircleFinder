@@ -42,4 +42,4 @@ static void ggRoundTest()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggRoundTest);
+GG_TEST_REGISTER(ggRoundTest);

@@ -29,4 +29,4 @@ static void ggWalkerTest()
 }
 
 
-static bool ggRegistered = ggUnitTest::Register(ggWalkerTest);
+GG_TEST_REGISTER(ggWalkerTest);

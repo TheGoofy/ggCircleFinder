@@ -30,9 +30,15 @@
     std::cout << GG_FILE_LINE << " expressions not equal: " << #aExpr1 << " ==> " << aExpr1 << " is different from " << #aExpr2 << " ==> " << aExpr2 << std::endl; \
   } }
 
+#define GG_TEST_REGISTER(aUnitTest) \
+  static bool ggRegistered_##aUnitTest = ggUnitTest::Register(aUnitTest, #aUnitTest, GG_FILE_LINE);
+
 namespace ggUnitTest
 {
-  bool Register(std::function<void()> aUnitTest);
+  bool Register(std::function<void()> aTest,
+                const char* aTestName,
+                const char* aFileLine);
+
   void CountFunction();
   void CountFunctionFail();
   void ExecuteAll();
