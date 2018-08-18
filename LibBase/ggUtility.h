@@ -108,7 +108,7 @@ namespace ggUtility {
   template <> inline std::string ToString(const ggVector2UInt16& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector2UInt32& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector2UInt64& aValue) { return VectorToString(aValue); }
-  template <> inline std::string ToString(const ggVector2Size& aValue) { return VectorToString(aValue); }
+  // template <> inline std::string ToString(const ggVector2Size& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector2Float& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector2Double& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector2Float& aValue, int aPrecision) { return VectorToString(aValue, aPrecision); }
@@ -123,7 +123,7 @@ namespace ggUtility {
   template <> inline std::string ToString(const ggVector3UInt16& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector3UInt32& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector3UInt64& aValue) { return VectorToString(aValue); }
-  template <> inline std::string ToString(const ggVector3Size& aValue) { return VectorToString(aValue); }
+  // template <> inline std::string ToString(const ggVector3Size& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector3Float& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector3Double& aValue) { return VectorToString(aValue); }
   template <> inline std::string ToString(const ggVector3Float& aValue, int aPrecision) { return VectorToString(aValue, aPrecision); }

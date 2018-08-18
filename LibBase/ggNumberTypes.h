@@ -36,13 +36,13 @@ template <> inline ggNumberType ggGetNumberType<ggInt8>() { return ggNumberType:
 template <> inline ggNumberType ggGetNumberType<ggInt16>() { return ggNumberType::eInt16; }
 template <> inline ggNumberType ggGetNumberType<ggInt32>() { return ggNumberType::eInt32; }
 template <> inline ggNumberType ggGetNumberType<ggInt64>() { return ggNumberType::eInt64; }
-template <> inline ggNumberType ggGetNumberType<ggSize>() { return ggNumberType::eSize; }
+// template <> inline ggNumberType ggGetNumberType<ggSize>() { return ggNumberType::eSize; }
 // redefinition of ggUInt8 ... template <> inline ggNumberType ggGetNumberType<ggUChar>() { return ggNumberType::eUChar; }
 template <> inline ggNumberType ggGetNumberType<ggUInt8>() { return ggNumberType::eUInt8; }
 template <> inline ggNumberType ggGetNumberType<ggUInt16>() { return ggNumberType::eUInt16; }
 template <> inline ggNumberType ggGetNumberType<ggUInt32>() { return ggNumberType::eUInt32; }
 template <> inline ggNumberType ggGetNumberType<ggUInt64>() { return ggNumberType::eUInt64; }
-template <> inline ggNumberType ggGetNumberType<ggUSize>() { return ggNumberType::eUSize; }
+// template <> inline ggNumberType ggGetNumberType<ggUSize>() { return ggNumberType::eUSize; }
 template <> inline ggNumberType ggGetNumberType<ggFloat>() { return ggNumberType::eFloat; }
 template <> inline ggNumberType ggGetNumberType<ggDouble>() { return ggNumberType::eDouble; }
 
