@@ -74,6 +74,28 @@ static void ggFilterMedianTestVector2Float()
   vFilter.Filter(ggVector2Float(2,2));
   GG_TEST_EQUAL(vFilter.GetIn(), ggVector2Float(2,2));
   GG_TEST_EQUAL(vFilter.GetOut(), ggVector2Float(4,3));
+
+  vFilter.Reset();
+
+  vFilter.Filter(ggVector2Float(3,-1));
+  GG_TEST_EQUAL(vFilter.GetIn(), ggVector2Float(3,-1));
+  GG_TEST_EQUAL(vFilter.GetOut(), ggVector2Float(3,-1));
+
+  vFilter.Filter(ggVector2Float(-4,0));
+  GG_TEST_EQUAL(vFilter.GetIn(), ggVector2Float(-4,0));
+  GG_TEST_EQUAL(vFilter.GetOut(), ggVector2Float(-4,0));
+
+  vFilter.Filter(ggVector2Float(5,1));
+  GG_TEST_EQUAL(vFilter.GetIn(), ggVector2Float(5,1));
+  GG_TEST_EQUAL(vFilter.GetOut(), ggVector2Float(-4,0));
+
+  vFilter.Filter(ggVector2Float(4,2));
+  GG_TEST_EQUAL(vFilter.GetIn(), ggVector2Float(4,2));
+  GG_TEST_EQUAL(vFilter.GetOut(), ggVector2Float(4,2));
+
+  vFilter.Filter(ggVector2Float(6,2));
+  GG_TEST_EQUAL(vFilter.GetIn(), ggVector2Float(6,2));
+  GG_TEST_EQUAL(vFilter.GetOut(), ggVector2Float(5,1));
 }
 
 

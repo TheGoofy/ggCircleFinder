@@ -38,7 +38,10 @@ public:
 
     // copy buffer, partially sort and get median
     std::vector<TValueType> vValuesSorted(mValues);
-    std::nth_element(vValuesSorted.begin(), vValuesSorted.begin() + vValuesSorted.size() / 2, vValuesSorted.end(), mLess);
+    std::nth_element(vValuesSorted.begin(),
+                     vValuesSorted.begin() + vValuesSorted.size() / 2,
+                     vValuesSorted.end(),
+                     mLess);
     mOutputValue = vValuesSorted[vValuesSorted.size() / 2];
 
     // return the median
