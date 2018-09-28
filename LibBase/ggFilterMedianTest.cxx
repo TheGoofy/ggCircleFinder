@@ -19,7 +19,7 @@ static void ggFilterMedianTestInt32()
     GG_TEST_EQUAL(vFilter.GetIn(), 6);
     GG_TEST_EQUAL(vFilter.GetOut(), 6);
 
-    GG_TEST_EQUAL(vFilter.Filter(3), 3);
+    GG_TEST_EQUAL(vFilter.Filter(3), 6);
     GG_TEST_EQUAL(vFilter.GetIn(), 3);
     GG_TEST_EQUAL(vFilter.GetOut(), 6);
 
@@ -27,15 +27,15 @@ static void ggFilterMedianTestInt32()
     GG_TEST_EQUAL(vFilter.GetIn(), 5);
     GG_TEST_EQUAL(vFilter.GetOut(), 5);
 
-    GG_TEST_EQUAL(vFilter.Filter(2), 2);
+    GG_TEST_EQUAL(vFilter.Filter(2), 5);
     GG_TEST_EQUAL(vFilter.GetIn(), 2);
     GG_TEST_EQUAL(vFilter.GetOut(), 5);
 
-    GG_TEST_EQUAL(vFilter.Filter(7), 7);
+    GG_TEST_EQUAL(vFilter.Filter(7), 5);
     GG_TEST_EQUAL(vFilter.GetIn(), 7);
     GG_TEST_EQUAL(vFilter.GetOut(), 5);
 
-    GG_TEST_EQUAL(vFilter.Filter(50), 50);
+    GG_TEST_EQUAL(vFilter.Filter(50), 5);
     GG_TEST_EQUAL(vFilter.GetIn(), 50);
     GG_TEST_EQUAL(vFilter.GetOut(), 5);
 
