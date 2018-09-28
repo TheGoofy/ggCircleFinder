@@ -5,6 +5,9 @@
 #include "LibBase/ggAssert.h"
 #include "LibBase/ggFilterT.h"
 
+/**
+ * Filters a specific number of samples (aLength), and returns the median value.
+ */
 template <class TValueType, class TLess = std::less<TValueType>>
 class ggFilterMedianT : public ggFilterT<TValueType> {
 

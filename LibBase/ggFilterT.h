@@ -3,6 +3,21 @@
 
 #include "LibBase/ggNumberTypes.h"
 
+/**
+ * Filter interface (blackbox).
+ *
+ * An input value is added by calling "Filter(...)".
+ * Current input- or output-values are returned by "GetIn()" or "GetOut()".
+ * Internal filter state is reset to initial state by calling "Reset()".
+ *
+ * Initially (or after "Reset()") the values of Input or Output are most likely undefined.
+ *
+ *        +---------------+
+ *        |               |
+ *  >>>>> | IN        OUT | >>>>>
+ *        |               |
+ *        +---------------+
+ */
 template <class TValueType>
 class ggFilterT {
 

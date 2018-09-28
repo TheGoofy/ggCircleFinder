@@ -8,7 +8,8 @@
 
 static void ggFilterCenterTestInt32()
 {
-  // for scalar value types, the filter should behave like the median
+  // for scalar value types, the filter behaves (almost) like the median.
+  // (for an even number of samples it returns sometimes the upper and spmetimes the lower median)
 
   ggFilterCenterT<ggInt32> vFilterCenter(5);
   ggFilterT<ggInt32>& vFilter = vFilterCenter;

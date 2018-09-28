@@ -18,6 +18,13 @@ struct ggFilterCenterDistanceT {
 
 /**
  * Finds the sample where the total distance to all other samples is minimal.
+ *
+ * For scalar value types like int or float, the filter behaves (almost) like the median (for
+ * an even number of samples it returns sometimes the upper and spmetimes the lower median).
+ *
+ * Other value types may require an extra implementat for the distance calculation. Usually the
+ * euclidean distance is used for vector types.
+ *
  * Note that the calculation effort is O(n^2)
  */
 template <class TValueType,
