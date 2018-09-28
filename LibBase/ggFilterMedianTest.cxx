@@ -11,7 +11,7 @@ static void ggFilterMedianTestInt32()
   ggFilterMedianT<ggInt32> vFilterMedian(5);
   ggFilterT<ggInt32>& vFilter = vFilterMedian;
 
-  for (ggInt32 vCount = 0; vCount < 2; vCount++) {
+  for (ggInt32 vCount = 0; vCount < 1; vCount++) {
 
     vFilter.Reset();
 
