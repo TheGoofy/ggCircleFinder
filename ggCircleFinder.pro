@@ -65,7 +65,8 @@ SOURCES += \
     LibImage/ggHistogram.cxx \
     LibImage/ggImageLabeling.cxx \
     LibBase/ggVectorTest.cxx \
-    LibBase/ggVector2Test.cxx
+    LibBase/ggVector2Test.cxx \
+    LibBase/ggFilterMedianTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -135,7 +136,9 @@ HEADERS += \
     LibImage/ggSegmentation.h \
     LibBase/ggAveragesT.h \
     QtGraphics/ggGraphicsHistogramRectItem.h \
-    LibImage/ggImageTest.h
+    LibImage/ggImageTest.h \
+    LibBase/ggFilterMedianT.h \
+    LibBase/ggFilterMeanT.h
 
 FORMS += \
     QtMain/MainWindow.ui \
