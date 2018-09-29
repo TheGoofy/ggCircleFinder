@@ -67,7 +67,8 @@ SOURCES += \
     LibBase/ggVectorTest.cxx \
     LibBase/ggVector2Test.cxx \
     LibBase/ggFilterMedianTest.cxx \
-    LibBase/ggFilterCenterTest.cxx
+    LibBase/ggFilterCenterTest.cxx \
+    LibBase/ggFilterTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
