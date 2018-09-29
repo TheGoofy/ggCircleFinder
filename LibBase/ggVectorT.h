@@ -239,11 +239,38 @@ public:
   template <typename TStringConverter>
   inline typename TStringConverter::tValueType ToString(int aPrecision = 3) const {
     typename TStringConverter::tValueType vString("(");
-    for (ggSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
       vString += TStringConverter::ToString(mValues[vDimension], aPrecision) +
                  typename TStringConverter::tValueType((vDimension + 1 < GetDimensions()) ? "," : ")");
     }
     return vString;
+  }
+
+  template <typename TValueProcessor>
+  inline void ProcessValues(TValueProcessor aValueProcessor) {
+    TValueType* vValuesIterator = mValues;
+    TValueType* vValuesEnd = mValues + GetDimensions();
+    while (vValuesIterator != vValuesEnd) {
+      aValueProcessor(*vValuesIterator);
+      ++vValuesIterator;
+    }
+  }
+
+  template <typename TValueProcessor>
+  inline void ProcessValues(TValueProcessor aValueProcessor) const {
+    const TValueType* vValuesIterator = mValues;
+    const TValueType* vValuesEnd = mValues + GetDimensions();
+    while (vValuesIterator != vValuesEnd) {
+      aValueProcessor(*vValuesIterator);
+      ++vValuesIterator;
+    }
+  }
+
+  template <typename TDimensionProcessor>
+  inline void ProcessDimensions(TDimensionProcessor aDimensionProcessor) const {
+    for (ggUSize vDimension = 0; vDimension < GetDimensions(); vDimension++) {
+      aDimensionProcessor(vDimension);
+    }
   }
 
 private:

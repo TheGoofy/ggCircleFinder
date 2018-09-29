@@ -29,6 +29,27 @@ static void ggVectorTest()
   GG_TEST_EQUAL(vVector2Int32[0], -9);
   GG_TEST_EQUAL(vVector2Int32[1], -12);
   GG_TEST_EQUAL(vVector2Int32.Length(), 15);
+
+  ggVectorT<ggInt32, 5> vVector5Int32;
+  vVector5Int32.ProcessValues([] (ggInt32& aValue) {
+    static ggInt32 vValue = 10;
+    aValue = vValue++;
+  });
+  GG_TEST_EQUAL(vVector5Int32[0], 10);
+  GG_TEST_EQUAL(vVector5Int32[1], 11);
+  GG_TEST_EQUAL(vVector5Int32[2], 12);
+  GG_TEST_EQUAL(vVector5Int32[3], 13);
+  GG_TEST_EQUAL(vVector5Int32[4], 14);
+
+  vVector5Int32.ProcessDimensions([&vVector5Int32] (ggUSize aDimension) {
+    ggUSize vDimension = vVector5Int32.GetDimensions() - aDimension - 1;
+    vVector5Int32[vDimension] += 2 * aDimension;
+  });
+  GG_TEST_EQUAL(vVector5Int32[0], 18);
+  GG_TEST_EQUAL(vVector5Int32[1], 17);
+  GG_TEST_EQUAL(vVector5Int32[2], 16);
+  GG_TEST_EQUAL(vVector5Int32[3], 15);
+  GG_TEST_EQUAL(vVector5Int32[4], 14);
 }
 
 
