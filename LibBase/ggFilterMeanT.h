@@ -24,16 +24,16 @@ public:
   virtual const TValueType& Filter(const TValueType& aInputValue) override {
 
     // store input values in ring-buffer
+    mIndex = (mIndex + 1) % mLength;
     mValues.resize(std::max(mValues.size(), mIndex + 1));
     mValues[mIndex] = aInputValue;
-    mIndex = (mIndex + 1) % mLength;
 
     // calculate mean value
-    ggDouble vSum = 0;
-    std::for_each(mValues.begin(), mValues.end(), [&vSum] (const TValueType& aValue) {
+    TValueType vSum = mValues.front();
+    std::for_each(mValues.begin() + 1, mValues.end(), [&vSum] (const TValueType& aValue) {
       vSum += aValue;
     });
-    mOutputValue = vSum / mValues.size();
+    mOutputValue = vSum / static_cast<ggSize>(mValues.size());
 
     // return the median
     return mOutputValue;
