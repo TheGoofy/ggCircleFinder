@@ -27,7 +27,7 @@
   if (!((aExpr1) == (aExpr2))) { \
     aSucceeded = false; \
     ggUnitTest::CountFunctionFail(); \
-    std::cout << GG_FILE_LINE << " expressions not equal: " << #aExpr1 << " is different from " << #aExpr2 << std::endl; \
+    std::cout << GG_FILE_LINE << " test equal failed: " << #aExpr1 << " == " << #aExpr2 << std::endl; \
   } }
 
 #define GG_TEST_REGISTER(aUnitTest) \
