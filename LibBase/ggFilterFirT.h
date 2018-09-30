@@ -22,9 +22,9 @@ public:
 
   // creates a FIR filter with specified order
   ggFilterFirT(ggUSize aOrder)
-  : mOrder(aOrder),
-    mInputIndex(static_cast<ggUSize>(-1)),
+  : mInputIndex(static_cast<ggUSize>(-1)),
     mInputValues(),
+    mOrder(aOrder),
     mCalculateOutput(true),
     mOutputValue() {
     mInputValues.reserve(mOrder);
@@ -37,6 +37,11 @@ public:
     mInputValues.reserve(mOrder);
     mCalculateOutput = true;
     mOutputValue = TValueType();
+  }
+
+  // returns the filter order
+  ggUSize GetOrder() const {
+    return mOrder;
   }
 
   // inputs a new value
@@ -79,9 +84,6 @@ protected:
   // (re)calculates output. only called, when output required after input was changed
   virtual void Calculate(TValueType& aOutputValue) = 0;
 
-  // filter order (maximum number of input values)
-  const ggUSize mOrder;
-
   // index of most recent input value
   ggUSize mInputIndex;
 
@@ -89,6 +91,9 @@ protected:
   std::vector<TValueType> mInputValues;
 
 private:
+
+  // filter order (maximum number of input values)
+  const ggUSize mOrder;
 
   // flags the need for (re)calculation
   mutable bool mCalculateOutput;
