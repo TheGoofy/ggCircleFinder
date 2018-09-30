@@ -142,7 +142,8 @@ HEADERS += \
     LibImage/ggImageTest.h \
     LibBase/ggFilterMedianT.h \
     LibBase/ggFilterMeanT.h \
-    LibBase/ggFilterCenterT.h
+    LibBase/ggFilterCenterT.h \
+    LibBase/ggFilterFirT.h
 
 FORMS += \
     QtMain/MainWindow.ui \

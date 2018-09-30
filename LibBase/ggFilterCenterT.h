@@ -1,16 +1,14 @@
 #ifndef GGFILTERCENTERT_H
 #define GGFILTERCENTERT_H
 
-#include <vector>
-#include "LibBase/ggAssert.h"
-#include "LibBase/ggFilterT.h"
+#include "LibBase/ggFilterFirT.h"
 
 /**
- * Default distance calculator
+ * Default distance calculator for common scalar types (calculates absolute difference)
  */
 template <class TValueType,
           class TScalar = TValueType>
-struct ggFilterCenterDistanceT {
+struct ggFilterCenterDistanceFuncT {
   TScalar operator () (const TValueType& aValueA, const TValueType& aValueB) const {
     return aValueA < aValueB ? aValueB - aValueA : aValueA - aValueB;
   }
@@ -25,50 +23,49 @@ struct ggFilterCenterDistanceT {
  * Other value types may require an extra implementat for the distance calculation. Usually the
  * euclidean distance is used for vector types.
  *
- * Note that the calculation effort is O(n^2)
+ * Note that the calculation effort is O(n^2).
  */
 template <class TValueType,
           class TScalar = TValueType,
-          class TDistance = ggFilterCenterDistanceT<TValueType>>
-class ggFilterCenterT : public ggFilterT<TValueType> {
+          class TDistanceFunc = ggFilterCenterDistanceFuncT<TValueType>>
+
+class ggFilterCenterT : public ggFilterFirT<TValueType> {
 
 public:
 
-  ggFilterCenterT(ggUSize aLength)
-  : mLength(aLength),
-    mIndex(static_cast<ggUSize>(-1)),
-    mValues(),
-    mDistance(mDistanceDefault) {
+  // base filter type (shortcut)
+  typedef ggFilterFirT<TValueType> tFilterFir;
+
+  // construct filter with specific order and default distance calculation (difference)
+  ggFilterCenterT(ggUSize aOrder)
+  : tFilterFir(aOrder),
+    mDistanceFunc(mDistanceFuncDefault) {
   }
 
-  ggFilterCenterT(ggUSize aLength, const TDistance& aDistance)
-  : mLength(aLength),
-    mIndex(static_cast<ggUSize>(-1)),
-    mValues(),
-    mDistance(aDistance) {
+  // construct filter with specific order and custom distance calculation
+  ggFilterCenterT(ggUSize aOrder, const TDistanceFunc& aDistanceFunc)
+  : tFilterFir(aOrder),
+    mDistanceFunc(aDistanceFunc) {
   }
 
-  virtual void Reset() override {
-    mValues.clear();
-    mIndex = static_cast<ggUSize>(-1);
-  }
+protected:
 
-  virtual const TValueType& Filter(const TValueType& aInputValue) override {
+  // finds input-value with smallest sum of distances to all its neighbors
+  virtual void Calculate(TValueType& aOutputValue) override {
 
-    // store input values in ring-buffer
-    mIndex = (mIndex + 1) % mLength;
-    mValues.resize(std::max(mValues.size(), mIndex + 1));
-    mValues[mIndex] = aInputValue;
+    // early return, if there are no input values
+    if (tFilterFir::mInputValues.empty()) return;
 
     // find smallest of all sums of distances
     ggUSize vIndexMin = 0;
     TScalar vDistanceTotalMin = 0;
-    for (ggUSize vIndexA = 0; vIndexA < mValues.size(); vIndexA++) {
+    for (ggUSize vIndexA = 0; vIndexA < tFilterFir::mInputValues.size(); vIndexA++) {
 
       // calculate sum of all distances
       TScalar vDistanceTotal = 0;
-      for (ggUSize vIndexB = 0; vIndexB < mValues.size(); vIndexB++) {
-        vDistanceTotal += mDistance(mValues[vIndexA], mValues[vIndexB]);
+      for (ggUSize vIndexB = 0; vIndexB < tFilterFir::mInputValues.size(); vIndexB++) {
+        vDistanceTotal += mDistanceFunc(tFilterFir::mInputValues[vIndexA],
+                                        tFilterFir::mInputValues[vIndexB]);
       }
 
       // use the first iteration for initialisation, later iterations will test if "less"
@@ -78,36 +75,22 @@ public:
       }
     }
 
-    // store center element as output
-    mOutputValue = mValues[vIndexMin];
-
-    // return the center
-    return mOutputValue;
-  }
-
-  virtual const TValueType& GetIn() const override {
-    GG_ASSERT(mValues.size() > 0);
-    return mValues[mIndex];
-  }
-
-  virtual const TValueType& GetOut() const override {
-    GG_ASSERT(mValues.size() > 0);
-    return mOutputValue;
+    // assign center element as output
+    aOutputValue = tFilterFir::mInputValues[vIndexMin];
   }
 
 private:
 
-  ggUSize mLength;
-  ggUSize mIndex;
-  std::vector<TValueType> mValues;
-  const TDistance& mDistance;
-  static TDistance mDistanceDefault;
+  // distance function
+  const TDistanceFunc& mDistanceFunc;
 
-  TValueType mOutputValue;
+  // default distance function (static)
+  static TDistanceFunc mDistanceFuncDefault;
 
 };
 
-template <class TValueType, class TScalar, class TDistance>
-TDistance ggFilterCenterT<TValueType, TScalar, TDistance>::mDistanceDefault;
+// instance of static member (default distance function)
+template <class TValueType, class TScalar, class TDistanceFunc>
+TDistanceFunc ggFilterCenterT<TValueType, TScalar, TDistanceFunc>::mDistanceFuncDefault;
 
 #endif // GGFILTERCENTERT_H

@@ -1,83 +1,71 @@
 #ifndef GGFILTERMEDIANT_H
 #define GGFILTERMEDIANT_H
 
-#include <vector>
-#include "LibBase/ggAssert.h"
-#include "LibBase/ggFilterT.h"
+#include "LibBase/ggFilterFirT.h"
 
 /**
- * Filters a specific number of samples (aLength), and returns the median value.
+ * Filters a specific number of samples (aOrder), and returns the median value.
+ *
+ * Requires that TValueType has implemented the "<" operator. Alternatively a custom
+ * "less" comparator function can be provided.
+ *
+ * Calculation effort is O(n).
  */
-template <class TValueType, class TLess = std::less<TValueType>>
-class ggFilterMedianT : public ggFilterT<TValueType> {
+template <class TValueType,
+          class TLessFunc = std::less<TValueType>>
+
+class ggFilterMedianT : public ggFilterFirT<TValueType> {
 
 public:
 
-  ggFilterMedianT(ggUSize aLength)
-  : mLength(aLength),
-    mIndex(static_cast<ggUSize>(-1)),
-    mValues(),
-    mLess(mLessDefault) {
+  // base filter type (shortcut)
+  typedef ggFilterFirT<TValueType> tFilterFir;
+
+  // construct filter with default "less" function (TValueType needs to have "<" operator implemented)
+  ggFilterMedianT(ggUSize aOrder)
+  : tFilterFir(aOrder),
+    mLessFunc(mLessFuncDefault) {
   }
 
-  ggFilterMedianT(ggUSize aLength, const TLess& aLess)
-  : mLength(aLength),
-    mIndex(static_cast<ggUSize>(-1)),
-    mValues(),
-    mLess(aLess) {
+  // construct filter with custom "less" function
+  ggFilterMedianT(ggUSize aOrder, const TLessFunc& aLessFunc)
+  : tFilterFir(aOrder),
+    mLessFunc(aLessFunc) {
   }
 
-  virtual void Reset() override {
-    mValues.clear();
-    mIndex = static_cast<ggUSize>(-1);
-  }
+protected:
 
-  virtual const TValueType& Filter(const TValueType& aInputValue) override {
+  // copies all input values, partially sorts, and picks middle element
+  virtual void Calculate(TValueType& aOutputValue) override {
 
-    // store input values in ring-buffer
-    mIndex = (mIndex + 1) % mLength;
-    mValues.resize(std::max(mValues.size(), mIndex + 1));
-    mValues[mIndex] = aInputValue;
+    // early return, if there are no input values
+    if (tFilterFir::mInputValues.empty()) return;
 
-    // copy buffer, partially sort and get median
-    std::vector<TValueType> vValuesSorted(mValues);
+    // copy buffer
+    std::vector<TValueType> vValuesSorted(tFilterFir::mInputValues);
+
+    // partially sort middle element (median)
     std::nth_element(vValuesSorted.begin(),
                      vValuesSorted.begin() + vValuesSorted.size() / 2,
                      vValuesSorted.end(),
-                     mLess);
-    mOutputValue = vValuesSorted[vValuesSorted.size() / 2];
+                     mLessFunc);
 
-    // return the median
-    return mOutputValue;
-  }
-
-  virtual const TValueType& GetIn() const override {
-    GG_ASSERT(mValues.size() > 0);
-    return mValues[mIndex];
-  }
-
-  virtual const TValueType& GetOut() const override {
-    GG_ASSERT(mValues.size() > 0);
-    return mOutputValue;
+    // assign the median
+    aOutputValue = vValuesSorted[vValuesSorted.size() / 2];
   }
 
 private:
 
-  ggUSize mLength;
-  ggUSize mIndex;
-  std::vector<TValueType> mValues;
-  const TLess& mLess;
-  static TLess mLessDefault;
+  // function for comparing two elements
+  const TLessFunc& mLessFunc;
 
-  TValueType mOutputValue;
+  // default less function
+  static TLessFunc mLessFuncDefault;
 
 };
 
-template <class TValueType, class TLess>
-TLess ggFilterMedianT<TValueType, TLess>::mLessDefault;
-
-typedef ggFilterMedianT<ggInt32> ggFilterMedianInt32;
-typedef ggFilterMedianT<ggFloat> ggFilterMedianFloat;
-typedef ggFilterMedianT<ggDouble> ggFilterMedianDouble;
+// static member instance for default compare function
+template <class TValueType, class TLessFunc>
+TLessFunc ggFilterMedianT<TValueType, TLessFunc>::mLessFuncDefault;
 
 #endif // GGFILTERMEDIANT_H

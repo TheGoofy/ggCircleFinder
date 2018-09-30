@@ -1,0 +1,101 @@
+#ifndef GGFILTERFIRT_H
+#define GGFILTERFIRT_H
+
+#include <vector>
+#include "LibBase/ggFilterT.h"
+#include "LibBase/ggAssert.h"
+
+/**
+ * General FIR Filter (finite impulse response).
+ *
+ * This class provides a framework for a common FIR filter containing the storage for
+ * the input values and triggering (re)calculation only when needed. The specific filter
+ * behavior needs to be implemented by a deriveved class (overriding "Calculate").
+ */
+template <class TValueType>
+class ggFilterFirT : public ggFilterT<TValueType> {
+
+public:
+
+  // base filter type (shortcut)
+  typedef ggFilterT<TValueType> tFilter;
+
+  // creates a FIR filter with specified order
+  ggFilterFirT(ggUSize aOrder)
+  : mOrder(aOrder),
+    mInputIndex(static_cast<ggUSize>(-1)),
+    mInputValues(),
+    mCalculateOutput(true),
+    mOutputValue() {
+    mInputValues.reserve(mOrder);
+  }
+
+  // resets the filter to its initial state
+  virtual void Reset() override {
+    mInputIndex = static_cast<ggUSize>(-1);
+    mInputValues.clear();
+    mInputValues.reserve(mOrder);
+    mCalculateOutput = true;
+    mOutputValue = TValueType();
+  }
+
+  // inputs a new value
+  virtual void PushIn(const TValueType& aInputValue) override {
+
+    // store input values in ring-buffer
+    mInputIndex = (mInputIndex + 1) % mOrder;
+    mInputValues.resize(std::max(mInputValues.size(), mInputIndex + 1));
+    mInputValues[mInputIndex] = aInputValue;
+
+    // output needs to be recalculated
+    mCalculateOutput = true;
+  }
+
+  // returns the most recent input value (or default value of TValueType)
+  virtual const TValueType& GetIn() const override {
+
+    // output has still its default value, if there was not yet an input value added
+    if (mInputValues.empty()) return mOutputValue;
+
+    // if container is not empty, this is our last input:
+    return mInputValues[mInputIndex];
+  }
+
+  // returns output value (triggers re-calculation if needed)
+  virtual const TValueType& GetOut() const override {
+
+    // re-calculate if needed
+    if (mCalculateOutput && !mInputValues.empty()) {
+      const_cast<ggFilterFirT<TValueType>*>(this)->Calculate(mOutputValue);
+      mCalculateOutput = false;
+    }
+
+    // return output
+    return mOutputValue;
+  }
+
+protected:
+
+  // (re)calculates output. only called, when output required after input was changed
+  virtual void Calculate(TValueType& aOutputValue) = 0;
+
+  // filter order (maximum number of input values)
+  const ggUSize mOrder;
+
+  // index of most recent input value
+  ggUSize mInputIndex;
+
+  // ring-buffer for input values (initially empty)
+  std::vector<TValueType> mInputValues;
+
+private:
+
+  // flags the need for (re)calculation
+  mutable bool mCalculateOutput;
+
+  // calculated output value
+  mutable TValueType mOutputValue;
+
+};
+
+#endif // GGFILTERFIRT_H

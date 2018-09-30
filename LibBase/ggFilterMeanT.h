@@ -1,66 +1,43 @@
 #ifndef GGFILTERMEANT_H
 #define GGFILTERMEANT_H
 
-#include <vector>
-#include "LibBase/ggAssert.h"
-#include "LibBase/ggFilterT.h"
+#include "LibBase/ggFilterFirT.h"
 
+/**
+ * Calculates mean (average).
+ * Effort is O(n).
+ */
 template <class TValueType>
-class ggFilterMeanT : public ggFilterT<TValueType> {
+class ggFilterMeanT : public ggFilterFirT<TValueType> {
 
 public:
 
-  ggFilterMeanT(ggUSize aLength)
-  : mLength(aLength),
-    mIndex(static_cast<ggUSize>(-1)),
-    mValues() {
+  // base filter type (shortcut)
+  typedef ggFilterFirT<TValueType> tFilterFir;
+
+  // construct filter with specific order
+  ggFilterMeanT(ggUSize aOrder)
+  : tFilterFir(aOrder) {
   }
 
-  virtual void Reset() override {
-    mValues.clear();
-    mIndex = static_cast<ggUSize>(-1);
-  }
+protected:
 
-  virtual const TValueType& Filter(const TValueType& aInputValue) override {
+  // cumputes average of all input values
+  virtual void Calculate(TValueType& aOutputValue) override {
 
-    // store input values in ring-buffer
-    mIndex = (mIndex + 1) % mLength;
-    mValues.resize(std::max(mValues.size(), mIndex + 1));
-    mValues[mIndex] = aInputValue;
+    // early return, if there are no input values
+    if (tFilterFir::mInputValues.empty()) return;
 
     // calculate mean value
-    TValueType vSum = mValues.front();
-    std::for_each(mValues.begin() + 1, mValues.end(), [&vSum] (const TValueType& aValue) {
+    TValueType vSum = tFilterFir::mInputValues.front();
+    std::for_each(tFilterFir::mInputValues.begin() + 1, tFilterFir::mInputValues.end(), [&vSum] (const TValueType& aValue) {
       vSum += aValue;
     });
-    mOutputValue = vSum / static_cast<ggSize>(mValues.size());
 
-    // return the median
-    return mOutputValue;
+    // assign the mean
+    aOutputValue = vSum / static_cast<ggSize>(tFilterFir::mInputValues.size());
   }
-
-  virtual const TValueType& GetIn() const override {
-    GG_ASSERT(mValues.size() > 0);
-    return mValues[mIndex];
-  }
-
-  virtual const TValueType& GetOut() const override {
-    GG_ASSERT(mValues.size() > 0);
-    return mOutputValue;
-  }
-
-private:
-
-  ggUSize mLength;
-  ggUSize mIndex;
-  std::vector<TValueType> mValues;
-
-  TValueType mOutputValue;
 
 };
-
-typedef ggFilterMeanT<ggInt32> ggFilterMeanInt32;
-typedef ggFilterMeanT<ggFloat> ggFilterMeanFloat;
-typedef ggFilterMeanT<ggDouble> ggFilterMeanDouble;
 
 #endif // GGFILTERMEANT_H
