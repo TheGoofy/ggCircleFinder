@@ -21,10 +21,13 @@ struct ggFilterCenterDistanceFuncT {
  * this filter outputs a specific measurement (and not a synthetically generated new value)
  * For scalar value types like int or float, the filter behaves (almost) like the median (if
  * the number of samples is even it returns sometimes the upper and spmetimes the lower median).
- * Other value types may require an extra implementat for the distance calculation (some sort
+ * Other value types may require an extra implementation for the distance calculation (some sort
  * of cost-function). Usually the euclidean distance works well for vector types.
  *
  * Note that the calculation effort is O(n^2).
+ *
+ * For filters with higher orders (over 20) a more sophisticated implementaion should be
+ * considered (e.g. Weiszfeld's algorithm).
  */
 template <class TValueType,
           class TDistanceValueType = TValueType,
