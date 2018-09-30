@@ -51,11 +51,11 @@ static void ggFilterCenterTestInt32()
 
 static void ggFilterCenterTestVector2Float()
 {
-  auto vDistance = [] (const ggVector2Float& aVectorA, const ggVector2Float& aVectorB) {
+  auto vDistanceFunc = [] (const ggVector2Float& aVectorA, const ggVector2Float& aVectorB) {
     return (aVectorA - aVectorB).Length();
   };
 
-  ggFilterCenterT<ggVector2Float, ggFloat, decltype(vDistance)> vFilterCenter(3, vDistance);
+  ggFilterCenterT<ggVector2Float, ggFloat, decltype(vDistanceFunc)> vFilterCenter(3, vDistanceFunc);
   ggFilterT<ggVector2Float>& vFilter = vFilterCenter;
 
   vFilter.Filter(ggVector2Float(3,-1));

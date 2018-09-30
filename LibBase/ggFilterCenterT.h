@@ -7,9 +7,9 @@
  * Default distance calculator for common scalar types (calculates absolute difference)
  */
 template <class TValueType,
-          class TScalar = TValueType>
+          class TDistanceValueType = TValueType>
 struct ggFilterCenterDistanceFuncT {
-  TScalar operator () (const TValueType& aValueA, const TValueType& aValueB) const {
+  TDistanceValueType operator () (const TValueType& aValueA, const TValueType& aValueB) const {
     return aValueA < aValueB ? aValueB - aValueA : aValueA - aValueB;
   }
 };
@@ -17,16 +17,17 @@ struct ggFilterCenterDistanceFuncT {
 /**
  * Finds the sample where the total distance to all other samples is minimal.
  *
- * For scalar value types like int or float, the filter behaves (almost) like the median (for
- * an even number of samples it returns sometimes the upper and spmetimes the lower median).
- *
- * Other value types may require an extra implementat for the distance calculation. Usually the
- * euclidean distance is used for vector types.
+ * Related with "geometric median" (see: https://en.wikipedia.org/wiki/Geometric_median). But
+ * this filter outputs a specific measurement (and not a synthetically generated new value)
+ * For scalar value types like int or float, the filter behaves (almost) like the median (if
+ * the number of samples is even it returns sometimes the upper and spmetimes the lower median).
+ * Other value types may require an extra implementat for the distance calculation (some sort
+ * of cost-function). Usually the euclidean distance works well for vector types.
  *
  * Note that the calculation effort is O(n^2).
  */
 template <class TValueType,
-          class TScalar = TValueType,
+          class TDistanceValueType = TValueType,
           class TDistanceFunc = ggFilterCenterDistanceFuncT<TValueType>>
 
 class ggFilterCenterT : public ggFilterFirT<TValueType> {
@@ -58,11 +59,11 @@ protected:
 
     // find smallest of all sums of distances
     ggUSize vIndexMin = 0;
-    TScalar vDistanceTotalMin = 0;
+    TDistanceValueType vDistanceTotalMin = 0;
     for (ggUSize vIndexA = 0; vIndexA < tFilterFir::mInputValues.size(); vIndexA++) {
 
       // calculate sum of all distances
-      TScalar vDistanceTotal = 0;
+      TDistanceValueType vDistanceTotal = 0;
       for (ggUSize vIndexB = 0; vIndexB < tFilterFir::mInputValues.size(); vIndexB++) {
         vDistanceTotal += mDistanceFunc(tFilterFir::mInputValues[vIndexA],
                                         tFilterFir::mInputValues[vIndexB]);
@@ -90,7 +91,7 @@ private:
 };
 
 // instance of static member (default distance function)
-template <class TValueType, class TScalar, class TDistanceFunc>
-TDistanceFunc ggFilterCenterT<TValueType, TScalar, TDistanceFunc>::mDistanceFuncDefault;
+template <class TValueType, class TDistanceValueType, class TDistanceFunc>
+TDistanceFunc ggFilterCenterT<TValueType, TDistanceValueType, TDistanceFunc>::mDistanceFuncDefault;
 
 #endif // GGFILTERCENTERT_H
