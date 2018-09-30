@@ -8,12 +8,17 @@
 #include "LibBase/ggNumberTypes.h"
 
 
+static ggUInt64 ggCountFunctions = 0;
+static ggUInt64 ggCountFunctionsFail = 0;
+
+
 struct ggUnitTestFunc {
 
   bool Execute() const {
     try {
+      ggUInt64 vCountFunctionsFail = ggCountFunctionsFail;
       mTest();
-      return true;
+      return vCountFunctionsFail == ggCountFunctionsFail;
     }
     catch (const std::exception& vException) {
       Print(vException.what());
@@ -46,8 +51,6 @@ struct ggUnitTestFunc {
 
 typedef std::vector<ggUnitTestFunc> tUnitTests;
 static tUnitTests* ggUnitTests = nullptr;
-static ggUInt64 ggCountFunctions = 0;
-static ggUInt64 ggCountFunctionsFail = 0;
 
 
 bool ggUnitTest::Register(std::function<void()> aTest,
