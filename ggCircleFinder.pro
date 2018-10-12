@@ -71,7 +71,8 @@ SOURCES += \
     LibBase/ggFilterTest.cxx \
     LibBase/ggFilterMeanTest.cxx \
     LibBase/ggFilterDelayTest.cxx \
-    LibBase/ggFilterFirTest.cxx
+    LibBase/ggFilterFirTest.cxx \
+    LibBase/ggFilterOutlierTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -146,7 +147,8 @@ HEADERS += \
     LibBase/ggFilterMeanT.h \
     LibBase/ggFilterCenterT.h \
     LibBase/ggFilterFirT.h \
-    LibBase/ggFilterDelayT.h
+    LibBase/ggFilterDelayT.h \
+    LibBase/ggFilterOutlierT.h
 
 FORMS += \
     QtMain/MainWindow.ui \
