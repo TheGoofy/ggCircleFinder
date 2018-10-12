@@ -70,7 +70,8 @@ SOURCES += \
     LibBase/ggFilterCenterTest.cxx \
     LibBase/ggFilterTest.cxx \
     LibBase/ggFilterMeanTest.cxx \
-    LibBase/ggFilterDelayTest.cxx
+    LibBase/ggFilterDelayTest.cxx \
+    LibBase/ggFilterFirTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \

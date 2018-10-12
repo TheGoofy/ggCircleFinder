@@ -84,6 +84,20 @@ protected:
   // (re)calculates output. only called, when output required after input was changed
   virtual void Calculate(TValueType& aOutputValue) = 0;
 
+  // returns the index to the nth-last input value (0 for the most recent). The returned index is
+  // truncated to the oldest value, if there are less input values.
+  ggUSize GetInputIndex(ggUSize aLastIndex) const {
+
+    // can't do anything useful, if there are no input values
+    if (mInputValues.size() == 0) return mInputIndex;
+
+    // truncate to the number of values
+    aLastIndex = std::min(aLastIndex, mInputValues.size() - 1);
+
+    // properly wrap around ring-buffer
+    return (mInputIndex + mInputValues.size() - aLastIndex) % mInputValues.size();
+  }
+
   // index of most recent input value
   ggUSize mInputIndex;
 
