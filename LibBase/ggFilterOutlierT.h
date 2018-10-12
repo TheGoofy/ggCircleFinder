@@ -18,6 +18,9 @@ struct ggFilterOutlierDistanceFuncT {
  * Finds the most recent sample, closest to the mean of all other samples. Rejects at maximum a
  * specified number of outliers.
  *
+ * The filter is (almost) as good as the "ggFilterCenterT", but it's more efficient, and the
+ * filter delay is less (defined by the maximum number of allowed outliers).
+ *
  * Note that the calculation effort is O(n).
  */
 template <class TValueType,

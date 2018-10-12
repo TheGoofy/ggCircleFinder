@@ -3,6 +3,7 @@
 #include "LibBase/ggUnitTest.h"
 #include "LibBase/ggFilterMedianT.h"
 #include "LibBase/ggFilterCenterT.h"
+#include "LibBase/ggFilterOutlierT.h"
 #include "LibBase/ggFilterMeanT.h"
 #include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggVectorTypes.h"
@@ -33,7 +34,7 @@ static void ggFilterCompareMedianAndCenter(const ggUSize aCountMax)
 {
   const ggFloat vSigma = 1.0f;
   const ggVector2Float vDrift(10.0f*vSigma/aCountMax, 5.0f*vSigma/aCountMax);
-  const ggUSize vFilterLength = 3;
+  const ggUSize vOrder = 3;
 
   auto vLess = [] (const ggVector2Float& aVectorA, const ggVector2Float& aVectorB) {
     return aVectorA.IsShorter(aVectorB);
@@ -42,19 +43,22 @@ static void ggFilterCompareMedianAndCenter(const ggUSize aCountMax)
     return (aVectorA - aVectorB).Length();
   };
 
-  ggFilterMedianT<ggVector2Float, decltype(vLess)> vFilterMedian(vFilterLength, vLess);
-  ggFilterCenterT<ggVector2Float, ggFloat, decltype(vDistance)> vFilterCenter(vFilterLength, vDistance);
-  ggFilterMeanT<ggVector2Float> vFilterMean(vFilterLength);
+  ggFilterMedianT<ggVector2Float, decltype(vLess)> vFilterMedian(vOrder, vLess);
+  ggFilterCenterT<ggVector2Float, ggFloat, decltype(vDistance)> vFilterCenter(vOrder, vDistance);
+  ggFilterOutlierT<ggVector2Float, ggFloat, decltype(vDistance)> vFilterOutlier(vOrder, 1, vDistance);
+  ggFilterMeanT<ggVector2Float> vFilterMean(vOrder);
 
   std::vector<ggVector2Float> vTruth;
   std::vector<ggVector2Float> vMeasured;
   std::vector<ggVector2Float> vMedian;
   std::vector<ggVector2Float> vCenter;
+  std::vector<ggVector2Float> vOutlier;
   std::vector<ggVector2Float> vMean;
 
   ggAveragesT<ggFloat> vDeviationMeasured;
   ggAveragesT<ggFloat> vDeviationMedian;
   ggAveragesT<ggFloat> vDeviationCenter;
+  ggAveragesT<ggFloat> vDeviationOutlier;
   ggAveragesT<ggFloat> vDeviationMean;
 
   for (ggUSize vCount = 0; vCount < aCountMax; vCount++) {
@@ -63,8 +67,8 @@ static void ggFilterCompareMedianAndCenter(const ggUSize aCountMax)
 
     ggVector2Float vPositionMeasured(vPositionTrue);
 
-    const ggUSize vOutlier = 10;
-    if (vCount % vOutlier == vOutlier - 1) {
+    const ggUSize vCountOutlier = 10;
+    if (vCount % vCountOutlier == vCountOutlier - 1) {
       ggRandomize(vPositionMeasured, 10*vSigma);
     }
     else {
@@ -73,32 +77,37 @@ static void ggFilterCompareMedianAndCenter(const ggUSize aCountMax)
 
     vFilterMedian.Filter(vPositionMeasured);
     vFilterCenter.Filter(vPositionMeasured);
+    vFilterOutlier.Filter(vPositionMeasured);
     vFilterMean.Filter(vPositionMeasured);
 
     vTruth.push_back(vPositionTrue);
     vMeasured.push_back(vPositionMeasured);
     vMedian.push_back(vFilterMedian.GetOut());
     vCenter.push_back(vFilterCenter.GetOut());
+    vOutlier.push_back(vFilterOutlier.GetOut());
     vMean.push_back(vFilterMean.GetOut());
 
     vDeviationMeasured.AddSample((vPositionTrue - vPositionMeasured).Length());
     vDeviationMedian.AddSample((vPositionTrue - vFilterMedian.GetOut()).Length());
     vDeviationCenter.AddSample((vPositionTrue - vFilterCenter.GetOut()).Length());
+    vDeviationOutlier.AddSample((vPositionTrue - vFilterOutlier.GetOut()).Length());
     vDeviationMean.AddSample((vPositionTrue - vFilterMean.GetOut()).Length());
   }
 
   if (aCountMax > 0) {
-    std::cout << "X" << "\t" << "Measured" << "\t" << "Median" << "\t" << "Center" << "\t" << "Truth" << std::endl;
-    for (ggUSize vIndex = 0; vIndex < vMeasured.size(); vIndex++) std::cout << vMeasured[vIndex].X() << "\t" << vMeasured[vIndex].Y() << "\t" << "\t" << "\t" << std::endl;
-    for (ggUSize vIndex = 0; vIndex < vMedian.size(); vIndex++) std::cout << vMedian[vIndex].X() << "\t" << "\t" << vMedian[vIndex].Y() << "\t" << "\t" << std::endl;
-    for (ggUSize vIndex = 0; vIndex < vCenter.size(); vIndex++) std::cout << vCenter[vIndex].X() << "\t" << "\t" << "\t" << vCenter[vIndex].Y() << "\t" << std::endl;
-    for (ggUSize vIndex = 0; vIndex < vTruth.size(); vIndex++) std::cout << vTruth[vIndex].X() << "\t" << "\t" << "\t" << "\t" << vTruth[vIndex].Y() << std::endl;
+    std::cout << "X" << "\t" << "Measured" << "\t" << "Median" << "\t" << "Center" << "\t" << "Outlier" << "\t" << "Truth" << std::endl;
+    for (ggUSize vIndex = 0; vIndex < vMeasured.size(); vIndex++) std::cout << vMeasured[vIndex].X() << "\t" << vMeasured[vIndex].Y() << "\t" << "\t" << "\t" << "\t" << std::endl;
+    for (ggUSize vIndex = 0; vIndex < vMedian.size(); vIndex++)   std::cout << vMedian[vIndex].X()   << "\t" << "\t" << vMedian[vIndex].Y()   << "\t" << "\t" << "\t" << std::endl;
+    for (ggUSize vIndex = 0; vIndex < vCenter.size(); vIndex++)   std::cout << vCenter[vIndex].X()   << "\t" << "\t" << "\t" << vCenter[vIndex].Y()   << "\t" << "\t" << std::endl;
+    for (ggUSize vIndex = 0; vIndex < vOutlier.size(); vIndex++)  std::cout << vOutlier[vIndex].X()  << "\t" << "\t" << "\t" << "\t" << vOutlier[vIndex].Y()  << "\t" << std::endl;
+    for (ggUSize vIndex = 0; vIndex < vTruth.size(); vIndex++)    std::cout << vTruth[vIndex].X()    << "\t" << "\t" << "\t" << "\t" << "\t" << vTruth[vIndex].Y()    << std::endl;
 
     std::cout << "Deviation" << "\t" << "Mean" << "\t" << "StdDev" << "\t" << "Min" << "\t" << "Max" << std::endl;
-    std::cout << "Measured" << "\t" << vDeviationMeasured.GetMean() << "\t" << vDeviationMeasured.GetStdDev() << "\t" << vDeviationMeasured.GetMin()  << "\t" << vDeviationMeasured.GetMax() << std::endl;
-    std::cout << "Median" << "\t" << vDeviationMedian.GetMean() << "\t" << vDeviationMedian.GetStdDev() << "\t" << vDeviationMedian.GetMin()  << "\t" << vDeviationMedian.GetMax() << std::endl;
-    std::cout << "Center" << "\t" << vDeviationCenter.GetMean() << "\t" << vDeviationCenter.GetStdDev() << "\t" << vDeviationCenter.GetMin()  << "\t" << vDeviationCenter.GetMax() << std::endl;
-    std::cout << "Mean" << "\t" << vDeviationMean.GetMean() << "\t" << vDeviationMean.GetStdDev() << "\t" << vDeviationMean.GetMin()  << "\t" << vDeviationMean.GetMax() << std::endl;
+    std::cout << "Measured" << "\t" << vDeviationMeasured.GetMean() << "\t" << vDeviationMeasured.GetStdDev() << "\t" << vDeviationMeasured.GetMin() << "\t" << vDeviationMeasured.GetMax() << std::endl;
+    std::cout << "Median"   << "\t" << vDeviationMedian.GetMean()   << "\t" << vDeviationMedian.GetStdDev()   << "\t" << vDeviationMedian.GetMin()   << "\t" << vDeviationMedian.GetMax()   << std::endl;
+    std::cout << "Center"   << "\t" << vDeviationCenter.GetMean()   << "\t" << vDeviationCenter.GetStdDev()   << "\t" << vDeviationCenter.GetMin()   << "\t" << vDeviationCenter.GetMax()   << std::endl;
+    std::cout << "Outlier"  << "\t" << vDeviationOutlier.GetMean()  << "\t" << vDeviationOutlier.GetStdDev()  << "\t" << vDeviationOutlier.GetMin()  << "\t" << vDeviationOutlier.GetMax()  << std::endl;
+    std::cout << "Mean"     << "\t" << vDeviationMean.GetMean()     << "\t" << vDeviationMean.GetStdDev()     << "\t" << vDeviationMean.GetMin()     << "\t" << vDeviationMean.GetMax()     << std::endl;
   }
 }
 
