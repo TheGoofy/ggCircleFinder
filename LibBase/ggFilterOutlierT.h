@@ -1,6 +1,7 @@
 #ifndef GGFILTEROUTLIERT_H
 #define GGFILTEROUTLIERT_H
 
+#include <algorithm>
 #include "LibBase/ggFilterFirT.h"
 
 /**

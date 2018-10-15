@@ -1,6 +1,7 @@
 #ifndef GGFILTERMEDIANT_H
 #define GGFILTERMEDIANT_H
 
+#include <algorithm>
 #include "LibBase/ggFilterFirT.h"
 
 /**
