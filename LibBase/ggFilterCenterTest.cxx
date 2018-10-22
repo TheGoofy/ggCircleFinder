@@ -55,7 +55,7 @@ static void ggFilterCenterTestVector2Float()
     return (aVectorA - aVectorB).Length();
   };
 
-  ggFilterCenterT<ggVector2Float, ggFloat, decltype(vDistanceFunc)> vFilterCenter(3, vDistanceFunc);
+  ggFilterCenterT<ggVector2Float, ggFloat> vFilterCenter(3, vDistanceFunc);
   ggFilterT<ggVector2Float>& vFilter = vFilterCenter;
 
   vFilter.Filter(ggVector2Float(3,-1));

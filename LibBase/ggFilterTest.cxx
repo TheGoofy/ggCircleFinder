@@ -43,9 +43,9 @@ static void ggFilterCompareMedianAndCenter(const ggUSize aCountMax)
     return (aVectorA - aVectorB).Length();
   };
 
-  ggFilterMedianT<ggVector2Float, decltype(vLess)> vFilterMedian(vOrder, vLess);
-  ggFilterCenterT<ggVector2Float, ggFloat, decltype(vDistance)> vFilterCenter(vOrder, vDistance);
-  ggFilterOutlierT<ggVector2Float, ggFloat, decltype(vDistance)> vFilterOutlier(vOrder, 1, vDistance);
+  ggFilterMedianT<ggVector2Float> vFilterMedian(vOrder, vLess);
+  ggFilterCenterT<ggVector2Float, ggFloat> vFilterCenter(vOrder, vDistance);
+  ggFilterOutlierT<ggVector2Float, ggFloat> vFilterOutlier(vOrder, 1, vDistance);
   ggFilterMeanT<ggVector2Float> vFilterMean(vOrder);
 
   std::vector<ggVector2Float> vTruth;

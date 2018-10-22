@@ -2,18 +2,16 @@
 #define GGFILTEROUTLIERT_H
 
 #include <algorithm>
+#include <functional>
 #include "LibBase/ggFilterFirT.h"
 
 /**
  * Default distance calculator for common scalar types (calculates absolute difference)
  */
-template <class TValueType,
-          class TDistanceValueType = TValueType>
-struct ggFilterOutlierDistanceFuncT {
-  TDistanceValueType operator () (const TValueType& aValueA, const TValueType& aValueB) const {
-    return aValueA < aValueB ? aValueB - aValueA : aValueA - aValueB;
-  }
-};
+template <typename TValueType>
+TValueType ggFilterOutlierDistanceFuncT(const TValueType& aValueA, const TValueType& aValueB) {
+  return aValueA < aValueB ? aValueB - aValueA : aValueA - aValueB;
+}
 
 /**
  * Finds the most recent sample, closest to the mean of all other samples. Rejects at maximum a
@@ -25,8 +23,7 @@ struct ggFilterOutlierDistanceFuncT {
  * Note that the calculation effort is O(n).
  */
 template <class TValueType,
-          class TDistanceValueType = TValueType,
-          class TDistanceFunc = ggFilterOutlierDistanceFuncT<TValueType>>
+          class TDistanceValueType = TValueType>
 
 class ggFilterOutlierT : public ggFilterFirT<TValueType> {
 
@@ -35,15 +32,11 @@ public:
   // base filter type (shortcut)
   typedef ggFilterFirT<TValueType> tFilterFir;
 
-  // construct filter with specific order and default distance calculation (difference)
-  ggFilterOutlierT(ggUSize aOrder, ggUSize aOutliers)
-  : tFilterFir(aOrder),
-    mOutliers(aOutliers),
-    mDistanceFunc(mDistanceFuncDefault) {
-  }
+  // function returning the distance between A and B
+  typedef std::function<TDistanceValueType (const TValueType& aValueA, const TValueType& aValueB)> tDistanceFunc;
 
   // construct filter with specific order and custom distance calculation
-  ggFilterOutlierT(ggUSize aOrder, ggUSize aOutliers, const TDistanceFunc& aDistanceFunc)
+  ggFilterOutlierT(ggUSize aOrder, ggUSize aOutliers, const tDistanceFunc aDistanceFunc = ggFilterOutlierDistanceFuncT<TValueType>)
   : tFilterFir(aOrder),
     mOutliers(aOutliers),
     mDistanceFunc(aDistanceFunc) {
@@ -98,15 +91,8 @@ private:
   const ggUSize mOutliers;
 
   // distance function
-  const TDistanceFunc& mDistanceFunc;
-
-  // default distance function (static)
-  static TDistanceFunc mDistanceFuncDefault;
+  const tDistanceFunc mDistanceFunc;
 
 };
-
-// instance of static member (default distance function)
-template <class TValueType, class TDistanceValueType, class TDistanceFunc>
-TDistanceFunc ggFilterOutlierT<TValueType, TDistanceValueType, TDistanceFunc>::mDistanceFuncDefault;
 
 #endif // GGFILTEROUTLIERT_H

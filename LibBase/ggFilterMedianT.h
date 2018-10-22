@@ -2,6 +2,7 @@
 #define GGFILTERMEDIANT_H
 
 #include <algorithm>
+#include <functional>
 #include "LibBase/ggFilterFirT.h"
 
 /**
@@ -12,8 +13,7 @@
  *
  * Calculation effort is O(n).
  */
-template <class TValueType,
-          class TLessFunc = std::less<TValueType>>
+template <class TValueType>
 
 class ggFilterMedianT : public ggFilterFirT<TValueType> {
 
@@ -22,14 +22,11 @@ public:
   // base filter type (shortcut)
   typedef ggFilterFirT<TValueType> tFilterFir;
 
-  // construct filter with default "less" function (TValueType needs to have "<" operator implemented)
-  ggFilterMedianT(ggUSize aOrder)
-  : tFilterFir(aOrder),
-    mLessFunc(mLessFuncDefault) {
-  }
+  // function returning A < B
+  typedef std::function<bool (const TValueType& aValueA, const TValueType& aValueB)> tLessFunc;
 
   // construct filter with custom "less" function
-  ggFilterMedianT(ggUSize aOrder, const TLessFunc& aLessFunc)
+  ggFilterMedianT(ggUSize aOrder, const tLessFunc aLessFunc = std::less<TValueType>())
   : tFilterFir(aOrder),
     mLessFunc(aLessFunc) {
   }
@@ -58,15 +55,8 @@ protected:
 private:
 
   // function for comparing two elements
-  const TLessFunc& mLessFunc;
-
-  // default less function
-  static TLessFunc mLessFuncDefault;
+  const tLessFunc mLessFunc;
 
 };
-
-// static member instance for default compare function
-template <class TValueType, class TLessFunc>
-TLessFunc ggFilterMedianT<TValueType, TLessFunc>::mLessFuncDefault;
 
 #endif // GGFILTERMEDIANT_H

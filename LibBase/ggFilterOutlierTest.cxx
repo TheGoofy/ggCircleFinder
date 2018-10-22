@@ -49,7 +49,7 @@ static void ggFilterOutlierTestVector2Float()
   };
 
   // filter with custom distance function
-  ggFilterOutlierT<ggVector2Float, ggFloat, decltype(vDistanceFunc)> vFilter3(3, 1, vDistanceFunc);
+  ggFilterOutlierT<ggVector2Float, ggFloat> vFilter3(3, 1, vDistanceFunc);
 
   // playground    ^ y
   //   .   .   .   |   .   .   .

@@ -52,7 +52,7 @@ static void ggFilterMedianTestVector2Float()
     return aVectorA.IsShorter(aVectorB);
   };
 
-  ggFilterMedianT<ggVector2Float, decltype(vLess)> vFilterMedian(3, vLess);
+  ggFilterMedianT<ggVector2Float> vFilterMedian(3, vLess);
   ggFilterT<ggVector2Float>& vFilter = vFilterMedian;
 
   vFilter.Filter(ggVector2Float(3,2));

@@ -1,18 +1,16 @@
 #ifndef GGFILTERCENTERT_H
 #define GGFILTERCENTERT_H
 
+#include <functional>
 #include "LibBase/ggFilterFirT.h"
 
 /**
  * Default distance calculator for common scalar types (calculates absolute difference)
  */
-template <class TValueType,
-          class TDistanceValueType = TValueType>
-struct ggFilterCenterDistanceFuncT {
-  TDistanceValueType operator () (const TValueType& aValueA, const TValueType& aValueB) const {
-    return aValueA < aValueB ? aValueB - aValueA : aValueA - aValueB;
-  }
-};
+template <typename TValueType>
+TValueType ggFilterCenterDistanceFuncT(const TValueType& aValueA, const TValueType& aValueB) {
+  return aValueA < aValueB ? aValueB - aValueA : aValueA - aValueB;
+}
 
 /**
  * Finds the sample where the total distance to all other samples is minimal.
@@ -30,8 +28,7 @@ struct ggFilterCenterDistanceFuncT {
  * considered (e.g. Weiszfeld's algorithm).
  */
 template <class TValueType,
-          class TDistanceValueType = TValueType,
-          class TDistanceFunc = ggFilterCenterDistanceFuncT<TValueType>>
+          class TDistanceValueType = TValueType>
 
 class ggFilterCenterT : public ggFilterFirT<TValueType> {
 
@@ -40,14 +37,11 @@ public:
   // base filter type (shortcut)
   typedef ggFilterFirT<TValueType> tFilterFir;
 
-  // construct filter with specific order and default distance calculation (difference)
-  ggFilterCenterT(ggUSize aOrder)
-  : tFilterFir(aOrder),
-    mDistanceFunc(mDistanceFuncDefault) {
-  }
+  // distance function
+  typedef std::function<TDistanceValueType (const TValueType& aValueA, const TValueType& aValueB)> tDistanceFunc;
 
   // construct filter with specific order and custom distance calculation
-  ggFilterCenterT(ggUSize aOrder, const TDistanceFunc& aDistanceFunc)
+  ggFilterCenterT(ggUSize aOrder, const tDistanceFunc aDistanceFunc = ggFilterCenterDistanceFuncT<TValueType>)
   : tFilterFir(aOrder),
     mDistanceFunc(aDistanceFunc) {
   }
@@ -86,15 +80,8 @@ protected:
 private:
 
   // distance function
-  const TDistanceFunc& mDistanceFunc;
-
-  // default distance function (static)
-  static TDistanceFunc mDistanceFuncDefault;
+  const tDistanceFunc mDistanceFunc;
 
 };
-
-// instance of static member (default distance function)
-template <class TValueType, class TDistanceValueType, class TDistanceFunc>
-TDistanceFunc ggFilterCenterT<TValueType, TDistanceValueType, TDistanceFunc>::mDistanceFuncDefault;
 
 #endif // GGFILTERCENTERT_H
