@@ -21,7 +21,8 @@ class ggAveragesT
 public:
 
   inline ggAveragesT()
-  : mSum(0),
+  : mShiftK(0),
+    mSum(0),
     mSumOfSquares(0),
     mCount(0),
     mMin(),
@@ -30,6 +31,7 @@ public:
 
   // reset the running averages
   inline void Reset() {
+    mShiftK = 0;
     mSum = 0;
     mSumOfSquares = 0;
     mCount = 0;
@@ -39,10 +41,9 @@ public:
 
   // adds a sample
   inline void AddSample(TValueType aValue, ggDouble aCount = 1.0) {
-    ggDouble vValue = ggRound<ggDouble>(aValue);
-    mSum += aCount * vValue;
-    mSumOfSquares += aCount * vValue * vValue;
+    const ggDouble vValue = ggRound<ggDouble>(aValue);
     if (mCount == 0) {
+      mShiftK = vValue;
       mMin = aValue;
       mMax = aValue;
     }
@@ -50,18 +51,21 @@ public:
       if (aValue < mMin) mMin = aValue;
       if (aValue > mMax) mMax = aValue;
     }
+    const ggDouble vValueShifted = vValue - mShiftK;
+    mSum += aCount * vValueShifted;
+    mSumOfSquares += aCount * vValueShifted * vValueShifted;
     mCount += aCount;
   }
 
   // removes a sample (min and max are not updated)
   inline void RemoveSample(TValueType aValue, ggDouble aCount = 1.0) {
-    ggDouble vValue = ggRound<ggDouble>(aValue);
-    mSum -= aCount * vValue;
-    mSumOfSquares -= aCount * vValue * vValue;
+    const ggDouble vValue = ggRound<ggDouble>(aValue);
+    const ggDouble vValueShifted = vValue - mShiftK;
+    mSum -= aCount * vValueShifted;
+    mSumOfSquares -= aCount * vValueShifted * vValueShifted;
     mCount -= aCount;
     if (mCount == 0) {
-      mMin = aValue;
-      mMax = aValue;
+      Reset();
     }
   }
 
@@ -153,12 +157,12 @@ private:
 
   // sum
   inline ggDouble GetSumDouble() const {
-    return mSum;
+    return mSum + mCount * mShiftK;
   }
 
   // mean, internal (note: mCount must not be zero)
   inline ggDouble GetMeanDouble() const {
-    return mSum / mCount;
+    return mSum / mCount + mShiftK;
   }
 
   // sum of squared errors, internal (note: mCount must not be zero)
@@ -166,6 +170,7 @@ private:
     return mSumOfSquares - mSum * mSum / mCount;
   }
 
+  ggDouble mShiftK;
   ggDouble mSum;
   ggDouble mSumOfSquares;
   ggDouble mCount;
