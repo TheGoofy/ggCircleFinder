@@ -30,6 +30,13 @@
     std::cout << GG_FILE_LINE << " test equal failed: " << #aExpr1 << " == " << #aExpr2 << std::endl; \
   } }
 
+#define GG_TEST_EQUAL_FLOAT(aExpr1, aExpr2, aFactor) { \
+  ggUnitTest::CountFunction(); \
+  if (!(ggRound<ggInt64>(aFactor*(aExpr1)) == ggRound<ggInt64>(aFactor*(aExpr2)))) { \
+    ggUnitTest::CountFunctionFail(); \
+    std::cout << GG_FILE_LINE << " test equal failed: " << #aExpr1 << " == " << #aExpr2 << std::endl; \
+  } }
+
 #define GG_TEST_REGISTER(aUnitTest) \
   static bool ggRegistered_##aUnitTest = ggUnitTest::Register(aUnitTest, #aUnitTest, GG_FILE_LINE);
 

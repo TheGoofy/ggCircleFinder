@@ -37,11 +37,11 @@ static void ggAverages2Test()
   GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 2.0);
   GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), -200);
   GG_TEST(vAveragesInt32.GetRegressionnX(vA, vB));
-  GG_TEST_EQUAL(ggRound<ggInt32>(1000*vA), -500); // -0.5
-  GG_TEST_EQUAL(ggRound<ggInt32>(1000*vB), -5000); // -5
+  GG_TEST_EQUAL_FLOAT(vA, -0.5, 1000);
+  GG_TEST_EQUAL_FLOAT(vB, -5, 1000);
   GG_TEST(vAveragesInt32.GetRegressionnY(vA, vB));
-  GG_TEST_EQUAL(ggRound<ggInt32>(1000*vA), -2000); // -2
-  GG_TEST_EQUAL(ggRound<ggInt32>(1000*vB), -10000); // -10
+  GG_TEST_EQUAL_FLOAT(vA, -2, 1000);
+  GG_TEST_EQUAL_FLOAT(vB, -10, 1000);
 
   vAveragesInt32.AddSample(90, -40);
   // ggAverages2Print(vAveragesInt32, "*******************************");

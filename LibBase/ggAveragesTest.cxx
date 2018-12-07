@@ -39,7 +39,7 @@ static void ggAveragesTest()
   GG_TEST_EQUAL(vAveragesInt32.GetStdDevP(), 0);
   GG_TEST_EQUAL(vAveragesInt32.GetVariance(), 0);
   GG_TEST_EQUAL(vAveragesInt32.GetVarianceP(), 0);
-  GG_TEST_EQUAL(ggRound<ggInt32>(vAveragesInt32.GetVariationCoefficient()*1000), 0);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetVariationCoefficient(), 0, 1000);
   GG_TEST_EQUAL(vAveragesInt32.GetSumOfSquaredErrors(), 0);
 
   vAveragesInt32.AddSample(50);
@@ -53,7 +53,7 @@ static void ggAveragesTest()
   GG_TEST_EQUAL(vAveragesInt32.GetStdDevP(), 20);
   GG_TEST_EQUAL(vAveragesInt32.GetVariance(), 800);
   GG_TEST_EQUAL(vAveragesInt32.GetVarianceP(), 400);
-  GG_TEST_EQUAL(ggRound<ggInt32>(vAveragesInt32.GetVariationCoefficient()*1000), 943);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetVariationCoefficient(), 0.943, 1000);
   GG_TEST_EQUAL(vAveragesInt32.GetSumOfSquaredErrors(), 800);
 
   vAveragesInt32.AddSample(90);
@@ -67,7 +67,7 @@ static void ggAveragesTest()
   GG_TEST_EQUAL(vAveragesInt32.GetStdDevP(), 33);
   GG_TEST_EQUAL(vAveragesInt32.GetVariance(), 1600);
   GG_TEST_EQUAL(vAveragesInt32.GetVarianceP(), 1067);
-  GG_TEST_EQUAL(ggRound<ggInt32>(vAveragesInt32.GetVariationCoefficient()*1000), 800);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetVariationCoefficient(), 0.8, 1000);
   GG_TEST_EQUAL(vAveragesInt32.GetSumOfSquaredErrors(), 3200);
 
   vAveragesInt32.AddSample(30, 2.0);
@@ -81,7 +81,7 @@ static void ggAveragesTest()
   GG_TEST_EQUAL(vAveragesInt32.GetStdDevP(), 27);
   GG_TEST_EQUAL(vAveragesInt32.GetVariance(), 920);
   GG_TEST_EQUAL(vAveragesInt32.GetVarianceP(), 736);
-  GG_TEST_EQUAL(ggRound<ggInt32>(vAveragesInt32.GetVariationCoefficient()*1000), 722);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetVariationCoefficient(), 0.722, 1000);
   GG_TEST_EQUAL(vAveragesInt32.GetSumOfSquaredErrors(), 3680);
 }
 
