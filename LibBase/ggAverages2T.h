@@ -5,7 +5,6 @@
 
 #include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggRound.h"
-#include "LibBase/ggVector2T.h"
 #include "LibBase/ggAveragesT.h"
 
 /**
@@ -69,14 +68,46 @@ public:
     return mAveragesY;
   }
 
-  // variance of sample (square of standard deviation)
+  // covariance of sample
   inline TValueType GetCovariance() const {
     const ggDouble vCount = mAveragesX.mCount;
     if (vCount > 1) {
       const ggDouble vProductOfSumsXY = mAveragesX.mSum * mAveragesY.mSum / vCount;
+      return (mSumOfProductsXY - vProductOfSumsXY) / (vCount - 1);
+    }
+    return TValueType();
+  }
+
+  // covariance of population
+  inline TValueType GetCovarianceP() const {
+    const ggDouble vCount = mAveragesX.mCount;
+    if (vCount > 0) {
+      const ggDouble vProductOfSumsXY = mAveragesX.mSum * mAveragesY.mSum / vCount;
       return (mSumOfProductsXY - vProductOfSumsXY) / vCount;
     }
     return TValueType();
+  }
+
+  // linear regression y = a * x + b
+  inline bool GetRegressionnX(ggDouble& aA, ggDouble& aB) const {
+    const ggDouble vVarianceX = mAveragesX.GetVarianceP();
+    if (vVarianceX != 0.0) {
+      aA = GetCovarianceP() / vVarianceX;
+      aB = mAveragesY.GetMean() - aA * mAveragesX.GetMean();
+      return true;
+    }
+    return false;
+  }
+
+  // linear regression x = a * y + b
+  inline bool GetRegressionnY(ggDouble& aA, ggDouble& aB) const {
+    const ggDouble vVarianceY = mAveragesY.GetVarianceP();
+    if (vVarianceY != 0.0) {
+      aA = GetCovarianceP() / vVarianceY;
+      aB = mAveragesX.GetMean() - aA * mAveragesY.GetMean();
+      return true;
+    }
+    return false;
   }
 
 private:
