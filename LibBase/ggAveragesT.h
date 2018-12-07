@@ -6,6 +6,9 @@
 #include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggRound.h"
 
+template <class TValueType>
+class ggAverages2T;
+
 /**
  * Computes the averages: Sum, Min, Max, Mean, StdDev, and
  * Variation. The class requires a minimum amount of memory, and
@@ -40,7 +43,8 @@ public:
   }
 
   // adds a sample
-  inline void AddSample(TValueType aValue, ggDouble aCount = 1.0) {
+  inline void AddSample(TValueType aValue,
+                        ggDouble aCount = 1.0) {
     const ggDouble vValue = ggRound<ggDouble>(aValue);
     if (mCount == 0) {
       mShiftK = vValue;
@@ -58,7 +62,8 @@ public:
   }
 
   // removes a sample (min and max are not updated)
-  inline void RemoveSample(TValueType aValue, ggDouble aCount = 1.0) {
+  inline void RemoveSample(TValueType aValue,
+                           ggDouble aCount = 1.0) {
     const ggDouble vValue = ggRound<ggDouble>(aValue);
     const ggDouble vValueShifted = vValue - mShiftK;
     mSum -= aCount * vValueShifted;
@@ -154,6 +159,9 @@ public:
   }
 
 private:
+
+  // friends will be friends ...
+  friend ggAverages2T<TValueType>;
 
   // sum
   inline ggDouble GetSumDouble() const {
