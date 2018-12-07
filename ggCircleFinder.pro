@@ -72,7 +72,8 @@ SOURCES += \
     LibBase/ggFilterMeanTest.cxx \
     LibBase/ggFilterDelayTest.cxx \
     LibBase/ggFilterFirTest.cxx \
-    LibBase/ggFilterOutlierTest.cxx
+    LibBase/ggFilterOutlierTest.cxx \
+    LibBase/ggAveragesTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \

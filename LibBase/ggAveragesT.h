@@ -1,6 +1,8 @@
 #ifndef GGAVERAGEST_H
 #define GGAVERAGEST_H
 
+#include <math.h>
+
 #include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggRound.h"
 
@@ -9,6 +11,8 @@
  * Variation. The class requires a minimum amount of memory, and
  * does not store individual samples (for this reason it can not
  * compute the Median).
+ *
+ * see: https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
  */
 template <class TValueType>
 class ggAveragesT
@@ -68,7 +72,7 @@ public:
 
   // returns the sum of all samples
   inline TValueType GetSum() const {
-    return ggRound<TValueType>(mSum);
+    return ggRound<TValueType>(GetSumDouble());
   }
 
   // returns the minimum
@@ -84,7 +88,7 @@ public:
   // returns the mean value
   inline TValueType GetMean() const {
     if (mCount > 0) {
-      return ggRound<TValueType>(mSum / mCount);
+      return ggRound<TValueType>(GetMeanDouble());
     }
     return TValueType();
   }
@@ -92,7 +96,7 @@ public:
   // sum of squared errors, also known as "residual sum of scquares" (RSS, or SSR, or SSE)
   inline TValueType GetSumOfSquaredErrors() const {
     if (mCount > 0) {
-      return ggRound<TValueType>(mSumOfSquares - mSum * mSum / mCount);
+      return ggRound<TValueType>(GetSumOfSquaredErrorsDouble());
     }
     return TValueType();
   }
@@ -100,7 +104,7 @@ public:
   // variance of sample (square of standard deviation)
   inline TValueType GetVariance() const {
     if (mCount > 1) {
-      ggDouble vSumOfSquaredErrors = mSumOfSquares - mSum * mSum / mCount;
+      ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
       return ggRound<TValueType>(vSumOfSquaredErrors / (mCount - 1));
     }
     return TValueType();
@@ -109,7 +113,7 @@ public:
   // variance of population (square the standard deviation)
   inline TValueType GetVarianceP() const {
     if (mCount > 0) {
-      ggDouble vSumOfSquaredErrors = mSumOfSquares - mSum * mSum / mCount;
+      ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
       return ggRound<TValueType>(vSumOfSquaredErrors / mCount);
     }
     return TValueType();
@@ -118,7 +122,7 @@ public:
   // returns the standard deviation of sample
   inline TValueType GetStdDev() const {
     if (mCount > 1) {
-      ggDouble vSumOfSquaredErrors = mSumOfSquares - mSum * mSum / mCount;
+      ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
       if (vSumOfSquaredErrors >= 0) return ggRound<TValueType>(sqrt(vSumOfSquaredErrors / (mCount - 1)));
     }
     return TValueType();
@@ -127,25 +131,40 @@ public:
   // returns the standard deviation of population
   inline TValueType GetStdDevP() const {
     if (mCount > 0) {
-      ggDouble vSumOfSquaredErrors = mSumOfSquares - mSum * mSum / mCount;
+      ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
       if (vSumOfSquaredErrors >= 0) return ggRound<TValueType>(sqrt(vSumOfSquaredErrors / mCount));
     }
     return TValueType();
   }
 
   // returns the coefficient of variation
-  inline TValueType GetVariationCoefficient() const {
+  inline ggDouble GetVariationCoefficient() const {
     if (mCount > 1) {
-      ggDouble vMean = mSum / mCount;
+      ggDouble vMean = GetMeanDouble();
       if (vMean != 0) {
-        ggDouble vSumOfSquaredErrors = mSumOfSquares - mSum * mSum / mCount;
-        return ggRound<TValueType>(sqrt(vSumOfSquaredErrors / (mCount - 1)) / vMean);
+        ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
+        return sqrt(vSumOfSquaredErrors / (mCount - 1)) / vMean;
       }
     }
     return TValueType();
   }
 
 private:
+
+  // sum
+  inline ggDouble GetSumDouble() const {
+    return mSum;
+  }
+
+  // mean, internal (note: mCount must not be zero)
+  inline ggDouble GetMeanDouble() const {
+    return mSum / mCount;
+  }
+
+  // sum of squared errors, internal (note: mCount must not be zero)
+  inline ggDouble GetSumOfSquaredErrorsDouble() const {
+    return mSumOfSquares - mSum * mSum / mCount;
+  }
 
   ggDouble mSum;
   ggDouble mSumOfSquares;
