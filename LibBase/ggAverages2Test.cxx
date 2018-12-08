@@ -1,5 +1,6 @@
 #include "LibBase/ggUnitTest.h"
 #include "LibBase/ggAverages2T.h"
+#include "LibBase/ggAveragesTest.h"
 
 
 template <typename TValueType>
@@ -52,6 +53,21 @@ static void ggAverages2Test()
   // ggAverages2Print(vAveragesInt32, "*******************************");
   GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 5.0);
   GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), -464);
+
+  ggAverages2T<ggDouble> vAveragesDouble;
+  vAveragesDouble.AddSample(-1.5, 0.00);
+  vAveragesDouble.AddSample( 0.0, 1.01);
+  vAveragesDouble.AddSample( 1.5, 2.01);
+  vAveragesDouble.AddSample( 3.0, 3.00);
+  // ggAverages2Print(vAveragesDouble, "**********");
+  // ggAveragesTest::Print(vAveragesDouble.X(), "vAveragesDouble.X() **********");
+  // ggAveragesTest::Print(vAveragesDouble.Y(), "vAveragesDouble.Y() **********");
+  GG_TEST(vAveragesDouble.GetRegressionnX(vA, vB));
+  GG_TEST_EQUAL_FLOAT(vA, 0.667, 1000);
+  GG_TEST_EQUAL_FLOAT(vB, 1.005, 1000);
+  GG_TEST(vAveragesDouble.GetRegressionnY(vA, vB));
+  GG_TEST_EQUAL_FLOAT(vA, 1.500, 1000);
+  GG_TEST_EQUAL_FLOAT(vB, -1.507, 1000);
 
 }
 
