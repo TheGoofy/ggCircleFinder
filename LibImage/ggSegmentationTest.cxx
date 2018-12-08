@@ -9,7 +9,7 @@ static void ggSegmentationTest()
   bool vPrint = false;
 
   // generate a histogram from normal distributed noise
-  ggImageT<ggFloat> vImage(16, 16, 0.0f);
+  ggImageT<ggFloat> vImage(32, 32, 0.0f);
   ggImageFilter::AddNoise(vImage, 1.0f);
   ggHistogramFixedT<ggFloat> vHistogram = ggImageFilter::GetHistogram(vImage, 8);
   if (vPrint) ggHistogramTest::Print(vHistogram);
@@ -17,6 +17,7 @@ static void ggSegmentationTest()
   // calculate two means threshold
   ggDouble vThreshold = 0;
   ggSegmentation::CalculateThresholdTwoMeans(vHistogram, vThreshold);
+  if (vPrint) std::cout << "vThreshold = " << vThreshold << std::endl;
 
   // threshold is expected to be located in the middle
   GG_TEST(vHistogram.GetValueMinF() <= vThreshold);
