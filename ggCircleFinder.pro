@@ -151,7 +151,8 @@ HEADERS += \
     LibBase/ggFilterFirT.h \
     LibBase/ggFilterDelayT.h \
     LibBase/ggFilterOutlierT.h \
-    LibBase/ggAverages2T.h
+    LibBase/ggAverages2T.h \
+    LibBase/ggAveragesTest.h
 
 FORMS += \
     QtMain/MainWindow.ui \

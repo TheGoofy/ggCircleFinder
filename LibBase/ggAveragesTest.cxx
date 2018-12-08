@@ -1,10 +1,10 @@
 #include "LibBase/ggUnitTest.h"
-#include "LibBase/ggAveragesT.h"
+#include "LibBase/ggAveragesTest.h"
 
 
 template <typename TValueType>
-static void ggAveragesPrint(const ggAveragesT<TValueType>& aAverages,
-                            const char* aHeaderText = nullptr)
+void ggAveragesTest::Print(const ggAveragesT<TValueType>& aAverages,
+                           const char* aHeaderText)
 {
   if (aHeaderText != nullptr) std::cout << aHeaderText << std::endl;
   std::cout << "NumberOfSamples = " << aAverages.GetNumberOfSamples() << std::endl;
@@ -21,7 +21,19 @@ static void ggAveragesPrint(const ggAveragesT<TValueType>& aAverages,
 }
 
 
-static void ggAveragesTest()
+template void ggAveragesTest::Print(const ggAveragesT<ggInt8>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggInt16>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggInt32>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggInt64>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggUInt8>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggUInt16>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggUInt32>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggUInt64>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggFloat>&, const char*);
+template void ggAveragesTest::Print(const ggAveragesT<ggDouble>&, const char*);
+
+
+void ggAveragesTest::Execute()
 {
   ggAveragesT<ggInt32> vAveragesInt32;
   // ggAveragesPrint(vAveragesInt32, "*******************************");
@@ -86,4 +98,10 @@ static void ggAveragesTest()
 }
 
 
-GG_TEST_REGISTER(ggAveragesTest);
+static void ggAveragesTestExecute()
+{
+  ggAveragesTest::Execute();
+}
+
+
+GG_TEST_REGISTER(ggAveragesTestExecute);
