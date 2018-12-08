@@ -8,6 +8,7 @@
 
 #define GG_TEST(aCondition) { \
   bool vSucceededDummy = true; \
+  vSucceededDummy = vSucceededDummy; \
   GG_TEST2(aCondition, vSucceededDummy); }
 
 #define GG_TEST2(aCondition, aSucceeded) { \
@@ -20,6 +21,7 @@
 
 #define GG_TEST_EQUAL(aExpr1, aExpr2) { \
   bool vSucceededDummy = true; \
+  vSucceededDummy = vSucceededDummy; \
   GG_TEST_EQUAL2(aExpr1, aExpr2, vSucceededDummy); }
 
 #define GG_TEST_EQUAL2(aExpr1, aExpr2, aSucceeded) { \
