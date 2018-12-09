@@ -80,8 +80,8 @@ public:
   }
 
   // returns the sum of all samples
-  inline TValueType GetSum() const {
-    return ggRound<TValueType>(GetSumDouble());
+  inline ggDouble GetSum() const {
+    return GetSumDouble();
   }
 
   // returns the minimum
@@ -95,53 +95,53 @@ public:
   }
 
   // returns the mean value
-  inline TValueType GetMean() const {
+  inline ggDouble GetMean() const {
     if (mCount > 0) {
-      return ggRound<TValueType>(GetMeanDouble());
+      return GetMeanDouble();
     }
     return TValueType();
   }
 
   // sum of squared errors, also known as "residual sum of scquares" (RSS, or SSR, or SSE)
-  inline TValueType GetSumOfSquaredErrors() const {
+  inline ggDouble GetSumOfSquaredErrors() const {
     if (mCount > 0) {
-      return ggRound<TValueType>(GetSumOfSquaredErrorsDouble());
+      return GetSumOfSquaredErrorsDouble();
     }
     return TValueType();
   }
 
   // variance of sample (square of standard deviation)
-  inline TValueType GetVariance() const {
+  inline ggDouble GetVariance() const {
     if (mCount > 1) {
       ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
-      return ggRound<TValueType>(vSumOfSquaredErrors / (mCount - 1));
+      return vSumOfSquaredErrors / (mCount - 1);
     }
     return TValueType();
   }
 
   // variance of population (square the standard deviation)
-  inline TValueType GetVarianceP() const {
+  inline ggDouble GetVarianceP() const {
     if (mCount > 0) {
       ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
-      return ggRound<TValueType>(vSumOfSquaredErrors / mCount);
+      return vSumOfSquaredErrors / mCount;
     }
     return TValueType();
   }
 
   // returns the standard deviation of sample
-  inline TValueType GetStdDev() const {
+  inline ggDouble GetStdDev() const {
     if (mCount > 1) {
       ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
-      if (vSumOfSquaredErrors >= 0) return ggRound<TValueType>(sqrt(vSumOfSquaredErrors / (mCount - 1)));
+      if (vSumOfSquaredErrors >= 0) return sqrt(vSumOfSquaredErrors / (mCount - 1));
     }
     return TValueType();
   }
 
   // returns the standard deviation of population
-  inline TValueType GetStdDevP() const {
+  inline ggDouble GetStdDevP() const {
     if (mCount > 0) {
       ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
-      if (vSumOfSquaredErrors >= 0) return ggRound<TValueType>(sqrt(vSumOfSquaredErrors / mCount));
+      if (vSumOfSquaredErrors >= 0) return sqrt(vSumOfSquaredErrors / mCount);
     }
     return TValueType();
   }

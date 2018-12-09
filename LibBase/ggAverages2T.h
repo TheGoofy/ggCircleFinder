@@ -69,7 +69,7 @@ public:
   }
 
   // covariance of sample
-  inline TValueType GetCovariance() const {
+  inline ggDouble GetCovariance() const {
     const ggDouble vCount = mAveragesX.mCount;
     if (vCount > 1) {
       const ggDouble vProductOfSumsXY = mAveragesX.mSum * mAveragesY.mSum / vCount;
@@ -79,7 +79,7 @@ public:
   }
 
   // covariance of population
-  inline TValueType GetCovarianceP() const {
+  inline ggDouble GetCovarianceP() const {
     const ggDouble vCount = mAveragesX.mCount;
     if (vCount > 0) {
       const ggDouble vProductOfSumsXY = mAveragesX.mSum * mAveragesY.mSum / vCount;
