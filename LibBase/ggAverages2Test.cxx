@@ -26,33 +26,33 @@ static void ggAverages2Test()
 
   vAveragesInt32.AddSample(10, -10);
   // ggAverages2Print(vAveragesInt32, "*******************************");
-  GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 1.0);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetNumberOfSamples(), 1.0);
   GG_TEST_EQUAL(vAveragesInt32.X().GetMin(), 10);
   GG_TEST_EQUAL(vAveragesInt32.X().GetMax(), 10);
   GG_TEST_EQUAL(vAveragesInt32.Y().GetMin(), -10);
   GG_TEST_EQUAL(vAveragesInt32.Y().GetMax(), -10);
-  GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), 0.0);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetCovarianceP(), 0.0);
 
   vAveragesInt32.AddSample(50, -30);
   // ggAverages2Print(vAveragesInt32, "*******************************");
-  GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 2.0);
-  GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), -200);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetNumberOfSamples(), 2.0);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetCovarianceP(), -200.0);
   GG_TEST(vAveragesInt32.GetRegressionX(vA, vB));
-  GG_TEST_EQUAL_FLOAT(vA, -0.5, 1000);
-  GG_TEST_EQUAL_FLOAT(vB, -5, 1000);
+  GG_TEST_EQUAL_FLOAT(vA, -0.5);
+  GG_TEST_EQUAL_FLOAT(vB, -5.0);
   GG_TEST(vAveragesInt32.GetRegressionY(vA, vB));
-  GG_TEST_EQUAL_FLOAT(vA, -2, 1000);
-  GG_TEST_EQUAL_FLOAT(vB, -10, 1000);
+  GG_TEST_EQUAL_FLOAT(vA, -2.0);
+  GG_TEST_EQUAL_FLOAT(vB, -10.0);
 
   vAveragesInt32.AddSample(90, -40);
   // ggAverages2Print(vAveragesInt32, "*******************************");
-  GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 3.0);
-  GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), -400);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetNumberOfSamples(), 3.0);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetCovarianceP(), -400.0);
 
   vAveragesInt32.AddSample(30, 20, 2.0);
   // ggAverages2Print(vAveragesInt32, "*******************************");
-  GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 5.0);
-  GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), -464);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetNumberOfSamples(), 5.0);
+  GG_TEST_EQUAL_FLOAT(vAveragesInt32.GetCovarianceP(), -464.0);
 
   ggAverages2T<ggDouble> vAveragesDouble;
   vAveragesDouble.AddSample(-1.5, 0.00);
@@ -63,11 +63,11 @@ static void ggAverages2Test()
   // ggAveragesTest::Print(vAveragesDouble.X(), "vAveragesDouble.X() **********");
   // ggAveragesTest::Print(vAveragesDouble.Y(), "vAveragesDouble.Y() **********");
   GG_TEST(vAveragesDouble.GetRegressionX(vA, vB));
-  GG_TEST_EQUAL_FLOAT(vA, 0.667, 1000);
-  GG_TEST_EQUAL_FLOAT(vB, 1.005, 1000);
+  GG_TEST_EQUAL_FLOAT(vA, 0.667);
+  GG_TEST_EQUAL_FLOAT(vB, 1.005);
   GG_TEST(vAveragesDouble.GetRegressionY(vA, vB));
-  GG_TEST_EQUAL_FLOAT(vA, 1.500, 1000);
-  GG_TEST_EQUAL_FLOAT(vB, -1.507, 1000);
+  GG_TEST_EQUAL_FLOAT(vA, 1.500);
+  GG_TEST_EQUAL_FLOAT(vB, -1.507);
 
 }
 

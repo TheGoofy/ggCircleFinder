@@ -32,9 +32,12 @@
     std::cout << GG_FILE_LINE << " test equal failed: " << #aExpr1 << " == " << #aExpr2 << std::endl; \
   } }
 
-#define GG_TEST_EQUAL_FLOAT(aExpr1, aExpr2, aFactor) { \
+#define GG_TEST_EQUAL_FLOAT(aExpr1, aExpr2) { \
+  GG_TEST_EQUAL_FLOAT2(aExpr1, aExpr2, 3) }
+
+#define GG_TEST_EQUAL_FLOAT2(aExpr1, aExpr2, aSignificantDigits) { \
   ggUnitTest::CountFunction(); \
-  if (!(ggRound<ggInt64>(aFactor*(aExpr1)) == ggRound<ggInt64>(aFactor*(aExpr2)))) { \
+  if (!ggEqual(aExpr1, aExpr2, aSignificantDigits)) { \
     ggUnitTest::CountFunctionFail(); \
     std::cout << GG_FILE_LINE << " test equal failed: " << #aExpr1 << " == " << #aExpr2 << std::endl; \
   } }
