@@ -89,7 +89,7 @@ public:
   }
 
   // linear regression y = a * x + b
-  inline bool GetRegressionnX(ggDouble& aA, ggDouble& aB) const {
+  inline bool GetRegressionX(ggDouble& aA, ggDouble& aB) const {
     const ggDouble vVarianceX = mAveragesX.GetVarianceP();
     if (vVarianceX != 0.0) {
       aA = GetCovarianceP() / vVarianceX;
@@ -100,7 +100,7 @@ public:
   }
 
   // linear regression x = a * y + b
-  inline bool GetRegressionnY(ggDouble& aA, ggDouble& aB) const {
+  inline bool GetRegressionY(ggDouble& aA, ggDouble& aB) const {
     const ggDouble vVarianceY = mAveragesY.GetVarianceP();
     if (vVarianceY != 0.0) {
       aA = GetCovarianceP() / vVarianceY;

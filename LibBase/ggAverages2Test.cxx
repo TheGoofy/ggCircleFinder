@@ -11,8 +11,8 @@ static void ggAverages2Print(const ggAverages2T<TValueType>& aAverages,
   if (aHeaderText != nullptr) std::cout << aHeaderText << std::endl;
   std::cout << "NumberOfSamples = " << aAverages.GetNumberOfSamples() << std::endl;
   std::cout << "Covariance = " << aAverages.GetCovarianceP() << std::endl;
-  if (aAverages.GetRegressionnX(vA, vB)) std::cout << "RegressionX: a = " << vA << ", b = " << vB << std::endl;
-  if (aAverages.GetRegressionnY(vA, vB)) std::cout << "RegressionY: a = " << vA << ", b = " << vB << std::endl;
+  if (aAverages.GetRegressionX(vA, vB)) std::cout << "RegressionX: a = " << vA << ", b = " << vB << std::endl;
+  if (aAverages.GetRegressionY(vA, vB)) std::cout << "RegressionY: a = " << vA << ", b = " << vB << std::endl;
 }
 
 
@@ -37,10 +37,10 @@ static void ggAverages2Test()
   // ggAverages2Print(vAveragesInt32, "*******************************");
   GG_TEST_EQUAL(vAveragesInt32.GetNumberOfSamples(), 2.0);
   GG_TEST_EQUAL(vAveragesInt32.GetCovarianceP(), -200);
-  GG_TEST(vAveragesInt32.GetRegressionnX(vA, vB));
+  GG_TEST(vAveragesInt32.GetRegressionX(vA, vB));
   GG_TEST_EQUAL_FLOAT(vA, -0.5, 1000);
   GG_TEST_EQUAL_FLOAT(vB, -5, 1000);
-  GG_TEST(vAveragesInt32.GetRegressionnY(vA, vB));
+  GG_TEST(vAveragesInt32.GetRegressionY(vA, vB));
   GG_TEST_EQUAL_FLOAT(vA, -2, 1000);
   GG_TEST_EQUAL_FLOAT(vB, -10, 1000);
 
@@ -62,10 +62,10 @@ static void ggAverages2Test()
   // ggAverages2Print(vAveragesDouble, "**********");
   // ggAveragesTest::Print(vAveragesDouble.X(), "vAveragesDouble.X() **********");
   // ggAveragesTest::Print(vAveragesDouble.Y(), "vAveragesDouble.Y() **********");
-  GG_TEST(vAveragesDouble.GetRegressionnX(vA, vB));
+  GG_TEST(vAveragesDouble.GetRegressionX(vA, vB));
   GG_TEST_EQUAL_FLOAT(vA, 0.667, 1000);
   GG_TEST_EQUAL_FLOAT(vB, 1.005, 1000);
-  GG_TEST(vAveragesDouble.GetRegressionnY(vA, vB));
+  GG_TEST(vAveragesDouble.GetRegressionY(vA, vB));
   GG_TEST_EQUAL_FLOAT(vA, 1.500, 1000);
   GG_TEST_EQUAL_FLOAT(vB, -1.507, 1000);
 
