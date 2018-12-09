@@ -74,7 +74,8 @@ SOURCES += \
     LibBase/ggFilterFirTest.cxx \
     LibBase/ggFilterOutlierTest.cxx \
     LibBase/ggAveragesTest.cxx \
-    LibBase/ggAverages2Test.cxx
+    LibBase/ggAverages2Test.cxx \
+    LibBase/ggNumerisTest.cpp
 
 HEADERS += \
     LibBase/ggAssert.h \
