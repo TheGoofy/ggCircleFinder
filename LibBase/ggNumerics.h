@@ -2,6 +2,7 @@
 #define GGNUMERICS_H
 
 #include <algorithm>
+#include <math.h>
 
 #include "LibBase/ggNumberTypes.h"
 
