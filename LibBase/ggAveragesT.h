@@ -150,7 +150,7 @@ public:
   inline ggDouble GetVariationCoefficient() const {
     if (mCount > 1) {
       ggDouble vMean = GetMeanDouble();
-      if (vMean != 0) {
+      if (vMean != 0.0) {
         ggDouble vSumOfSquaredErrors = GetSumOfSquaredErrorsDouble();
         return sqrt(vSumOfSquaredErrors / (mCount - 1)) / vMean;
       }
