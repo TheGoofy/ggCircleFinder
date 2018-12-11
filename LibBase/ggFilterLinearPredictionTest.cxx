@@ -9,7 +9,7 @@
 static void ggFilterLinearPredictionTestDouble()
 {
   // filter order 3, look ahead 1
-  ggFilterLinearPredictionT<ggDouble> vFilterLinearPrediction(3, 1);
+  ggFilterLinearPredictionT<ggDouble> vFilterLinearPrediction(3, 1.0);
   ggFilterT<ggDouble>& vFilter = vFilterLinearPrediction;
 
   // run twice in order to test "Reset()"
