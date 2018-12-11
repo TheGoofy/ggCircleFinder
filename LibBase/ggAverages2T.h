@@ -21,14 +21,14 @@ public:
   inline ggAverages2T()
   : mAveragesX(),
     mAveragesY(),
-    mSumOfProductsXY(0) {
+    mSumOfProductsXY(0.0) {
   }
 
   // reset the running averages
   inline void Reset() {
     mAveragesX.Reset();
     mAveragesY.Reset();
-    mSumOfProductsXY = 0;
+    mSumOfProductsXY = 0.0;
   }
 
   // adds a sample
@@ -71,7 +71,7 @@ public:
   // covariance of sample
   inline ggDouble GetCovariance() const {
     const ggDouble vCount = mAveragesX.mCount;
-    if (vCount > 1) {
+    if (vCount > 1.0) {
       const ggDouble vProductOfSumsXY = mAveragesX.mSum * mAveragesY.mSum / vCount;
       return (mSumOfProductsXY - vProductOfSumsXY) / (vCount - 1);
     }
@@ -81,7 +81,7 @@ public:
   // covariance of population
   inline ggDouble GetCovarianceP() const {
     const ggDouble vCount = mAveragesX.mCount;
-    if (vCount > 0) {
+    if (vCount > 0.0) {
       const ggDouble vProductOfSumsXY = mAveragesX.mSum * mAveragesY.mSum / vCount;
       return (mSumOfProductsXY - vProductOfSumsXY) / vCount;
     }
