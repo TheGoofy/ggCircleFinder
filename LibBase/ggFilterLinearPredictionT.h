@@ -10,7 +10,7 @@
  * Output is calculated for provided prediction-index:
  * => 0 means the current step (likely similar to current input)
  * => 1 means one step ahead (future)
- * => -1 means one step into the pasr
+ * => -1 means one step into the past
  *
  * If prediction-index is half of the filter order, the returned value
  * is the same as the mean value.
@@ -22,10 +22,10 @@ class ggFilterLinearPredictionT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
 
-  // construct filter with specific order and desired index of prediction (look ahead 0 = current, 1 = 1 step ahead)
-  ggFilterLinearPredictionT(ggUSize aOrder, ggInt32 aIndexPrediction)
+  // construct filter with specific order and desired index of prediction (look ahead 0 = current, 1 = one step ahead)
+  ggFilterLinearPredictionT(ggUSize aOrder, ggInt32 aPredictionStep)
   : tFilterFir(aOrder),
-    mIndexPrediction(aIndexPrediction) {
+    mPredictionStep(aPredictionStep) {
   }
 
 protected:
@@ -39,23 +39,23 @@ protected:
     // compile all the values for the linear regression
     ggAverages2T<ggDouble> vAverages2;
     for (ggUSize vIndex = 0; vIndex < tFilterFir::mInputValues.size(); vIndex++) {
-      ggDouble vStep = -ggRound<ggDouble>(vIndex);
-      ggDouble vValue = tFilterFir::mInputValues[tFilterFir::GetInputIndex(vIndex)];
+      const ggDouble vStep = -ggRound<ggDouble>(vIndex);
+      const ggDouble vValue = tFilterFir::mInputValues[tFilterFir::GetInputIndex(vIndex)];
       vAverages2.AddSample(vStep, vValue);
     }
 
     // calculate the regression
-    ggDouble vA, vB;
+    ggDouble vA = 1.0, vB = 0.0;
     if (vAverages2.GetRegressionX(vA, vB)) {
-      const ggDouble vStepPrediction = ggRound<ggDouble>(mIndexPrediction);
-      aOutputValue = ggRound<TValueType>(vA * vStepPrediction + vB);
+      const ggDouble vPredictionStep = ggRound<ggDouble>(mPredictionStep);
+      aOutputValue = ggRound<TValueType>(vA * vPredictionStep + vB);
     }
     else {
       aOutputValue = tFilterFir::GetIn();
     }
   }
 
-  ggInt32 mIndexPrediction;
+  ggInt32 mPredictionStep;
 
 };
 
