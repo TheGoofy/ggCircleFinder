@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <functional>
-#include "LibBase/ggFilterFirT.h"
+#include "LibBase/ggFilterFirInputBufferT.h"
 
 /**
  * Default distance calculator for common scalar types (calculates absolute difference)
@@ -25,12 +25,9 @@ TValueType ggFilterOutlierDistanceFuncT(const TValueType& aValueA, const TValueT
 template <class TValueType,
           class TDistanceValueType = TValueType>
 
-class ggFilterOutlierT : public ggFilterFirT<TValueType> {
+class ggFilterOutlierT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
-
-  // base filter type (shortcut)
-  typedef ggFilterFirT<TValueType> tFilterFir;
 
   // function returning the distance between A and B
   typedef std::function<TDistanceValueType (const TValueType& aValueA, const TValueType& aValueB)> tDistanceFunc;
@@ -43,6 +40,9 @@ public:
   }
 
 protected:
+
+  // base filter type (shortcut)
+  typedef ggFilterFirInputBufferT<TValueType> tFilterFir;
 
   // finds input-value which is closest to the current mean
   virtual void Calculate(TValueType& aOutputValue) override {

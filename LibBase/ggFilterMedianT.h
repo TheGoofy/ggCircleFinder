@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <functional>
-#include "LibBase/ggFilterFirT.h"
+#include "LibBase/ggFilterFirInputBufferT.h"
 
 /**
  * Filters a specific number of samples (aOrder), and returns the median value.
@@ -15,12 +15,9 @@
  */
 template <class TValueType>
 
-class ggFilterMedianT : public ggFilterFirT<TValueType> {
+class ggFilterMedianT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
-
-  // base filter type (shortcut)
-  typedef ggFilterFirT<TValueType> tFilterFir;
 
   // function returning A < B
   typedef std::function<bool (const TValueType& aValueA, const TValueType& aValueB)> tLessFunc;
@@ -32,6 +29,9 @@ public:
   }
 
 protected:
+
+  // base filter type (shortcut)
+  typedef ggFilterFirInputBufferT<TValueType> tFilterFir;
 
   // copies all input values, partially sorts, and picks middle element
   virtual void Calculate(TValueType& aOutputValue) override {

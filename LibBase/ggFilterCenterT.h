@@ -2,7 +2,7 @@
 #define GGFILTERCENTERT_H
 
 #include <functional>
-#include "LibBase/ggFilterFirT.h"
+#include "LibBase/ggFilterFirInputBufferT.h"
 
 /**
  * Default distance calculator for common scalar types (calculates absolute difference)
@@ -30,12 +30,9 @@ TValueType ggFilterCenterDistanceFuncT(const TValueType& aValueA, const TValueTy
 template <class TValueType,
           class TDistanceValueType = TValueType>
 
-class ggFilterCenterT : public ggFilterFirT<TValueType> {
+class ggFilterCenterT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
-
-  // base filter type (shortcut)
-  typedef ggFilterFirT<TValueType> tFilterFir;
 
   // distance function
   typedef std::function<TDistanceValueType (const TValueType& aValueA, const TValueType& aValueB)> tDistanceFunc;
@@ -47,6 +44,9 @@ public:
   }
 
 protected:
+
+  // base filter type (shortcut)
+  typedef ggFilterFirInputBufferT<TValueType> tFilterFir;
 
   // finds input-value with smallest sum of distances to all its neighbors
   virtual void Calculate(TValueType& aOutputValue) override {

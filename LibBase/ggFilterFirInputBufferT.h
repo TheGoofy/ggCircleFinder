@@ -13,7 +13,7 @@
  * behavior needs to be implemented by a deriveved class (overriding "Calculate").
  */
 template <class TValueType>
-class ggFilterFirT : public ggFilterT<TValueType> {
+class ggFilterFirInputBufferT : public ggFilterT<TValueType> {
 
 public:
 
@@ -21,7 +21,7 @@ public:
   typedef ggFilterT<TValueType> tFilter;
 
   // creates a FIR filter with specified order
-  ggFilterFirT(ggUSize aOrder)
+  ggFilterFirInputBufferT(ggUSize aOrder)
   : mInputIndex(static_cast<ggUSize>(-1)),
     mInputValues(),
     mOrder(aOrder),
@@ -71,7 +71,7 @@ public:
 
     // re-calculate if needed
     if (mCalculateOutput && !mInputValues.empty()) {
-      const_cast<ggFilterFirT<TValueType>*>(this)->Calculate(mOutputValue);
+      const_cast<ggFilterFirInputBufferT<TValueType>*>(this)->Calculate(mOutputValue);
       mCalculateOutput = false;
     }
 

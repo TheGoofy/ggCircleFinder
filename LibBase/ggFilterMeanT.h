@@ -2,19 +2,16 @@
 #define GGFILTERMEANT_H
 
 #include <algorithm>
-#include "LibBase/ggFilterFirT.h"
+#include "LibBase/ggFilterFirInputBufferT.h"
 
 /**
  * Calculates mean (average).
  * Effort is O(n).
  */
 template <class TValueType>
-class ggFilterMeanT : public ggFilterFirT<TValueType> {
+class ggFilterMeanT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
-
-  // base filter type (shortcut)
-  typedef ggFilterFirT<TValueType> tFilterFir;
 
   // construct filter with specific order
   ggFilterMeanT(ggUSize aOrder)
@@ -22,6 +19,9 @@ public:
   }
 
 protected:
+
+  // base filter type (shortcut)
+  typedef ggFilterFirInputBufferT<TValueType> tFilterFir;
 
   // cumputes average of all input values
   virtual void Calculate(TValueType& aOutputValue) override {

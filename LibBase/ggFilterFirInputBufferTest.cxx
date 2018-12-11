@@ -1,7 +1,7 @@
 #include <vector>
 
 #include "LibBase/ggUnitTest.h"
-#include "LibBase/ggFilterFirT.h"
+#include "LibBase/ggFilterFirInputBufferT.h"
 #include "LibBase/ggNumberTypes.h"
 #include "LibBase/ggVectorTypes.h"
 
@@ -10,38 +10,38 @@
  * Since "ggFilterFirT" is abstract, we need to derive a class for testing it
  */
 template <class TValueType>
-class ggFilterFirTestT : public ggFilterFirT<TValueType> {
+class ggFilterFirInputBufferTestT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
 
   // base filter type (shortcut)
-  typedef ggFilterFirT<TValueType> tFilterFir;
+  typedef ggFilterFirInputBufferT<TValueType> tFilterFirInputBuffer;
 
   // construct filter with specific order
-  ggFilterFirTestT(ggUSize aOrder)
-  : tFilterFir(aOrder) {
+  ggFilterFirInputBufferTestT(ggUSize aOrder)
+  : tFilterFirInputBuffer(aOrder) {
   }
 
   // virtual destructor (in order to satisfy compiler warning)
-  virtual ~ggFilterFirTestT() {
+  virtual ~ggFilterFirInputBufferTestT() {
   }
 
   // allow test function to access all members
-  friend void ggFilterFirTestInt32();
+  friend void ggFilterFirInputBufferTestInt32();
 
 protected:
 
   // implement abstract member, simply output the current input
   virtual void Calculate(TValueType& aOutputValue) override {
-    aOutputValue = tFilterFir::GetIn();
+    aOutputValue = tFilterFirInputBuffer::GetIn();
   }
 
 };
 
 
-static void ggFilterFirTestInt32()
+static void ggFilterFirInputBufferTestInt32()
 {
-  ggFilterFirTestT<ggInt32> vFilter(4);
+  ggFilterFirInputBufferTestT<ggInt32> vFilter(4);
 
   GG_TEST_EQUAL(vFilter.GetOrder(), 4);
   GG_TEST_EQUAL(vFilter.mInputIndex, static_cast<ggUSize>(-1));
@@ -118,10 +118,10 @@ static void ggFilterFirTestInt32()
 }
 
 
-static void ggFilterFirTest()
+static void ggFilterFirInputBufferTest()
 {
-  ggFilterFirTestInt32();
+  ggFilterFirInputBufferTestInt32();
 }
 
 
-GG_TEST_REGISTER(ggFilterFirTest);
+GG_TEST_REGISTER(ggFilterFirInputBufferTest);

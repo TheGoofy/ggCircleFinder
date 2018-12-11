@@ -1,19 +1,16 @@
 #ifndef GGFILTERDELAYT_H
 #define GGFILTERDELAYT_H
 
-#include "LibBase/ggFilterFirT.h"
+#include "LibBase/ggFilterFirInputBufferT.h"
 
 /**
  * Delays input value by the order of the filter
  * Effort is O(1).
  */
 template <class TValueType>
-class ggFilterDelayT : public ggFilterFirT<TValueType> {
+class ggFilterDelayT : public ggFilterFirInputBufferT<TValueType> {
 
 public:
-
-  // base filter type (shortcut)
-  typedef ggFilterFirT<TValueType> tFilterFir;
 
   // construct filter with specific order
   ggFilterDelayT(ggUSize aDelay)
@@ -21,6 +18,9 @@ public:
   }
 
 protected:
+
+  // base filter type (shortcut)
+  typedef ggFilterFirInputBufferT<TValueType> tFilterFir;
 
   // cumputes oldest of all input values
   virtual void Calculate(TValueType& aOutputValue) override {

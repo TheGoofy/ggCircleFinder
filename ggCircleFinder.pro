@@ -71,11 +71,11 @@ SOURCES += \
     LibBase/ggFilterTest.cxx \
     LibBase/ggFilterMeanTest.cxx \
     LibBase/ggFilterDelayTest.cxx \
-    LibBase/ggFilterFirTest.cxx \
     LibBase/ggFilterOutlierTest.cxx \
     LibBase/ggAveragesTest.cxx \
     LibBase/ggAverages2Test.cxx \
-    LibBase/ggNumerisTest.cpp
+    LibBase/ggNumerisTest.cpp \
+    LibBase/ggFilterFirInputBufferTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -149,11 +149,11 @@ HEADERS += \
     LibBase/ggFilterMedianT.h \
     LibBase/ggFilterMeanT.h \
     LibBase/ggFilterCenterT.h \
-    LibBase/ggFilterFirT.h \
     LibBase/ggFilterDelayT.h \
     LibBase/ggFilterOutlierT.h \
     LibBase/ggAverages2T.h \
-    LibBase/ggAveragesTest.h
+    LibBase/ggAveragesTest.h \
+    LibBase/ggFilterFirInputBufferT.h
 
 FORMS += \
     QtMain/MainWindow.ui \
