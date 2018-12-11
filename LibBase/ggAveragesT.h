@@ -13,7 +13,7 @@ class ggAverages2T;
  * Computes the averages: Sum, Min, Max, Mean, StdDev, and
  * Variation. The class requires a minimum amount of memory, and
  * does not store individual samples (for this reason it can not
- * compute the Median).
+ * compute the Median). Also known as "Online-Averages" ...
  *
  * see: https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
  */
