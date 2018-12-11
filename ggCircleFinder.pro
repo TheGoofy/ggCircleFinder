@@ -75,7 +75,8 @@ SOURCES += \
     LibBase/ggAveragesTest.cxx \
     LibBase/ggAverages2Test.cxx \
     LibBase/ggNumerisTest.cpp \
-    LibBase/ggFilterFirInputBufferTest.cxx
+    LibBase/ggFilterFirInputBufferTest.cxx \
+    LibBase/ggFilterLinearPredictionTest.cxx
 
 HEADERS += \
     LibBase/ggAssert.h \
@@ -153,7 +154,8 @@ HEADERS += \
     LibBase/ggFilterOutlierT.h \
     LibBase/ggAverages2T.h \
     LibBase/ggAveragesTest.h \
-    LibBase/ggFilterFirInputBufferT.h
+    LibBase/ggFilterFirInputBufferT.h \
+    LibBase/ggFilterLinearPredictionT.h
 
 FORMS += \
     QtMain/MainWindow.ui \
