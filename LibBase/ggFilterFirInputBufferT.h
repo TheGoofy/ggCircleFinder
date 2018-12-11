@@ -1,5 +1,5 @@
-#ifndef GGFILTERFIRT_H
-#define GGFILTERFIRT_H
+#ifndef GGFILTERFIRINPUTBUFFERT_H
+#define GGFILTERFIRINPUTBUFFERT_H
 
 #include <vector>
 #include "LibBase/ggFilterT.h"
@@ -117,4 +117,4 @@ private:
 
 };
 
-#endif // GGFILTERFIRT_H
+#endif // GGFILTERFIRINPUTBUFFERT_H
