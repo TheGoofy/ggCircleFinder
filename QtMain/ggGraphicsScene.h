@@ -7,6 +7,9 @@
 #include <QGraphicsLineItem>
 #include <QLineF>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "LibBase/ggGeometry.h"
 #include "LibBase/ggFilterT.h"
 #include "LibBase/ggRound.h"

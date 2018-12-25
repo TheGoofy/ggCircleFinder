@@ -133,7 +133,7 @@ public:
       return aImage(aIndex) == vValueForNeedingLabel;
     };
 
-    auto vHasLabel = [&vMinMaxImage] (const ggVector2Size& aIndex) -> bool {
+    auto vHasLabel = [&vMinMaxImage, &vLabelUnassigned] (const ggVector2Size& aIndex) -> bool {
       return vMinMaxImage(aIndex) != vLabelUnassigned;
     };
 
@@ -145,19 +145,7 @@ public:
       GetNeighborMinMax(aImage, aIndex, vValueNeighborMin, vValueNeighborMax);
     };
 
-    auto vCalculateMinMax = [&aImage,
-                             &vMinMaxImage,
-                             &vLabelMap,
-                             &vLabelNoMinMax,
-                             &vLabelLocalMin,
-                             &vLabelLocalMax,
-                             &vValueForNeedingLabel,
-                             &vNeedsLabel,
-                             &vLabelToSet,
-                             &vHasLabel,
-                             &vSetLabel,
-                             &vValueNeighborMin,
-                             &vValueNeighborMax] (ggSize aIndexX, ggSize aIndexY) {
+    auto vCalculateMinMax = [&] (ggSize aIndexX, ggSize aIndexY) {
 
       ggInt32& vLabel = vMinMaxImage(aIndexX, aIndexY);
 

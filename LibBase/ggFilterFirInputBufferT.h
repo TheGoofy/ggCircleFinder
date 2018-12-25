@@ -2,6 +2,7 @@
 #define GGFILTERFIRINPUTBUFFERT_H
 
 #include <vector>
+#include <algorithm>
 #include "LibBase/ggFilterT.h"
 #include "LibBase/ggAssert.h"
 

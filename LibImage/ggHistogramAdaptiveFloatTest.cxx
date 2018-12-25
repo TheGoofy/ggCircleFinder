@@ -8,7 +8,7 @@
 template <class TValueType>
 static void ggHistogramAdaptiveFloatTestT(ggInt64 aCountBinCapacity, bool aPrint, bool aPrintBinIndex)
 {
-  if (aPrint) std::cout << "========== " <<  __PRETTY_FUNCTION__ << " ==========" << std::endl;
+  if (aPrint) std::cout << "========== " <<  GG_FUNCTION << " ==========" << std::endl;
   bool vSucceeded = true;
 
   ggHistogramAdaptiveFloatT<TValueType> vHistogram(aCountBinCapacity);

@@ -128,7 +128,7 @@ void ggGraphicsDecoratedPathItem::paint(QPainter* aPainter, const QStyleOptionGr
 {
   // don't draw the (ugly) default selection box
   QStyle::State vState = aOption->state;
-  const_cast<QStyleOptionGraphicsItem*>(aOption)->state = aOption->state & !QStyle::State_Selected;
+  const_cast<QStyleOptionGraphicsItem*>(aOption)->state &= !QStyle::State_Selected;
   QGraphicsPathItem::paint(aPainter, aOption, aWidget);
   const_cast<QStyleOptionGraphicsItem*>(aOption)->state = vState;
 }

@@ -13,10 +13,10 @@ int main(int argc, char *argv[])
 
   QCoreApplication::setOrganizationName("Goofy Soft");
   QCoreApplication::setApplicationName("ggCircleFinder");
-  qDebug() << __PRETTY_FUNCTION__ << a.organizationDomain();
-  qDebug() << __PRETTY_FUNCTION__ << a.organizationName();
+  qDebug() << GG_FUNCTION << a.organizationDomain();
+  qDebug() << GG_FUNCTION << a.organizationName();
   QSettings vSettings;
-  qDebug() << __PRETTY_FUNCTION__ << vSettings.fileName();
+  qDebug() << GG_FUNCTION << vSettings.fileName();
 
   MainWindow w;
   w.show();

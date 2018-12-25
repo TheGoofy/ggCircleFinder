@@ -309,7 +309,7 @@ void ggImageLabeling::CalculateDistanceTransformCDA3Private(ggImageT<ggInt32>& a
   const ggInt32 vDeltaXY = 4;
 
   // distance calculation for forward loop
-  auto vDistanceCheckForward = [&aConnectivity, &aDistanceImage, &aProcessForeground, &aProcessBackground] (ggSize aIndexX, ggSize aIndexY) {
+  auto vDistanceCheckForward = [&] (ggSize aIndexX, ggSize aIndexY) {
     ggInt32& vDistance = aDistanceImage(aIndexX, aIndexY);
     if (aIndexX > 0) {
       AdjustDistance(vDistance, aDistanceImage(aIndexX - 1, aIndexY), vDeltaX, aProcessForeground, aProcessBackground);
@@ -326,7 +326,7 @@ void ggImageLabeling::CalculateDistanceTransformCDA3Private(ggImageT<ggInt32>& a
   };
 
   // distance calculation for forward loop
-  auto vDistanceCheckReverse = [&aConnectivity, &aDistanceImage, &aProcessForeground, &aProcessBackground] (ggSize aIndexX, ggSize aIndexY) {
+  auto vDistanceCheckReverse = [&] (ggSize aIndexX, ggSize aIndexY) {
     ggInt32& vDistance = aDistanceImage(aIndexX, aIndexY);
     if (aIndexX + 1 < aDistanceImage.GetSizeX()) {
       AdjustDistance(vDistance, aDistanceImage(aIndexX + 1, aIndexY), vDeltaX, aProcessForeground, aProcessBackground);

@@ -5,6 +5,29 @@
 // 2) include own project-related (sort by component dependency)
 // 3) forward declarations
 
+#ifdef _WIN32
+
+#include <cstddef>
+
+typedef char ggChar;
+typedef __int8 ggInt8;
+typedef __int16 ggInt16;
+typedef __int32 ggInt32;
+typedef __int64 ggInt64;
+typedef std::ptrdiff_t ggSize;
+
+typedef unsigned char ggUChar;
+typedef unsigned __int8 ggUInt8;
+typedef unsigned __int16 ggUInt16;
+typedef unsigned __int32 ggUInt32;
+typedef unsigned __int64 ggUInt64;
+typedef std::size_t ggUSize;
+
+typedef float ggFloat;
+typedef double ggDouble;
+
+#else
+
 typedef char ggChar;
 typedef __INT8_TYPE__ ggInt8;
 typedef __INT16_TYPE__ ggInt16;
@@ -22,6 +45,8 @@ typedef __SIZE_TYPE__ ggUSize;
 typedef float ggFloat;
 typedef double ggDouble;
 
+#endif // _WIN32
+
 enum class ggNumberType {
   eUnknown,
   eChar,  eInt8,  eInt16,  eInt32,  eInt64,  eSize,
@@ -32,7 +57,7 @@ enum class ggNumberType {
 template <typename T> inline ggNumberType ggGetNumberType() { return ggNumberType::eUnknown; }
 
 template <> inline ggNumberType ggGetNumberType<ggChar>() { return ggNumberType::eChar; }
-template <> inline ggNumberType ggGetNumberType<ggInt8>() { return ggNumberType::eInt8; }
+// template <> inline ggNumberType ggGetNumberType<ggInt8>() { return ggNumberType::eInt8; }
 template <> inline ggNumberType ggGetNumberType<ggInt16>() { return ggNumberType::eInt16; }
 template <> inline ggNumberType ggGetNumberType<ggInt32>() { return ggNumberType::eInt32; }
 template <> inline ggNumberType ggGetNumberType<ggInt64>() { return ggNumberType::eInt64; }

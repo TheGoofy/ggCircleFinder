@@ -94,7 +94,7 @@ void ggUnitTest::ExecuteAll()
     });
   };
 
-  vUnitTestFunc.mTestName = __PRETTY_FUNCTION__;
+  vUnitTestFunc.mTestName = GG_FUNCTION;
   vUnitTestFunc.mFileLine = GG_FILE_LINE;
 
   std::cout << "Executing " << ggUnitTests->size() << " unit tests." << std::endl;

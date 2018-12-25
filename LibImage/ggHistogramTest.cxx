@@ -90,7 +90,7 @@ bool ggHistogramTest::TestConsistency(const ggHistogram& aHistogram,
   GG_TEST_EQUAL2(aHistogram.GetCountTotal(), vCountTotal, vSucceeded);
 
   if (!vSucceeded) {
-    std::cout << "Failed in: " << __PRETTY_FUNCTION__;
+    std::cout << "Failed in: " << GG_FUNCTION;
     if (aReference != nullptr) std::cout << " reference => " << aReference;
     std::cout << std::endl;
   }

@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 // 0) include own header
 #include "ggConnectionPoint.h"
 

@@ -8,7 +8,7 @@
 template <class TValueType>
 static void ggHistogramFixedTestT(ggInt64 aNumberOfBins, bool aPrint, bool aPrintBinIndex)
 {
-  if (aPrint) std::cout << "========== " <<  __PRETTY_FUNCTION__ << " ==========" << std::endl;
+  if (aPrint) std::cout << "========== " <<  GG_FUNCTION << " ==========" << std::endl;
   bool vSucceeded = true;
 
   ggHistogramFixedT<TValueType> vHistogram(aNumberOfBins, ggRound<TValueType>(-2), ggRound<TValueType>(2));
