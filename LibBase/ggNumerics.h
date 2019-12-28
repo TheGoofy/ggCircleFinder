@@ -42,7 +42,7 @@ inline const T& ggMax(const T& aA, const T& aB) {
 template <typename T>
 inline const T& ggMin(const T& aA, const T& aB, const T& aC) {
   if (aA < aB) return ggMin(aA, aC);
-  else return ggMin(aA, aC);
+  else return ggMin(aB, aC);
 }
 
 template <typename T>
